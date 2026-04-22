@@ -180,13 +180,37 @@ jurisdictions:
     label: "California"
     situations:
       insurance_dispute:
-        status: stub
+        status: populated
         authorities:
-          - name: "TODO: populate CA Department of Insurance info"
-            short_name: "TODO"
+          - name: "California Department of Insurance"
+            short_name: "CDI"
             kind: "regulator"
-            url: ""
-            notes: "TODO: populate"
+            url: "https://www.insurance.ca.gov/01-consumers/101-help/"
+            notes: |
+              Primary state regulator for insurers licensed in California.
+              Handles complaints about claim handling, coverage disputes,
+              and unfair claim-settlement practices under the California
+              Fair Claims Settlement Practices Regulations (CCR Title 10,
+              Chapter 5, Subchapter 7.5, §§ 2695.1 et seq.). Consumer
+              Hotline: 1-800-927-4357. This is reference information, not
+              legal advice — verify with counsel.
+          - name: "California Office of the Attorney General — Consumer Protection Section"
+            short_name: "CA AG Consumer"
+            kind: "ag"
+            url: "https://oag.ca.gov/consumers"
+            notes: |
+              Parallel avenue for unfair-and-deceptive-practices claims
+              that overlap with an insurance-specific complaint. The
+              Consumer Law Section handles Unfair Competition Law
+              (Cal. Bus. & Prof. Code § 17200) referrals.
+          - name: "State Bar of California — Lawyer Referral Service"
+            short_name: "CA Bar Referral"
+            kind: "bar"
+            url: "https://www.calbar.ca.gov/Public/Need-Legal-Help/Lawyer-Referral-Service"
+            notes: |
+              Certified lawyer-referral services directory, useful if the
+              dispute appears to require litigation. This is reference
+              information, not legal advice — verify with counsel.
   NY:
     label: "New York"
     situations:

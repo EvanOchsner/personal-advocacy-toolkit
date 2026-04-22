@@ -260,22 +260,25 @@ Mutual).
 
 ## 8. Render the case dashboard
 
+First generate the unified evidence manifest (infers `kind` per file
+from `data/kind_inference.yaml`):
+
+```sh
+python -m scripts.manifest.evidence_manifest \
+  --root examples/mustang-in-maryland/evidence \
+  --out examples/mustang-in-maryland/evidence-manifest.yaml
+```
+
+Expected: `wrote 68 entries (6 kinds) to .../evidence-manifest.yaml`.
+
+Then render the dashboard:
+
 ```sh
 python -m scripts.status.case_dashboard \
   --intake examples/mustang-in-maryland/case-facts.yaml \
-  --manifest examples/mustang-in-maryland/complaint_packet/packet-manifest.yaml \
+  --manifest examples/mustang-in-maryland/evidence-manifest.yaml \
   --packet-dir examples/mustang-in-maryland/complaint_packet/
 ```
-
-<!-- TODO: verify after dogfood pass -->
-The dashboard's `--manifest` is an evidence-manifest YAML with an
-`entries:` list (kind per entry), not the SHA-256 manifest from
-Step 1. For the Mustang case we don't ship a standalone
-`evidence-manifest.yaml` yet — the command above points `--manifest`
-at the packet manifest as a placeholder, which loads cleanly but
-produces zero evidence-count rows. A proper evidence-manifest.yaml
-(or running `correspondence_manifest.py` first) would populate the
-Evidence section.
 
 Expected output: a Markdown dashboard to stdout containing:
 
@@ -352,7 +355,7 @@ corpus for the test suite; a green run confirms end-to-end integrity.
 |  5   | `packet.build`                  | merged packet PDF + exhibit PDFs + appendix PDF             |
 |  6   | `provenance`                    | unified provenance report (JSON)                            |
 |  7   | `letters.draft`                 | .docx letters per kind                                      |
-|  8   | `status.case_dashboard`         | Markdown dashboard                                          |
+|  8   | `manifest.evidence_manifest` + `status.case_dashboard` | unified evidence-manifest + Markdown dashboard |
 |  9   | `publish.pii_scrub --dry-run`   | sidecar JSON report (no file changes)                       |
 | 10   | `pytest`                        | green test suite                                            |
 
@@ -360,14 +363,6 @@ corpus for the test suite; a green run confirms end-to-end integrity.
 
 ## Known rough edges
 
-- Several commands in this walkthrough are flagged
-  `<!-- TODO: verify after dogfood pass -->`. The parent orchestrator
-  will fix these as part of the Phase 5 verification pass.
-- The dashboard's expected `--manifest` input is an evidence-
-  manifest.yaml (list of entries) distinct from the SHA-256 manifest
-  produced by `evidence_hash`. A dedicated evidence-manifest for the
-  Mustang case is not yet generated; Step 8 uses the packet manifest
-  as a loadable-but-empty placeholder.
 - `build.py` for `.docx` exhibit sources requires `soffice` or
   `libreoffice` on PATH. The Mustang case currently uses `.md` and
   `.pdf` sources only, so this doesn't trip.

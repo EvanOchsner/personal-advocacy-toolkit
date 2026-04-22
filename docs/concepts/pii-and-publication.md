@@ -179,6 +179,34 @@ review ticket without leaking the thing you just scrubbed.
   `drafts/` tree. If you committed the unscrubbed version earlier,
   `history_sanitizer.py` is the tool; see that section.
 
+## CI gates
+
+Two CI jobs enforce the publication-safety story continuously:
+
+- **`publication-safety-postchecks`** (`.github/workflows/ci.yml`) runs
+  the three scrubbers against `examples/` (and `templates/` for
+  `.docx`) in post-check mode: `exif_scrub` (exit 1 on any surviving
+  EXIF/GPS/XMP tag), `docx_metadata_scrub` per `.docx` (exit 1 if any
+  sensitive `core.xml` or `app.xml` field survived), and `pii_scrub`
+  with `ci/example-subs.yaml` (exit 1 if any banned-term survivor).
+  All three run on every push and PR to `main`.
+- **`publication-prep-grep`** runs `rg -F -f ci/banned-terms.txt` over
+  the whole repo. Any match fails CI. `ci/banned-terms.txt` ships
+  empty; the infra is in place for when a real-case identifier ever
+  nearly leaks.
+
+To add a banned term: append one line per term to `ci/banned-terms.txt`
+(fixed-string match, case-sensitive, `#` for comments). Commit. CI will
+fail on any file in the repo — tracked or untracked — that contains the
+term, except `ci/banned-terms.txt` and `scripts/ci/local_postchecks.sh`
+themselves, which are excluded so a term never matches its own
+declaration.
+
+To diagnose a failing post-check: run `bash scripts/ci/local_postchecks.sh`
+locally. It mirrors the CI steps and prints the same reports
+(`/tmp/postcheck/*` or `$REPO/.tmp/postcheck/*`) so the offending file
+and field are visible without re-reading CI logs.
+
 ## See also
 
 - [`evidence-integrity.md`](evidence-integrity.md) — the append-only

@@ -1,0 +1,21 @@
+# ci/banned-terms.txt
+#
+# One banned term per line. Blank lines and lines starting with `#` are
+# ignored. Terms are matched as fixed strings (not regex) by ripgrep in
+# the `publication-prep-grep` CI job (and by scripts/ci/local_postchecks.sh).
+#
+# Purpose: belt-and-suspenders against a real-case identifier leaking
+# into the public repo. Synthetic identifiers from examples/ must NOT be
+# listed here — they are intentionally present in the repo. Only add a
+# term when a real person, address, policy number, claim number, etc.
+# has, or nearly has, slipped into a commit. A line added here will
+# fail CI if it ever reappears.
+#
+# Format:
+#   # a comment
+#   Some Real Name
+#   real.email@example.org
+#   POL-REAL-123456
+#
+# This file ships empty by design. The infrastructure exists so the fix
+# for a near-miss is one commit (add the term) away.

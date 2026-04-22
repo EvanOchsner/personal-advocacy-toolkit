@@ -144,15 +144,69 @@ jurisdictions:
   CA:
     situations:
       insurance_dispute:
-        status: stub
+        status: populated
         deadlines:
-          - label: "TODO: populate CA insurance SOL"
+          - label: "General civil action — written contract SOL (California)"
             kind: "sol"
             clock_starts: "loss_date"
             duration:
-              years: 2
-            authority_ref: "TODO"
-            notes: "TODO: populate"
+              years: 4
+            authority_ref: "Cal. Code Civ. Proc. § 337"
+            notes: |
+              4-year SOL for actions on a written contract. First-party
+              insurance claims are contract-based and typically governed
+              by this section, but the policy itself may contain a
+              shorter contractual suit-limitation clause (e.g., one year
+              from inception of loss for fire policies under Cal. Ins.
+              Code § 2071). Confirm the policy's suit-limitation clause
+              with counsel before relying on the statutory window.
+          - label: "CDI administrative complaint window (practical)"
+            kind: "admin_complaint"
+            clock_starts: "denial_date"
+            duration:
+              years: 3
+            authority_ref: "CDI Consumer Services Division (practice)"
+            notes: |
+              CDI does not enforce a hard statutory complaint window,
+              but stale complaints receive less investigative weight.
+              Reference value only; file promptly after the
+              insurer's final position. Verify current CDI guidance.
+          - label: "Prompt claim acknowledgment (insurer-side)"
+            kind: "notice"
+            clock_starts: "notice_of_loss"
+            duration:
+              days: 15
+            authority_ref: "Cal. Code Regs. tit. 10, § 2695.5(b)"
+            notes: |
+              Not a claimant deadline — this is the insurer's expected
+              window to acknowledge receipt of a claim communication
+              under the California Fair Claims Settlement Practices
+              Regulations. Useful to cite in correspondence when the
+              insurer is slow. Verify current CCR text with counsel.
+          - label: "Insurer claim decision window"
+            kind: "notice"
+            clock_starts: "notice_of_loss"
+            duration:
+              days: 40
+            authority_ref: "Cal. Code Regs. tit. 10, § 2695.7(b)"
+            notes: |
+              Insurer must accept or deny the claim, in whole or in
+              part, within 40 calendar days after receiving proof of
+              claim (extendable with written notice). This is the
+              insurer's deadline, not the claimant's — cite when the
+              insurer is sitting on an undisputed claim.
+          - label: "Policy-internal proof-of-loss window (typical)"
+            kind: "notice"
+            clock_starts: "loss_date"
+            duration:
+              days: 60
+            authority_ref: "Policy-specific; confirm in policy form"
+            notes: |
+              Most California auto and property policies require proof
+              of loss within 60 days. This is a policy term, not a
+              statute — always confirm in the specific policy form
+              set. Cal. Ins. Code § 2071 (fire policies) sets 60 days
+              as a statutory floor for fire-line products.
   NY:
     situations:
       insurance_dispute:

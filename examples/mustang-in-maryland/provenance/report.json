@@ -1,742 +1,1478 @@
 {
-  "count": 68,
-  "evidence_root": "/Users/evanochsner/workplace/personal-advocacy-toolkit/evidence",
+  "count": 72,
+  "evidence_root": "/Users/evanochsner/workplace/personal-advocacy-toolkit/examples/mustang-in-maryland/evidence",
   "files": [
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875086.182918,
       "path": "emails/raw/001_2025-03-16_delia-to-claims-intake.eml",
+      "reason_codes": [],
       "sha256": "3d96fa476c55f91cbba003542d0ad36e01d415b2317da07ac581d47b1913d840",
       "size": 1150,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875095.26347,
       "path": "emails/raw/002_2025-03-16_auto-ack.eml",
+      "reason_codes": [],
       "sha256": "2546ae393d37d87a64b7fc4581b4edf31753613246b81f403115ee2d78e4840b",
       "size": 875,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875114.461513,
       "path": "emails/raw/003_2025-03-17_whitlock-assignment.eml",
+      "reason_codes": [],
       "sha256": "643ec51b8696f875c11b3c9ed4005b6d6583b806583d5f3d8f89b6a3ea9bf1cc",
       "size": 967,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876536.6045291,
       "path": "emails/raw/004_2025-03-19_dundalk-decline.eml",
+      "reason_codes": [],
       "sha256": "4b1a6a9ad6c9b367567e1c8b3f35eef2cd59982b98f340b6dccb5e91b50fc4d3",
       "size": 921,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876399.389742,
       "path": "emails/raw/005_2025-03-19_delia-forward-to-whitlock.eml",
+      "reason_codes": [],
       "sha256": "ab409d8b043fe653d5d138525079273a55d971f38e744db8d951ec4d84c4c88a",
       "size": 916,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876399.39067,
       "path": "emails/raw/006_2025-03-21_whitlock-approves-midlife-crisis.eml",
+      "reason_codes": [],
       "sha256": "757f6bcd4f830a6ca3629c8ef369de0fb0a49d95d564adb818e2f3a771a5fb70",
       "size": 981,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876536.6041694,
       "path": "emails/raw/007_2025-03-24_midlife-crisis-intake.eml",
+      "reason_codes": [],
       "sha256": "507a96b0eed8fc048b251bc29271383f6881c2de5d582979a6f864c5ed81d08d",
       "size": 1233,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876399.3899662,
       "path": "emails/raw/008_2025-04-02_pemberton-schedule.eml",
+      "reason_codes": [],
       "sha256": "24133c42f8b34f6e8dde256f7a69c0dcb3626923a2a4b8c568adc8bce60c7d92",
       "size": 894,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875189.1072793,
       "path": "emails/raw/009_2025-04-03_delia-scope-question.eml",
+      "reason_codes": [],
       "sha256": "23450fde522a1e64edc1bacb14a9889de06825dac8794d65cee5271b897c32fd",
       "size": 876,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875201.3469286,
       "path": "emails/raw/010_2025-04-17_pemberton-valuation-delivery.eml",
+      "reason_codes": [],
       "sha256": "a842310ac115cbb94ea11ca15ac1696438a1cdf7bd32b174e8c371da0443d5ae",
       "size": 938,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876399.3904138,
       "path": "emails/raw/011_2025-04-18_delia-objects-valuation.eml",
+      "reason_codes": [],
       "sha256": "7fc07118d3d10f86f9bb0a73d3380ad0810177faf9fa2fd41eb82fa6414bc817",
       "size": 1161,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875233.6242104,
       "path": "emails/raw/012_2025-04-21_delia-to-agent.eml",
+      "reason_codes": [],
       "sha256": "458c80c9d2064d4d54db6002bfb090cd150478563a5a256cf5b93f36f839e79f",
       "size": 875,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875244.4252288,
       "path": "emails/raw/013_2025-04-21_keel-sends-forms.eml",
+      "reason_codes": [],
       "sha256": "116b0e5fc7f369fa0e51391915d5e60af354e4eb10cf719e70cebf28547e928e",
       "size": 712,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876365.7252824,
       "path": "emails/raw/014_2025-05-09_whitlock-formal-position.eml",
+      "reason_codes": [],
       "sha256": "0f4d1da145b0216ae6d8d4dd8292a1c6111eef804bd9df377db6cedddf4dceca",
       "size": 1291,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876399.3895125,
       "path": "emails/raw/015_2025-05-22_delia-written-objection.eml",
+      "reason_codes": [],
       "sha256": "d1a1e73080ecd2f5b54377b94853e116af72080590e9cdacbad20c312d7c444b",
       "size": 1743,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875290.0937362,
       "path": "emails/raw/016_2025-06-10_whitlock-salvage-notice.eml",
+      "reason_codes": [],
       "sha256": "652727494f90eba85ad6e13506b79e76e84a3be2bf7ba380d2d529da1ed050b8",
       "size": 875,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876365.7247102,
       "path": "emails/raw/017_2025-06-24_salvage-transfer-notification.eml",
+      "reason_codes": [],
       "sha256": "e58f4e0d6501202f3d151f868084aee5ca4d36db1d4ab8becb8b66e4ae176055",
       "size": 898,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875314.8955014,
       "path": "emails/raw/018_2025-06-25_delia-escalation.eml",
+      "reason_codes": [],
       "sha256": "6599a41f8514b64adec30355922bf7de178bfef63c503758810555e8a50fd7d0",
       "size": 1408,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876500.018979,
       "path": "emails/raw/019_2025-07-18_delia-fact-finding-midlife-crisis.eml",
+      "reason_codes": [],
       "sha256": "e272c75e32aa23b3491676f8b1feba8575f621a61b6fdb0f42508797c22c1745",
       "size": 975,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876536.6050546,
       "path": "emails/raw/020_2025-08-15_midlife-crisis-opinion-letter.eml",
+      "reason_codes": [],
       "sha256": "2da3f097f4960e685da181d9ea68381742f2bce9ef13c69288a907be1b92c94d",
       "size": 936,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875089.8770359,
       "path": "emails/readable/001_2025-03-16_delia-to-claims-intake.txt",
+      "reason_codes": [],
       "sha256": "a768daf4914d7d54278964ce6a7b0a2c58fb61ae4c7a78092757327703241ec8",
       "size": 1019,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875101.1499624,
       "path": "emails/readable/002_2025-03-16_auto-ack.txt",
+      "reason_codes": [],
       "sha256": "b66287c09d59f262e4e9ad69d6292e9e5195d13d850b0c0f94daa2cd9a6bd768",
       "size": 643,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875110.9635427,
       "path": "emails/readable/003_2025-03-17_whitlock-assignment.txt",
+      "reason_codes": [],
       "sha256": "1eed419c7cffb2e5b298beba30cafe2bc135d47092e7e18c6cf5d7508ec1135b",
       "size": 797,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876536.603777,
       "path": "emails/readable/004_2025-03-19_dundalk-decline.txt",
+      "reason_codes": [],
       "sha256": "99a1ee6f8bbef75110873f41dd22a6b4aa34dcd8a13824a5992b223a02bf5334",
       "size": 748,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876399.3886888,
       "path": "emails/readable/005_2025-03-19_delia-forward-to-whitlock.txt",
+      "reason_codes": [],
       "sha256": "7bbed894fe8e8418c511d218711f243915eee69fbbc517003068c9d8b2b574f7",
       "size": 705,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876399.3878608,
       "path": "emails/readable/006_2025-03-21_whitlock-approves-midlife-crisis.txt",
+      "reason_codes": [],
       "sha256": "2315cf37ef6fc9132810ee5202b559ba5414891a8b41270f23f30b06a5d4d1dc",
       "size": 757,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876500.0183725,
       "path": "emails/readable/007_2025-03-24_midlife-crisis-intake.txt",
+      "reason_codes": [],
       "sha256": "f2ed3a6d32760a6e84d5a324a4265394a6889aae5a043d8229af2a09f7eba1c7",
       "size": 983,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876399.389259,
       "path": "emails/readable/008_2025-04-02_pemberton-schedule.txt",
+      "reason_codes": [],
       "sha256": "0399da160d432d9d1a5a02838fa69d9863c271925ad3c9cce735191882dc5722",
       "size": 672,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875191.588516,
       "path": "emails/readable/009_2025-04-03_delia-scope-question.txt",
+      "reason_codes": [],
       "sha256": "975d9d09e8a2bc751fa8f44a934c447d7bac0b89527da88239369565f4768ca9",
       "size": 618,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875204.0138535,
       "path": "emails/readable/010_2025-04-17_pemberton-valuation-delivery.txt",
+      "reason_codes": [],
       "sha256": "1dedca038c45d686a8ef7d7d97eccfb80773c9a1150d1b49d7e1a9119622df99",
       "size": 629,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876399.38811,
       "path": "emails/readable/011_2025-04-18_delia-objects-valuation.txt",
+      "reason_codes": [],
       "sha256": "e6e4024daf1a760fadb8559ffbf3a941e8ab11442c7f4431d75b95358240c5f4",
       "size": 903,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875236.4359019,
       "path": "emails/readable/012_2025-04-21_delia-to-agent.txt",
+      "reason_codes": [],
       "sha256": "1bc8dc56a728659afe9ccaf230bf010a1eaffeb3747b0807cec5f77e8d5c9722",
       "size": 718,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875246.6751475,
       "path": "emails/readable/013_2025-04-21_keel-sends-forms.txt",
+      "reason_codes": [],
       "sha256": "ef948ca070710c533aaf54fb46a9708b3d522d41b908adcc3bbb72f8ac8a43be",
       "size": 546,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876365.723303,
       "path": "emails/readable/014_2025-05-09_whitlock-formal-position.txt",
+      "reason_codes": [],
       "sha256": "fcaeabe5fc0bfe04747f657a5a17d402821d25f4464b6ce5c9853f5c5870c2f0",
       "size": 1067,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876399.3889182,
       "path": "emails/readable/015_2025-05-22_delia-written-objection.txt",
+      "reason_codes": [],
       "sha256": "2cdfd8730c193ff989472f889be0609e0d9441281bf57b6d914a4a3040e55e9f",
       "size": 1516,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875292.3433588,
       "path": "emails/readable/016_2025-06-10_whitlock-salvage-notice.txt",
+      "reason_codes": [],
       "sha256": "6d0b2a4c0bb5141f60e54d629ca0732d33ca6580b389f9f459ec6d4f1aa8369c",
       "size": 651,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876365.72401,
       "path": "emails/readable/017_2025-06-24_salvage-transfer-notification.txt",
+      "reason_codes": [],
       "sha256": "8166240fd5104796fd8dbfc100ae1cc7eba858f3ac001521281835e7d35c33c2",
       "size": 629,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875318.167257,
       "path": "emails/readable/018_2025-06-25_delia-escalation.txt",
+      "reason_codes": [],
       "sha256": "9adeb99d85cfba19b470b226d065862f0f91517195d677cd6e2c9fb62b7c8f95",
       "size": 1202,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876399.387489,
       "path": "emails/readable/019_2025-07-18_delia-fact-finding-midlife-crisis.txt",
+      "reason_codes": [],
       "sha256": "de2dc7942d78a43e2765468ce317184e6575dfdebde9e54da5e6eea8c46f4173",
       "size": 774,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876399.388456,
       "path": "emails/readable/020_2025-08-15_midlife-crisis-opinion-letter.txt",
+      "reason_codes": [],
       "sha256": "8ea42d8c44bf29669fe768119f56d9f7b03193034b58f0477a06a61d237d104e",
       "size": 722,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875086.44235,
       "path": "emails/structured/001_2025-03-16_delia-to-claims-intake.json",
+      "reason_codes": [],
       "sha256": "b8396b68082d561ff8d2be3a646503847bbe47a016181f527a59e218a3a10d09",
       "size": 644,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875099.0605292,
       "path": "emails/structured/002_2025-03-16_auto-ack.json",
+      "reason_codes": [],
       "sha256": "6ac7647a41a51086cefa6432e3d71a4945fdeb4d966b9de5d731add6a7de16fe",
       "size": 762,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875117.7164245,
       "path": "emails/structured/003_2025-03-17_whitlock-assignment.json",
+      "reason_codes": [],
       "sha256": "0565c2d253f17876e24a585dc26289bbe3e3bb1361f6fbb1c5e1151daf29b24e",
       "size": 682,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876536.6023536,
       "path": "emails/structured/004_2025-03-19_dundalk-decline.json",
+      "reason_codes": [],
       "sha256": "9a47754cb90e76e67e9018ce8be56012d87898836881e011ccb1239578683b86",
       "size": 726,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876399.3870075,
       "path": "emails/structured/005_2025-03-19_delia-forward-to-whitlock.json",
+      "reason_codes": [],
       "sha256": "d82535196a80ae79bc09e72b21084dba7f82b7b3d8bd113cb38ab6ef42ab50fd",
       "size": 785,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876500.015495,
       "path": "emails/structured/006_2025-03-21_whitlock-approves-midlife-crisis.json",
+      "reason_codes": [],
       "sha256": "e8c40cfb248d42cd5241284fe2d4b415f0cf94bcda9a3c7c6fea3f6f7906b8b8",
       "size": 780,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876536.6033409,
       "path": "emails/structured/007_2025-03-24_midlife-crisis-intake.json",
+      "reason_codes": [],
       "sha256": "76979594d0749b480f0d111f983fe61b8ba13a2ecfcc3dbd77c97576456e3550",
       "size": 820,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876399.3864453,
       "path": "emails/structured/008_2025-04-02_pemberton-schedule.json",
+      "reason_codes": [],
       "sha256": "0f34d5e338f9d8c0264275c6ca8d1ce4d69b7438d3c66c4426c157c1ea60a106",
       "size": 727,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875196.320201,
       "path": "emails/structured/009_2025-04-03_delia-scope-question.json",
+      "reason_codes": [],
       "sha256": "c3c746f27a081c252d55ede0230ed69fa75c5656fb7d8bace421e7149ae69d36",
       "size": 869,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875208.443018,
       "path": "emails/structured/010_2025-04-17_pemberton-valuation-delivery.json",
+      "reason_codes": [],
       "sha256": "55ec9386a5d9f68ab17916cb29fac4dc9da11d17110edf6759248defb779468a",
       "size": 1039,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875226.6216877,
       "path": "emails/structured/011_2025-04-18_delia-objects-valuation.json",
+      "reason_codes": [],
       "sha256": "4fea10dbc7719e615d12120b700e4b625b276cf2185a065e18392598dddff443",
       "size": 794,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875240.1211586,
       "path": "emails/structured/012_2025-04-21_delia-to-agent.json",
+      "reason_codes": [],
       "sha256": "7327c7af98b7c240ad7d94d15ec9b4e346a5b256b0ca0161afd167e0e86ae2ba",
       "size": 719,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875250.5434248,
       "path": "emails/structured/013_2025-04-21_keel-sends-forms.json",
+      "reason_codes": [],
       "sha256": "afc05ab831b68047bfac4196dd470522e263394daeed6651f8ea5bde8bbade04",
       "size": 874,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875266.305278,
       "path": "emails/structured/014_2025-05-09_whitlock-formal-position.json",
+      "reason_codes": [],
       "sha256": "21276216c99de2192638a28b3cf412260134da3999304a1031708b9cee4db13c",
       "size": 756,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875284.187114,
       "path": "emails/structured/015_2025-05-22_delia-written-objection.json",
+      "reason_codes": [],
       "sha256": "ec97b84979e378eab74c12ab372faecc50cfd99f5e6ef4d16e1116458b9394ba",
       "size": 701,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875296.097952,
       "path": "emails/structured/016_2025-06-10_whitlock-salvage-notice.json",
+      "reason_codes": [],
       "sha256": "ebf652121c2c70872888d289a16b3fcbb4f324829902ab791c4ae0b14a5d5625",
       "size": 772,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875307.100466,
       "path": "emails/structured/017_2025-06-24_salvage-transfer-notification.json",
+      "reason_codes": [],
       "sha256": "0a227264675d3e28d7e49d53686a5e57b0879330613b3b5f652f7febe3ce1a1e",
       "size": 848,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875321.3459797,
       "path": "emails/structured/018_2025-06-25_delia-escalation.json",
+      "reason_codes": [],
       "sha256": "5209bbd59818a07fa21db44531c0b056c521485c531a2cdb31a8162b3c007787",
       "size": 742,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876536.601744,
       "path": "emails/structured/019_2025-07-18_delia-fact-finding-midlife-crisis.json",
+      "reason_codes": [],
       "sha256": "48fa66ee0e281aca44fe6ae0167a02e554c12a7839b54bfa58307fee8c5f2f27",
       "size": 740,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876536.602753,
       "path": "emails/structured/020_2025-08-15_midlife-crisis-opinion-letter.json",
+      "reason_codes": [],
       "sha256": "0a54a79ba3948eda5f60a3dfaf29024fe8b9c4b86494bacccf5a914f592f961b",
       "size": 874,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876500.0213058,
       "path": "photos/README.md",
+      "reason_codes": [],
       "sha256": "93970ce0a1985f3a16f94cadc8a0b1c537c8dd77ddd6f7135233082398e2f7aa",
       "size": 976,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
         "added": null,
         "last_touched": null
+      },
+      "mtime": 1776883584.622831,
+      "path": "photos/photo-01-mustang-at-midlife-crisis.jpg",
+      "reason_codes": [
+        "git-untracked"
+      ],
+      "sha256": "dc824717e5aee2893dd1a3bd2d628480ab3589b1011a120403802c54273e0a6b",
+      "size": 91966,
+      "verdict": "warn",
+      "xattrs": {}
+    },
+    {
+      "git": {
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776876500.0217695,
       "path": "photos/photo-01-mustang-at-midlife-crisis.md",
+      "reason_codes": [],
       "sha256": "9cc5171a5c3e8d042936316439e5c4350d5a1bf772f1d41718e1a34198937378",
       "size": 328,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
         "added": null,
         "last_touched": null
+      },
+      "mtime": 1776883584.647062,
+      "path": "photos/photo-02-damage-closeup.jpg",
+      "reason_codes": [
+        "git-untracked"
+      ],
+      "sha256": "72f3359ca21851fd0bb96eb409763c1078026107d8d40e6a6fdc1fa82e4e438d",
+      "size": 84082,
+      "verdict": "warn",
+      "xattrs": {}
+    },
+    {
+      "git": {
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875378.973427,
       "path": "photos/photo-02-damage-closeup.md",
+      "reason_codes": [],
       "sha256": "f8f57fd5f3f421d961285d792a83f04feb426ec42fd81868a3de2de33d3f56aa",
       "size": 290,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
         "added": null,
         "last_touched": null
+      },
+      "mtime": 1776883584.6673856,
+      "path": "photos/photo-03-vin-plate-placeholder.jpg",
+      "reason_codes": [
+        "git-untracked"
+      ],
+      "sha256": "e93d4e948713d23a9e1872795305a45d0a1cd3e76b604f2a8d681ef78058510a",
+      "size": 79544,
+      "verdict": "warn",
+      "xattrs": {}
+    },
+    {
+      "git": {
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875380.637063,
       "path": "photos/photo-03-vin-plate-placeholder.md",
+      "reason_codes": [],
       "sha256": "a2988c9d47ba686bcbcdb6c9d11b7ab3ba979f2f8e295363f93f3c982732cee3",
       "size": 281,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875405.7227745,
       "path": "policy/CIM-AV-ENDT-2023.md",
+      "reason_codes": [],
       "sha256": "e1a74efb14e78607909426e0db68808be656cec8a5f7a6b250b7abe101c325c1",
       "size": 1519,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875414.2586389,
       "path": "policy/CIM-SALV-2023.md",
+      "reason_codes": [],
       "sha256": "b89d27fd833c3dc27d03cdb8f7ad7b2f12f5e34ae7e3dfe8f57d51ccaff62bc1",
       "size": 1598,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
       "git": {
-        "added": null,
-        "last_touched": null
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
       },
       "mtime": 1776875396.490192,
       "path": "policy/CIM-VEH-2023.md",
+      "reason_codes": [],
       "sha256": "6652ec40f83a817b97c3f1213b7c62d723a9a6d58e1d64527c5307ff0a649087",
       "size": 2161,
+      "verdict": "pass",
+      "xattrs": {}
+    },
+    {
+      "git": {
+        "added": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        },
+        "last_touched": {
+          "author": "Evan Ochsner",
+          "date": "2026-04-22T12:53:07-04:00",
+          "sha": "7c543bd2bb4b116ed0dea4c12d35de06f42aa9c1"
+        }
+      },
+      "mtime": 1776876365.7281654,
+      "path": "valuation/MidAtlantic-Vehicle-Appraisers-valuation.md",
+      "reason_codes": [],
+      "sha256": "26d3f7e53cd57dc15c659d5dc0ba68875b2a8a28357da00e05ee51cb541cdf2e",
+      "size": 2054,
+      "verdict": "pass",
       "xattrs": {}
     },
     {
@@ -744,16 +1480,26 @@
         "added": null,
         "last_touched": null
       },
-      "mtime": 1776876365.7281654,
-      "path": "valuation/MidAtlantic-Vehicle-Appraisers-valuation.md",
-      "sha256": "26d3f7e53cd57dc15c659d5dc0ba68875b2a8a28357da00e05ee51cb541cdf2e",
-      "size": 2054,
+      "mtime": 1776883584.6739347,
+      "path": "valuation/MidAtlantic-Vehicle-Appraisers-valuation.pdf",
+      "reason_codes": [
+        "git-untracked"
+      ],
+      "sha256": "baa7476a0a6cb49fcc7bfc71f5e250b211517438d971f7f87255e41b10be8c41",
+      "size": 4700,
+      "verdict": "warn",
       "xattrs": {}
     }
   ],
-  "generated_at": "2026-04-22T18:14:48.290690+00:00",
+  "generated_at": "2026-04-22T19:03:59.295088+00:00",
   "manifest": "/Users/evanochsner/workplace/personal-advocacy-toolkit/examples/mustang-in-maryland/.evidence-manifest.sha256",
   "repo_root": "/Users/evanochsner/workplace/personal-advocacy-toolkit",
   "schema": "advocacy-toolkit/provenance-report/v1",
-  "snapshot": "2026-04-22T18:11:43.540208+00:00"
+  "snapshot": "2026-04-22T19:03:59.206308+00:00",
+  "snapshot_stale": false,
+  "verdict_counts": {
+    "fail": 0,
+    "pass": 68,
+    "warn": 4
+  }
 }

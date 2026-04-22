@@ -187,6 +187,67 @@ writing. Re-run the lookup tools for current values.
 
 ---
 
+## Worked California specifics
+
+Populated in `data/authorities.yaml` and `data/deadlines.yaml` as of
+writing. Re-run the lookup tools for current values — the data files
+are the source of truth; this section describes the shape so a reader
+knows what to expect.
+
+**Lead authority:** California Department of Insurance (CDI),
+`https://www.insurance.ca.gov/`. Consumer Hotline: 1-800-927-4357.
+CDI enforces the California Fair Claims Settlement Practices
+Regulations (CCR Title 10, Chapter 5, Subchapter 7.5, §§ 2695.1 et
+seq.), which govern insurer conduct — acknowledgment windows, claim
+decision windows, and unfair-practice definitions.
+
+**Secondary authorities:**
+- CFPB (financial-products insurance).
+- California Attorney General — Consumer Protection Section (overlaps
+  via the Unfair Competition Law, Cal. Bus. & Prof. Code § 17200).
+- State Bar of California — Lawyer Referral Service.
+- FTC ReportFraud (when deceptive practices accompany the dispute).
+
+Run the lookup tool to see the current shortlist:
+
+```
+python -m scripts.intake.authorities_lookup --situation insurance_dispute --jurisdiction CA
+```
+
+**Relevant California statutory framework** (confirm with counsel):
+- Cal. Code Civ. Proc. § 337 — 4-year SOL on written contracts
+  (first-party insurance claims are contract-based).
+- Cal. Ins. Code § 790.03(h) — Unfair Claims Settlement Practices
+  (statutory anchor for the CCR regulations below).
+- Cal. Code Regs. tit. 10, § 2695.5 — claim acknowledgment window
+  (15 calendar days).
+- Cal. Code Regs. tit. 10, § 2695.7 — claim acceptance/denial window
+  (40 calendar days after proof of claim).
+- Cal. Ins. Code § 2071 — statutory fire-policy form; 60-day proof of
+  loss floor.
+- Common-law bad-faith in first-party contexts
+  (*Gruenberg v. Aetna*, *Egan v. Mutual of Omaha*).
+
+**Policy suit-limitation caveat:** California policies often contain
+contractual suit-limitation clauses (one year from inception of loss
+is common for fire-line products under § 2071). The statutory 4-year
+SOL does not override a shorter policy clause that is enforceable on
+its face. Confirm the policy's own clause before relying on the § 337
+window.
+
+Compute the concrete windows for a given loss date:
+
+```
+python -m scripts.intake.deadline_calc \
+  --situation insurance_dispute --jurisdiction CA \
+  --loss-date 2025-03-15
+```
+
+Output tags every date `[VERIFY WITH COUNSEL]`. Do not file on the
+machine's math.
+
+---
+
 ## Populate-this list for other states
 
 To convert your state from stub to populated:

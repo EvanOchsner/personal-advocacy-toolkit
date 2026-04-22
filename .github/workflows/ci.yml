@@ -73,3 +73,125 @@ jobs:
           python -m scripts.letters.draft --help
           python -m scripts.status.case_dashboard --help
           python -m scripts.publish.pii_scrub --help
+
+  # Publication-safety post-checks: exercise the Phase 3C scrubbers against
+  # examples/ and templates/ and assert that nothing survives. A failure
+  # here means either (a) a real-case artifact has leaked into the repo, or
+  # (b) a new synthetic artifact was added without being cleaned first.
+  publication-safety-postchecks:
+    name: Publication-safety post-checks (Python 3.11)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install package (with synthetic-case extras for Pillow/python-docx)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,synthetic-case]"
+
+      - name: EXIF scrub post-check (examples/)
+        # exif_scrub exits 1 if any image has surviving EXIF/GPS/XMP tags.
+        # The --report flag requested in the Phase-6 plan does not exist on
+        # this CLI; stdout already lists every offending file, and the exit
+        # code is the authoritative signal. We capture stdout to a log file
+        # in the step workspace so the CI log is reviewable after the run.
+        run: |
+          set -e
+          mkdir -p /tmp/postcheck
+          python -m scripts.publish.exif_scrub --root examples/ \
+            | tee /tmp/postcheck/exif.log
+          echo "--- EXIF post-check report ---"
+          cat /tmp/postcheck/exif.log
+
+      - name: DOCX metadata post-check (examples/ and templates/)
+        # docx_metadata_scrub.py is single-file (--in/--out) and does its own
+        # post-check internally (exit 1 + deletes the output if sensitive
+        # metadata survived). We loop over every .docx in examples/ and
+        # templates/ and aggregate.
+        run: |
+          set -e
+          mkdir -p /tmp/postcheck/docx
+          FAIL=0
+          COUNT=0
+          while IFS= read -r -d '' DOCX; do
+            COUNT=$((COUNT + 1))
+            OUT="/tmp/postcheck/docx/$(echo "$DOCX" | tr '/' '_').docx"
+            echo "scrubbing: $DOCX"
+            if ! python -m scripts.publish.docx_metadata_scrub --in "$DOCX" --out "$OUT"; then
+              FAIL=$((FAIL + 1))
+            fi
+          done < <(find examples templates -type f -name '*.docx' -print0 2>/dev/null)
+          echo "--- DOCX post-check report ---"
+          echo "scanned: $COUNT files; failures: $FAIL"
+          if [ "$FAIL" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: PII scrub post-check (examples/ vs ci/example-subs.yaml)
+        # pii_scrub exits 0 if no banned-term survivors after scrubbing, 1
+        # otherwise. It is strict-by-default; the `--strict` flag named in
+        # the Phase-6 plan does not exist on this CLI — the exit code is
+        # the strict signal. We run dry-run so examples/ is not mutated by
+        # CI; the in-memory scrubbed text is what the survivor check runs
+        # against.
+        run: |
+          set -e
+          mkdir -p /tmp/postcheck
+          python -m scripts.publish.pii_scrub \
+            --root examples/ \
+            --substitutions ci/example-subs.yaml \
+            --report /tmp/postcheck/pii_scrub_report.json
+          echo "--- PII scrub report ---"
+          cat /tmp/postcheck/pii_scrub_report.json
+
+  # Publication-prep grep rehearsal: fail CI if any term in
+  # ci/banned-terms.txt appears anywhere in the repo. The file ships
+  # empty on purpose (see its header for the add-a-term protocol); the
+  # infra exists so landing a banned term is a one-line patch.
+  publication-prep-grep:
+    name: Publication-prep grep (ci/banned-terms.txt)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Confirm ripgrep is available
+        # ripgrep is preinstalled on ubuntu-latest GitHub-hosted runners.
+        # This step makes the dependency explicit and fails loudly if the
+        # runner image ever drops it.
+        run: rg --version
+
+      - name: Grep repo for banned terms
+        # Strip comments and blank lines from banned-terms.txt to produce
+        # the effective pattern file. If empty, nothing to match — succeed
+        # trivially. Otherwise rg -F (fixed-string) -f (pattern file)
+        # across the whole repo; exit 1 on any hit.
+        run: |
+          set -e
+          EFFECTIVE=/tmp/banned-terms.effective
+          grep -vE '^[[:space:]]*(#|$)' ci/banned-terms.txt > "$EFFECTIVE" || true
+          if [ ! -s "$EFFECTIVE" ]; then
+            echo "ci/banned-terms.txt is empty (no effective terms) — skipping grep"
+            exit 0
+          fi
+          echo "effective banned terms:"
+          cat "$EFFECTIVE"
+          echo "---"
+          # Exclude the banned-terms file itself and the local_postchecks
+          # script so a listed term does not match its own declaration.
+          if rg -F -n --no-ignore \
+                --glob '!ci/banned-terms.txt' \
+                --glob '!scripts/ci/local_postchecks.sh' \
+                -f "$EFFECTIVE" \
+                .; then
+            echo "FAIL: banned term found in repo" >&2
+            exit 1
+          fi
+          echo "OK: no banned terms found"

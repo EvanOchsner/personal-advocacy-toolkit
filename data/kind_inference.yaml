@@ -1,0 +1,103 @@
+# kind_inference.yaml — path-pattern → evidence kind
+#
+# Rules are matched top-to-bottom; first match wins. Each rule is:
+#   - glob:     fnmatch glob against the path relative to --root.
+#     kind:     the evidence-kind string to assign.
+#     notes:    optional human-readable explanation.
+#
+# Patterns are case-insensitive. If no rule matches, the file falls
+# through to kind: "unknown".
+#
+# This file is versioned and community-maintainable — add rules here
+# rather than in code.
+
+rules:
+  # --- Correspondence --------------------------------------------------- #
+  - glob: "**/emails/raw/*.eml"
+    kind: email_raw
+  - glob: "**/emails/structured/*.json"
+    kind: email_structured
+  - glob: "**/emails/readable/*.txt"
+    kind: email_readable
+  - glob: "**/emails/**/*.eml"
+    kind: email_raw
+  - glob: "**/sms/raw/*"
+    kind: sms_raw
+  - glob: "**/sms/structured/**/*.json"
+    kind: sms_structured
+  - glob: "**/sms/**/*"
+    kind: sms
+
+  # --- Voice / voicemail ------------------------------------------------ #
+  - glob: "**/voicemail/**/*.csv"
+    kind: voicemail_meta
+  - glob: "**/voicemail/**/*"
+    kind: voicemail
+
+  # --- Web / screenshot ------------------------------------------------- #
+  - glob: "**/screenshots/**/*.pdf"
+    kind: screenshot
+  - glob: "**/screenshots/**/*.png"
+    kind: screenshot
+  - glob: "**/screenshots/**/*"
+    kind: screenshot
+
+  # --- Medical ---------------------------------------------------------- #
+  - glob: "**/medical/**/*.csv"
+    kind: medical_eob
+  - glob: "**/medical/**/*.pdf"
+    kind: medical_eob
+  - glob: "**/medical/**/*"
+    kind: medical
+
+  # --- Photos / media --------------------------------------------------- #
+  - glob: "**/photos/**/*.jpg"
+    kind: photo
+  - glob: "**/photos/**/*.jpeg"
+    kind: photo
+  - glob: "**/photos/**/*.png"
+    kind: photo
+  - glob: "**/photos/**/*.heic"
+    kind: photo
+  - glob: "**/photos/**/*"
+    kind: photo
+
+  # --- Governing documents --------------------------------------------- #
+  - glob: "**/policy/**/*"
+    kind: policy_document
+  - glob: "**/contract/**/*"
+    kind: contract
+  - glob: "**/lease/**/*"
+    kind: contract
+
+  # --- Valuation / appraisal ------------------------------------------- #
+  - glob: "**/valuation/**/*"
+    kind: valuation
+  - glob: "**/appraisal/**/*"
+    kind: valuation
+
+  # --- Inspection / opinion -------------------------------------------- #
+  - glob: "**/inspection/**/*"
+    kind: inspection
+  - glob: "**/opinion/**/*"
+    kind: opinion_letter
+
+  # --- Receipts / bills ------------------------------------------------- #
+  - glob: "**/receipts/**/*"
+    kind: receipt
+  - glob: "**/bills/**/*"
+    kind: bill
+
+  # --- Catch-alls for common extensions -------------------------------- #
+  - glob: "**/*.eml"
+    kind: email_raw
+  - glob: "**/*.mbox"
+    kind: email_mbox
+  - glob: "**/*.pdf"
+    kind: pdf_other
+  - glob: "**/*.docx"
+    kind: docx_other
+  - glob: "**/*.md"
+    kind: text_note
+  - glob: "**/README*"
+    kind: readme

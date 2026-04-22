@@ -1,0 +1,25 @@
+{{ today }}
+
+{{ recipient.name }}
+{{ recipient.address }}
+
+Re: Demand — {{ case_caption or situation_type }}{% if policy_number %}, policy {{ policy_number }}{% endif %}
+
+Dear {{ recipient.name }}:
+
+I am writing regarding the matter described above. The loss or incident occurred on {{ loss_date or "[date on file]" }}{% if loss_description %} ({{ loss_description.splitlines()[0] }}){% endif %}. Despite prior correspondence, the matter remains unresolved.
+
+I hereby demand that you cure the conduct or payment deficiency identified in my prior correspondence within thirty (30) days of your receipt of this letter.{% if agreed_value_usd %} Specifically, I demand payment consistent with the agreed value of ${{ agreed_value_usd }}{% if insurer_deduction_usd %}, including release of the disputed ${{ insurer_deduction_usd }} deduction{% endif %}.{% endif %}
+
+If this demand is not met within the stated window, I intend to pursue all available administrative and legal remedies, including any complaints to the appropriate regulator and retention of counsel.
+
+Please direct any response to me at the contact information below.
+
+Sincerely,
+
+{{ sender.name }}
+{{ sender.address }}
+{% if sender.email %}{{ sender.email }}{% endif %}
+{% if sender.phone %}{{ sender.phone }}{% endif %}
+
+{{ disclaimer }}

@@ -1,0 +1,5 @@
+number,name,direction,timestamp,duration_seconds,transcript
++15551234567,Alice Example,incoming,2024-03-15T14:05:00Z,120,
++15557654321,Bob Shop,voicemail,1710600000000,45,"Hi this is Bob from the shop calling about your Mustang, please call me back."
++15559999999,,missed,2024-03-16T09:30:00+00:00,0,
++15551234567,Alice Example,outgoing,2024-03-17T11:00:00Z,300,

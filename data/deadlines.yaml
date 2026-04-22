@@ -1,0 +1,179 @@
+# deadlines.yaml — statute-of-limitations and notice deadlines, keyed by
+# (jurisdiction, situation). Reference material only. Not legal advice.
+# Every deadline is a starting point for verification with counsel.
+#
+# Schema (v0.1):
+#   schema_version: str
+#   disclaimer: str             # echoed in every CLI output
+#   jurisdictions:
+#     <jurisdiction_slug>:
+#       situations:
+#         <situation_slug>:
+#           status: populated | stub
+#           deadlines:
+#             - label: str      # human-readable
+#               kind: str       # sol | notice | admin_complaint | demand_window
+#               clock_starts: str   # one of: loss_date | notice_of_loss |
+#                                   # denial_date | last_act | custom
+#               duration:           # pick ONE of days/months/years
+#                 days: int
+#                 months: int
+#                 years: int
+#               authority_ref: str  # where this deadline comes from
+#               notes: str
+#
+# duration is a single-key mapping. deadline_calc.py computes
+#   start_date + duration -> deadline_date
+# using calendar-aware arithmetic. Month/year arithmetic clamps the day
+# to the last-valid day of the target month (e.g., Jan 31 + 1 month -> Feb 28/29).
+
+schema_version: "0.1"
+disclaimer: >-
+  This is reference information, not legal advice. Deadlines vary with
+  facts, tolling, and statutory amendments. Verify every date with
+  counsel licensed in the relevant jurisdiction before relying on it.
+
+jurisdictions:
+
+  MD:
+    situations:
+      insurance_dispute:
+        status: populated
+        deadlines:
+          - label: "General civil action statute of limitations (Maryland)"
+            kind: "sol"
+            clock_starts: "loss_date"
+            duration:
+              years: 3
+            authority_ref: "Md. Code, Cts. & Jud. Proc. § 5-101"
+            notes: |
+              3-year default SOL for civil actions in Maryland. Insurance
+              contract claims may also be governed by the policy's own
+              limitation clause. Verify with counsel.
+          - label: "Unfair claim settlement practice — administrative complaint window"
+            kind: "admin_complaint"
+            clock_starts: "denial_date"
+            duration:
+              years: 3
+            authority_ref: "Md. Ins. Code § 27-303 (referenced)"
+            notes: |
+              Administrative-complaint timing is MIA-managed and practical
+              rather than statutory. Reference value only. Verify with
+              counsel.
+          - label: "Prompt-payment / claim acknowledgment window (insurer-side)"
+            kind: "notice"
+            clock_starts: "notice_of_loss"
+            duration:
+              days: 15
+            authority_ref: "COMAR 31.15.07 (referenced)"
+            notes: |
+              Not a claimant deadline — this is the insurer's expected
+              response window. Useful to cite in correspondence when the
+              insurer is slow. Verify current COMAR text with counsel.
+          - label: "Policy-internal proof-of-loss window (typical)"
+            kind: "notice"
+            clock_starts: "loss_date"
+            duration:
+              days: 60
+            authority_ref: "Policy-specific; confirm in policy form"
+            notes: |
+              Most auto policies require proof of loss within 60 days.
+              This is a policy term, not a statute — always confirm in
+              the specific policy form set.
+      medical_billing:
+        status: stub
+        deadlines:
+          - label: "TODO: populate MD medical-billing SOL"
+            kind: "sol"
+            clock_starts: "loss_date"
+            duration:
+              years: 3
+            authority_ref: "TODO"
+            notes: "TODO: populate"
+      consumer_scam:
+        status: stub
+        deadlines:
+          - label: "TODO: populate"
+            kind: "sol"
+            clock_starts: "loss_date"
+            duration:
+              years: 3
+            authority_ref: "TODO"
+            notes: "TODO: populate"
+      harassment_cyberbullying:
+        status: stub
+        deadlines:
+          - label: "TODO: populate"
+            kind: "sol"
+            clock_starts: "last_act"
+            duration:
+              years: 1
+            authority_ref: "TODO"
+            notes: "TODO: populate"
+      landlord_tenant:
+        status: stub
+        deadlines:
+          - label: "TODO: populate"
+            kind: "sol"
+            clock_starts: "loss_date"
+            duration:
+              years: 3
+            authority_ref: "TODO"
+            notes: "TODO: populate"
+      debt_collector:
+        status: stub
+        deadlines:
+          - label: "TODO: populate FDCPA 1-year SOL confirmation"
+            kind: "sol"
+            clock_starts: "last_act"
+            duration:
+              years: 1
+            authority_ref: "TODO (15 U.S.C. § 1692k)"
+            notes: "TODO: populate"
+      employment_retaliation:
+        status: stub
+        deadlines:
+          - label: "TODO: populate"
+            kind: "admin_complaint"
+            clock_starts: "last_act"
+            duration:
+              days: 300
+            authority_ref: "TODO (EEOC 300-day dual-filing)"
+            notes: "TODO: populate"
+
+  CA:
+    situations:
+      insurance_dispute:
+        status: stub
+        deadlines:
+          - label: "TODO: populate CA insurance SOL"
+            kind: "sol"
+            clock_starts: "loss_date"
+            duration:
+              years: 2
+            authority_ref: "TODO"
+            notes: "TODO: populate"
+  NY:
+    situations:
+      insurance_dispute:
+        status: stub
+        deadlines:
+          - label: "TODO: populate NY insurance SOL"
+            kind: "sol"
+            clock_starts: "loss_date"
+            duration:
+              years: 2
+            authority_ref: "TODO"
+            notes: "TODO: populate"
+  TX:
+    situations:
+      insurance_dispute:
+        status: stub
+        deadlines:
+          - label: "TODO: populate TX insurance SOL"
+            kind: "sol"
+            clock_starts: "loss_date"
+            duration:
+              years: 2
+            authority_ref: "TODO"
+            notes: "TODO: populate"

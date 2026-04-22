@@ -1,0 +1,28 @@
+{{ today }}
+
+{{ recipient.name }}
+{{ recipient.address }}
+
+Re: Withdrawal of consent — {{ case_caption or situation_type }}
+
+Dear {{ recipient.name }}:
+
+Effective upon your receipt of this letter, I withdraw my consent to any of the following, to the extent such consent was previously given or implied:
+
+- Recording of telephone calls between you (or your agents) and me.
+- Contact outside ordinary business hours, or at my place of employment.
+- Use or disclosure of my personal information for any purpose not strictly required to administer the matter identified above.
+- Any automatic-renewal, auto-debit, or recurring-charge authorization tied to {% if policy_number %}policy {{ policy_number }}{% else %}this matter{% endif %}.
+
+Please update your records immediately and confirm in writing, within fourteen (14) days of your receipt of this letter, that this withdrawal of consent has been processed and that your organization's systems reflect it.
+
+For the avoidance of doubt, this withdrawal does not waive any right or claim I may have arising from the underlying matter, and I reserve all rights.
+
+Sincerely,
+
+{{ sender.name }}
+{{ sender.address }}
+{% if sender.email %}{{ sender.email }}{% endif %}
+{% if sender.phone %}{{ sender.phone }}{% endif %}
+
+{{ disclaimer }}

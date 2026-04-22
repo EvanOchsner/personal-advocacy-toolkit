@@ -21,11 +21,16 @@ from pathlib import Path
 from typing import Any
 
 
-def _fmt_addrs(addrs: list[dict[str, str]] | None) -> str:
+def _fmt_addrs(addrs: list[dict[str, str]] | dict[str, str] | None) -> str:
     if not addrs:
         return ""
+    if isinstance(addrs, dict):
+        addrs = [addrs]
     parts = []
     for a in addrs:
+        if isinstance(a, str):
+            parts.append(a)
+            continue
         name = (a.get("name") or "").strip()
         email_ = (a.get("email") or "").strip()
         parts.append(f"{name} <{email_}>" if name else email_)

@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: pytest + ruff (Python 3.11)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install package (with dev extras)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Ruff lint
+        # ruff is declared in pyproject.toml [project.optional-dependencies].dev
+        # and configured under [tool.ruff]. Fail CI on any lint error.
+        run: ruff check .
+
+      - name: Pytest
+        run: pytest -v
+
+  # Second job: sanity-check the synthetic walkthrough's static tool invocations
+  # (no side effects — just --help on every documented CLI, to catch argparse
+  # drift between the docs and the scripts).
+  cli-surface:
+    name: CLI surface smoke (--help) (Python 3.11)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Smoke-test CLI help output
+        run: |
+          set -e
+          python -m scripts.evidence_hash --help
+          python -m scripts.provenance --help
+          python -m scripts.provenance_snapshot --help
+          python -m scripts.ingest.email_eml_to_json --help
+          python -m scripts.ingest.email_json_to_txt --help
+          python -m scripts.ingest.mbox_split --help
+          python -m scripts.manifest.correspondence_manifest --help
+          python -m scripts.intake.situation_classify --help || true
+          python -m scripts.intake.authorities_lookup --help || true
+          python -m scripts.intake.deadline_calc --help || true
+          python -m scripts.packet.build --help
+          python -m scripts.packet.appendix_cover --help
+          python -m scripts.packet.compile_reference --help
+          python -m scripts.letters.draft --help
+          python -m scripts.status.case_dashboard --help
+          python -m scripts.publish.pii_scrub --help

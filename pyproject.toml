@@ -33,6 +33,8 @@ dependencies = [
     "PyYAML>=6",          # packet-manifest + correspondence-manifest config loading
     "reportlab>=4",       # packet cover/separator/watermark PDF generation
     "pypdf>=4",           # PDF merge + read for packet assembly
+    "Jinja2>=3",          # scripts/letters/draft.py — template rendering
+    "python-docx>=1",     # scripts/letters/draft.py — .docx output
 ]
 
 [project.optional-dependencies]
@@ -46,6 +48,18 @@ synthetic-case = [
     # currently ships as .md fallbacks.
     "Pillow>=10",
     "python-docx>=1",
+]
+publish = [
+    # Phase 3C publication-safety tools.
+    # - Pillow: exif_scrub.py (also used by the synthetic-case extra)
+    # - reportlab: used by tests to synthesize PDF fixtures for pdf_redact
+    # - git-filter-repo is a separate binary; install via your package
+    #   manager (`brew install git-filter-repo`, etc.). history_sanitizer.py
+    #   shells out to it.
+    "Pillow>=10",
+    "PyYAML>=6",
+    "pypdf>=4",
+    "reportlab>=4",
 ]
 
 [project.urls]

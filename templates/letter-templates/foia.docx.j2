@@ -1,0 +1,30 @@
+{{ today }}
+
+{{ recipient.name }}
+Public Records / FOIA Officer
+{{ recipient.address }}
+
+Re: Public records request{% if regulator_case_number %} — file {{ regulator_case_number }}{% endif %}
+
+Dear Public Records Officer:
+
+Pursuant to the applicable public records act (federal FOIA, 5 U.S.C. § 552, or the analogous state public records statute for {{ jurisdiction.state or "[jurisdiction]" }}), I submit this public records request for the following records:
+
+1. All records reflecting communications, internal notes, and case-handling decisions related to {% if case_caption %}{{ case_caption }}{% else %}the matter identified below{% endif %}{% if regulator_case_number %}, agency file {{ regulator_case_number }}{% endif %}.
+2. Any intake forms, triage notes, investigator assignments, and final dispositions associated with the above.
+3. Any correspondence between {{ recipient.name }} and any third party regarding this matter.
+
+The loss or incident date is {{ loss_date or "[date on file]" }}. I am the subject / requester of record for this matter.
+
+If any portion of this request is denied, please cite the specific statutory exemption and provide the portions that are disclosable. I am willing to discuss narrowing the request to reduce search burden.
+
+Please respond within the statutory deadline. I can be reached at the contact information below.
+
+Sincerely,
+
+{{ sender.name }}
+{{ sender.address }}
+{% if sender.email %}{{ sender.email }}{% endif %}
+{% if sender.phone %}{{ sender.phone }}{% endif %}
+
+{{ disclaimer }}

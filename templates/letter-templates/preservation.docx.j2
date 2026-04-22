@@ -1,0 +1,31 @@
+{{ today }}
+
+{{ recipient.name }}
+{{ recipient.address }}
+
+Re: Litigation hold and preservation of evidence — {{ case_caption or situation_type }}
+
+Dear {{ recipient.name }}:
+
+This letter serves as formal notice of a litigation hold and request for the preservation of evidence. It applies to all records — paper and electronic — relating to the matter identified above, arising out of events on or about {{ loss_date or "[date on file]" }}.
+
+You are hereby directed to preserve, and not to alter, delete, overwrite, or destroy, any of the following:
+
+- All correspondence (email, letter, SMS, chat, voicemail, call logs) between your organization and me, or internally referencing me or this matter.
+- All claim files, case notes, adjuster notes, supervisor reviews, vendor reports, appraisals, and internal memoranda.
+- All policy documents, contract documents, form sets, and endorsements in effect on or near the loss date.
+- All audio/video recordings and any metadata associated with them.
+- Any backup tapes or archives that might otherwise be recycled in the ordinary course of business.
+
+This preservation obligation continues until the matter is fully resolved or until we mutually agree in writing that it has ended. Routine document-retention schedules must be suspended as to this matter.
+
+Please confirm receipt of this notice in writing and identify the individual responsible for ensuring compliance.
+
+Sincerely,
+
+{{ sender.name }}
+{{ sender.address }}
+{% if sender.email %}{{ sender.email }}{% endif %}
+{% if sender.phone %}{{ sender.phone }}{% endif %}
+
+{{ disclaimer }}

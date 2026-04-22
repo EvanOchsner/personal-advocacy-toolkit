@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<smses count="3" backup_set="synthetic" backup_date="1700000000000">
+  <sms protocol="0" address="+15551234567" date="1710500000000" type="1" subject="null" body="Hey, did you get my last message about the claim?" toa="null" sc_toa="null" service_center="null" read="1" status="-1" locked="0" sub_id="-1" readable_date="Mar 15, 2024 10:00:00 AM" contact_name="Alice Example" thread_id="42" />
+  <sms protocol="0" address="+15551234567" date="1710500600000" type="2" subject="null" body="Yes, forwarding to the adjuster now." toa="null" sc_toa="null" service_center="null" read="1" status="-1" locked="0" sub_id="-1" readable_date="Mar 15, 2024 10:10:00 AM" contact_name="Alice Example" thread_id="42" />
+  <sms protocol="0" address="+15557654321" date="1710600000000" type="1" subject="null" body="Shop can take the car Monday." toa="null" sc_toa="null" service_center="null" read="1" status="-1" locked="0" sub_id="-1" readable_date="Mar 16, 2024 01:40:00 PM" contact_name="Bob Shop" thread_id="43" />
+</smses>

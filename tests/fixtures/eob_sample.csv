@@ -1,0 +1,4 @@
+date_of_service,provider,cpt_code,description,billed,allowed,patient_responsibility,claim_id
+2024-02-15,Dr. Synthetic MD,99213,Office visit established patient,"$250.00","$150.00","$30.00",SYN-001
+2024-02-15,Dr. Synthetic MD,85025,Complete blood count,"$85.00","$42.50","$8.50",SYN-001
+03/01/2024,Imaging Synthetic LLC,72148,MRI lumbar spine,"$2,100.00","$1,050.00","$250.00",SYN-002

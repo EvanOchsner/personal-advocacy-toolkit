@@ -1,38 +1,44 @@
 # personal-advocacy-toolkit
 
-> **Status:** scaffolding only. Phase 0 of the plan at
-> `.claude/plans/advocacy-toolkit/` is complete; Phases 1–5 (tool porting,
-> synthetic case, new tools, skills, documentation) are not yet written.
-> Nothing in this repo is functional or reviewed yet.
+Evidence-integrity and packet-assembly tooling for non-technical people
+organizing a fact-heavy dispute so that a regulator, advocate, journalist,
+or attorney can act on it effectively.
 
-## What this is
+## Thesis
 
-You have a situation — a bad-faith insurance claim, a surprise medical bill,
-a harassment campaign, a landlord trying to retaliate, a debt collector who
-won't follow the rules, a scam that took your money. There are people and
-offices whose job it is to help: regulators, consumer-protection advocates,
-attorneys, journalists. They can only help you if you hand them something
-they can act on.
+You have a situation — a bad-faith insurance claim, a surprise medical
+bill, a harassment campaign, a landlord trying to retaliate, a debt
+collector who won't follow the rules, a scam that took your money.
+There are people and offices whose job it is to help: state regulators,
+consumer-protection advocates, attorneys, journalists. They can only
+help you if you hand them something they can act on. This toolkit does
+the legwork: it organizes your digital evidence with forensic
+integrity, helps you understand what's happening, and packages the
+result in the form each helper needs.
 
-This toolkit helps you organize digital evidence with forensic integrity,
-understand what's happening in your situation, and package the result in
-the form the right helper needs.
+**Do the legwork so whoever helps you can actually help you.**
 
 ## What this isn't
 
-- **Not legal advice.** Nothing here tells you what to argue or predicts an
-  outcome in your specific case.
+- **Not legal advice.** Nothing here tells you what to argue or predicts
+  an outcome in your specific case. Every tool that emits a date, an
+  authority, or a statute cite does so with a "verify with counsel"
+  disclaimer.
 - **Not a substitute for counsel.** When you need a lawyer, hire one.
-- **Not a litigation automation platform.** There are other projects for that
-  (Document Assembly Line, Docassemble); this one handles the *pre-filing*
-  evidence-organization step those projects generally assume has already
-  happened.
-
-The thesis: **do the legwork so whoever helps you can actually help you.**
+  The toolkit makes you a better client, not your own attorney.
+- **Not a litigation-automation platform.** There are good projects for
+  that (Suffolk LIT Lab's Document Assembly Line, Docassemble). This
+  one handles the *pre-filing* evidence-organization step those
+  projects generally assume has already happened.
+- **Not for criminal-matter evidence collection.** The chain-of-custody
+  model here is designed for civil and regulatory contexts. Criminal
+  evidentiary standards are stricter and should involve law enforcement.
 
 ## Situations it fits
 
-- Insurance bad-faith / claim handling
+The initial playbooks cover:
+
+- Insurance bad-faith / claim handling (**worked** for Maryland)
 - Medical balance-billing and surprise bills
 - Consumer scams (romance, crypto, impersonation, fake invoices)
 - Harassment and cyberbullying
@@ -40,28 +46,116 @@ The thesis: **do the legwork so whoever helps you can actually help you.**
 - Debt-collector abuse (FDCPA)
 - Employment retaliation
 
-The framework generalizes further; these are just the situations the
-initial playbooks cover.
+The framework generalizes further. See `docs/playbooks/` for each
+situation's reference material.
 
 ## 60-second demo
 
-*(Not yet functional — coming in Phase 5.)*
+Uses the fully synthetic Mustang-in-Maryland example. Nothing real is
+at stake.
 
 ```sh
-git clone <this-repo> advocacy-toolkit
-cd advocacy-toolkit/examples/mustang-in-maryland
-# ... walkthrough steps ...
+git clone https://github.com/EvanOchsner/personal-advocacy-toolkit.git
+cd personal-advocacy-toolkit
+pip install -e .
+
+# See the case context
+cat examples/mustang-in-maryland/case-facts.yaml
+
+# 1. Hash every file under the evidence tree
+python -m scripts.evidence_hash \
+  --root examples/mustang-in-maryland/evidence \
+  --manifest examples/mustang-in-maryland/.evidence-manifest.sha256
+
+# 2. Look up which authorities have jurisdiction over a MD insurance dispute
+python -m scripts.intake.authorities_lookup \
+  --situation insurance_dispute --jurisdiction MD
+
+# 3. Compute statute-of-limitations / notice deadlines from the loss date
+python -m scripts.intake.deadline_calc \
+  --situation insurance_dispute --jurisdiction MD \
+  --loss-date 2025-03-15
 ```
 
-See `examples/mustang-in-maryland/WALKTHROUGH.md` once it exists.
+For the full end-to-end run (ingest → triage → packet → dashboard →
+publication-safety scrub), see
+[`examples/mustang-in-maryland/WALKTHROUGH.md`](examples/mustang-in-maryland/WALKTHROUGH.md).
+
+For a guided first-time setup against your own situation, see
+[`docs/tutorials/01-setting-up-your-case.md`](docs/tutorials/01-setting-up-your-case.md).
 
 ## For tech-minded evaluators
 
-If you're from Suffolk LIT Lab, United Policyholders, LSC TIG, or a
-civic-legal-tech group: the interop story is in
-`docs/concepts/evidence-integrity.md` and the packet pipeline in
-`scripts/packet/`. The packet assembler is a plausible upstream feed into
-Document Assembly Line / Docassemble.
+If you are from Suffolk LIT Lab, United Policyholders, an LSC TIG
+grantee, or any civic-legal-tech group: the differentiator is not the
+letter templates or the packet PDF — those are table stakes. The
+differentiator is a *forensic audit trail* a regulator or attorney can
+verify without trusting the author:
+
+- **Hash manifest** (`scripts/evidence_hash.py`) — SHA-256 of every
+  file, human-readable.
+- **Pre-commit immutability hook** (`scripts/hooks/pre_commit.py`) —
+  refuses git commits that modify or delete files under the protected
+  evidence path.
+- **xattr / provenance snapshots** (`scripts/provenance_snapshot.py`) —
+  captures `kMDItemWhereFroms` download URLs and quarantine timestamps
+  that git does not track.
+- **Unified provenance report** (`scripts/provenance.py`) — joins the
+  manifest, the xattr snapshot, git history, and pipeline-metadata
+  sidecars into a single JSON document a reviewer can skim.
+- **Publication-safety scrubbers** with mandatory post-checks
+  (`scripts/publish/`) — the failure mode these exist to prevent is a
+  "redacted" PDF whose text layer still contains the redacted content.
+
+Full write-up and interop notes:
+[`docs/concepts/evidence-integrity.md`](docs/concepts/evidence-integrity.md).
+
+The packet assembler (`scripts/packet/build.py`) is driven by a
+declarative `packet-manifest.yaml` (schema at
+`templates/packet-manifests/schema.yaml`) and is a plausible upstream
+feed into Document Assembly Line / Docassemble: DAL handles interview
+→ document; this handles the pre-filing evidence-organization step
+that DAL assumes has already happened.
+
+## Repository layout
+
+```
+scripts/       CLI tools (evidence_hash, provenance, ingest, intake,
+               packet, publish, letters, status, hooks)
+skills/        Portable Claude Code skills (case intake, situation
+               triage, provenance review, packet building, PII scrub,
+               tone-modes, going-public checks)
+data/          Community-maintainable reference data (authorities by
+               jurisdiction, deadline tables, situation types)
+templates/     Case-intake, letter, and packet-manifest templates
+docs/          Concepts, playbooks, tutorials
+examples/      Fully synthetic worked examples (mustang-in-maryland)
+tests/         pytest suite; fixtures derived from the synthetic case
+```
+
+## Install
+
+```sh
+pip install -e .
+# Optional extras:
+pip install -e ".[dev]"              # pytest + ruff
+pip install -e ".[publish]"          # Pillow, pypdf, reportlab for scrubbers
+pip install -e ".[synthetic-case]"   # Pillow, python-docx for regenerating the example
+```
+
+`git filter-repo` (for history sanitizing) is a separate binary;
+install via your package manager (`brew install git-filter-repo` on
+macOS).
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Good first contributions:
+
+- Populate a jurisdiction in `data/authorities.yaml` or
+  `data/deadlines.yaml`.
+- Flesh out one of the stub playbooks under `docs/playbooks/`.
+- Add a new ingest format (SMS / iMessage, voicemail-metadata, medical
+  EOB) following the three-layer pattern in `scripts/ingest/`.
 
 ## License
 

@@ -8,7 +8,10 @@ machine with nothing but a stdlib Python.
 
 from __future__ import annotations
 
-import tomllib
+try:
+    import tomllib  # type: ignore[import-not-found]
+except ModuleNotFoundError:
+    import tomli as tomllib  # type: ignore[no-redef]
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any

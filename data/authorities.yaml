@@ -1,0 +1,211 @@
+# authorities.yaml — jurisdiction x situation -> authorities shortlist
+#
+# Reference material, not legal advice. Lists regulators, ombuds offices,
+# and resources that plausibly have jurisdiction over a situation. Use
+# with scripts/intake/authorities_lookup.py.
+#
+# Schema (v0.1):
+#   schema_version: str
+#   jurisdictions:
+#     <jurisdiction_slug>:        # e.g. "MD", "federal", "CA"
+#       label: str
+#       situations:
+#         <situation_slug>:       # matches data/situation_types.yaml slug
+#           status: populated | stub
+#           authorities:
+#             - name: str
+#               short_name: str
+#               kind: str         # regulator | ombud | bar | ag | federal | nonprofit
+#               url: str
+#               notes: str        # when to use; include "verify" disclaimer where relevant
+#
+# Federal authorities are placed under jurisdictions.federal and are
+# returned *in addition* to state-level results for any lookup.
+
+schema_version: "0.1"
+
+jurisdictions:
+
+  federal:
+    label: "Federal (applies across U.S. jurisdictions)"
+    situations:
+      insurance_dispute:
+        status: populated
+        authorities:
+          - name: "Consumer Financial Protection Bureau"
+            short_name: "CFPB"
+            kind: "federal"
+            url: "https://www.consumerfinance.gov/complaint/"
+            notes: |
+              Primarily for financial products (not most P&C insurance),
+              but useful for lender-placed insurance and related consumer
+              finance issues. Verify jurisdictional fit with counsel.
+          - name: "Federal Trade Commission — ReportFraud"
+            short_name: "FTC ReportFraud"
+            kind: "federal"
+            url: "https://reportfraud.ftc.gov/"
+            notes: |
+              For deceptive practices that may accompany an insurance
+              dispute. Not a regulator of the insurance contract itself.
+      medical_billing:
+        status: stub
+        authorities:
+          - name: "TODO: populate federal medical-billing authorities"
+            short_name: "TODO"
+            kind: "federal"
+            url: ""
+            notes: "TODO: populate (No Surprises Act, CMS, etc.)"
+      consumer_scam:
+        status: stub
+        authorities:
+          - name: "TODO: populate"
+            short_name: "TODO"
+            kind: "federal"
+            url: ""
+            notes: "TODO: populate (FTC, IC3, CFPB as applicable)"
+      harassment_cyberbullying:
+        status: stub
+        authorities:
+          - name: "TODO: populate"
+            short_name: "TODO"
+            kind: "federal"
+            url: ""
+            notes: "TODO: populate (FBI IC3 for threats, platform abuse)"
+      landlord_tenant:
+        status: stub
+        authorities:
+          - name: "TODO: populate"
+            short_name: "TODO"
+            kind: "federal"
+            url: ""
+            notes: "TODO: populate (HUD for FHA issues)"
+      debt_collector:
+        status: stub
+        authorities:
+          - name: "TODO: populate"
+            short_name: "TODO"
+            kind: "federal"
+            url: ""
+            notes: "TODO: populate (CFPB, FTC under FDCPA)"
+      employment_retaliation:
+        status: stub
+        authorities:
+          - name: "TODO: populate"
+            short_name: "TODO"
+            kind: "federal"
+            url: ""
+            notes: "TODO: populate (EEOC, OSHA, DOL)"
+
+  MD:
+    label: "Maryland"
+    situations:
+      insurance_dispute:
+        status: populated
+        authorities:
+          - name: "Maryland Insurance Administration"
+            short_name: "MIA"
+            kind: "regulator"
+            url: "https://insurance.maryland.gov/Consumer/Pages/FileAComplaint.aspx"
+            notes: |
+              Primary state regulator for insurers licensed in Maryland.
+              Handles complaints about claim handling, coverage disputes,
+              and unfair claim-settlement practices. This is reference
+              information, not legal advice — verify with counsel.
+          - name: "Maryland Office of the Attorney General — Consumer Protection Division"
+            short_name: "MD AG CPD"
+            kind: "ag"
+            url: "https://www.marylandattorneygeneral.gov/Pages/CPD/"
+            notes: |
+              Parallel avenue for unfair-and-deceptive-practices claims
+              that overlap with the insurance-specific complaint.
+          - name: "Maryland State Bar Association — Lawyer Referral"
+            short_name: "MSBA Referral"
+            kind: "bar"
+            url: "https://www.msba.org/public/find-a-lawyer/"
+            notes: |
+              Referral service for locating counsel. Useful if the
+              dispute appears to require litigation. This is reference
+              information, not legal advice — verify with counsel.
+      medical_billing:
+        status: stub
+        authorities:
+          - name: "TODO: populate MD medical-billing authorities"
+            short_name: "TODO"
+            kind: "regulator"
+            url: ""
+            notes: "TODO: populate"
+      consumer_scam:
+        status: stub
+        authorities:
+          - name: "TODO: populate"
+            short_name: "TODO"
+            kind: "ag"
+            url: ""
+            notes: "TODO: populate"
+      harassment_cyberbullying:
+        status: stub
+        authorities:
+          - name: "TODO: populate"
+            short_name: "TODO"
+            kind: "regulator"
+            url: ""
+            notes: "TODO: populate"
+      landlord_tenant:
+        status: stub
+        authorities:
+          - name: "TODO: populate"
+            short_name: "TODO"
+            kind: "regulator"
+            url: ""
+            notes: "TODO: populate"
+      debt_collector:
+        status: stub
+        authorities:
+          - name: "TODO: populate"
+            short_name: "TODO"
+            kind: "regulator"
+            url: ""
+            notes: "TODO: populate"
+      employment_retaliation:
+        status: stub
+        authorities:
+          - name: "TODO: populate"
+            short_name: "TODO"
+            kind: "regulator"
+            url: ""
+            notes: "TODO: populate"
+
+  # Other state stubs. Populate as Track A grows.
+  CA:
+    label: "California"
+    situations:
+      insurance_dispute:
+        status: stub
+        authorities:
+          - name: "TODO: populate CA Department of Insurance info"
+            short_name: "TODO"
+            kind: "regulator"
+            url: ""
+            notes: "TODO: populate"
+  NY:
+    label: "New York"
+    situations:
+      insurance_dispute:
+        status: stub
+        authorities:
+          - name: "TODO: populate NY DFS info"
+            short_name: "TODO"
+            kind: "regulator"
+            url: ""
+            notes: "TODO: populate"
+  TX:
+    label: "Texas"
+    situations:
+      insurance_dispute:
+        status: stub
+        authorities:
+          - name: "TODO: populate TDI info"
+            short_name: "TODO"
+            kind: "regulator"
+            url: ""
+            notes: "TODO: populate"

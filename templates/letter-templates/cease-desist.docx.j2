@@ -1,0 +1,25 @@
+{{ today }}
+
+{{ recipient.name }}
+{{ recipient.address }}
+
+Re: Cease and desist — {{ case_caption or situation_type }}
+
+Dear {{ recipient.name }}:
+
+This letter is a formal demand that you cease and desist from the conduct described below.
+
+The conduct at issue includes (without limitation): harassing, abusive, misleading, or unauthorized communications; contact at inconvenient times or places; contact with third parties regarding this matter; and any further conduct inconsistent with applicable consumer-protection, debt-collection, or anti-harassment law.
+
+You are directed to cease and desist immediately. All further communication regarding this matter must be in writing, directed to the return address below. I do not consent to telephone, text, or in-person contact.
+
+If the conduct continues after your receipt of this letter, I intend to pursue all available remedies, including but not limited to complaints to the appropriate regulator, the state attorney general, and, where applicable, civil litigation.
+
+Sincerely,
+
+{{ sender.name }}
+{{ sender.address }}
+{% if sender.email %}{{ sender.email }}{% endif %}
+{% if sender.phone %}{{ sender.phone }}{% endif %}
+
+{{ disclaimer }}

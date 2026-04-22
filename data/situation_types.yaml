@@ -1,0 +1,168 @@
+# situation_types.yaml — canonical situation taxonomy
+#
+# Each entry defines a slug (machine key) + human label + a minimal set of
+# router questions used by scripts/intake/situation_classify.py to map a
+# user's answers to a situation_type. This file is reference material, not
+# legal advice. See docs/concepts/ for the narrative.
+#
+# Schema (v0.1):
+#   schema_version: str
+#   situations:
+#     - slug: str                  # machine key, used in other data files
+#       label: str                 # human-readable
+#       description: str
+#       subtypes: [str]            # optional list of slugs
+#       playbook: str | null       # path to playbook doc (may be TODO)
+#       router_answers:            # classifier inputs that route *to* this slug
+#         counterparty_kind: [str] # one-of match: insurer, landlord, etc.
+#         keywords: [str]          # any substring match in free-text "situation" answer
+#       status: "populated" | "stub"
+#
+# The classifier is a simple rules engine: if an answer's
+# counterparty_kind matches and/or any keyword appears in the free-text
+# "situation" field, we pick the highest-priority match. Ties break on
+# list order. A "fallback" slug with status=stub is returned if nothing
+# matches.
+
+schema_version: "0.1"
+
+situations:
+  - slug: insurance_dispute
+    label: "Insurance dispute (coverage / claim / bad faith)"
+    description: |
+      Dispute with a first- or third-party insurer over coverage,
+      valuation, claim handling, or settlement timing. Examples include
+      auto total-loss valuation, homeowner denial, health-insurance
+      coverage denials, and delayed claim payments.
+    subtypes:
+      - auto_total_loss_bad_faith
+      - homeowner_denial
+      - health_coverage_denial
+      - delayed_payment
+    playbook: "docs/playbooks/insurance-dispute.md"  # TODO: populate
+    router_answers:
+      counterparty_kind: ["insurer", "insurance_company"]
+      keywords:
+        - "insurance"
+        - "insurer"
+        - "claim denied"
+        - "total loss"
+        - "bad faith"
+        - "adjuster"
+        - "coverage"
+        - "policy"
+    status: populated
+
+  - slug: medical_billing
+    label: "Medical billing / balance-billing / surprise-billing dispute"
+    description: |
+      TODO: populate. Dispute with a hospital, provider, or billing
+      service over surprise/balance billing, coding errors, or coverage
+      coordination.
+    subtypes: []
+    playbook: "docs/playbooks/medical-billing.md"  # TODO: populate
+    router_answers:
+      counterparty_kind: ["hospital", "provider", "billing_service"]
+      keywords:
+        - "medical bill"
+        - "balance bill"
+        - "surprise bill"
+        - "hospital"
+        - "provider"
+    status: stub
+
+  - slug: consumer_scam
+    label: "Consumer scam / fraud / misrepresentation"
+    description: |
+      TODO: populate. Deceptive trade practices, online scams, contractor
+      fraud, or misrepresentation by a seller of goods/services.
+    subtypes: []
+    playbook: "docs/playbooks/consumer-scam.md"  # TODO: populate
+    router_answers:
+      counterparty_kind: ["merchant", "contractor", "online_seller"]
+      keywords:
+        - "scam"
+        - "fraud"
+        - "misrepresentation"
+        - "fake"
+    status: stub
+
+  - slug: harassment_cyberbullying
+    label: "Harassment / cyberbullying / online abuse"
+    description: |
+      TODO: populate. Persistent online or offline harassment, stalking,
+      doxxing, or coordinated harassment campaigns.
+    subtypes: []
+    playbook: "docs/playbooks/harassment-cyberbullying.md"  # TODO: populate
+    router_answers:
+      counterparty_kind: ["individual", "online_platform"]
+      keywords:
+        - "harassment"
+        - "stalking"
+        - "doxxing"
+        - "cyberbullying"
+        - "threats"
+    status: stub
+
+  - slug: landlord_tenant
+    label: "Landlord / tenant dispute"
+    description: |
+      TODO: populate. Security-deposit disputes, habitability, retaliation,
+      wrongful eviction, or lease-terms disputes.
+    subtypes: []
+    playbook: "docs/playbooks/landlord-tenant.md"  # TODO: populate
+    router_answers:
+      counterparty_kind: ["landlord", "property_manager"]
+      keywords:
+        - "landlord"
+        - "tenant"
+        - "security deposit"
+        - "eviction"
+        - "lease"
+        - "habitability"
+    status: stub
+
+  - slug: debt_collector
+    label: "Debt collector abuse (FDCPA / state analogs)"
+    description: |
+      TODO: populate. Abusive, deceptive, or unfair debt-collection
+      practices by third-party collectors or assignees.
+    subtypes: []
+    playbook: "docs/playbooks/debt-collector.md"  # TODO: populate
+    router_answers:
+      counterparty_kind: ["debt_collector", "collection_agency"]
+      keywords:
+        - "debt collector"
+        - "collection"
+        - "FDCPA"
+        - "harassing call"
+    status: stub
+
+  - slug: employment_retaliation
+    label: "Employment retaliation / wrongful termination"
+    description: |
+      TODO: populate. Retaliation for protected activity, wrongful
+      termination, whistleblower claims, or workplace discrimination.
+    subtypes: []
+    playbook: "docs/playbooks/employment-retaliation.md"  # TODO: populate
+    router_answers:
+      counterparty_kind: ["employer", "former_employer"]
+      keywords:
+        - "fired"
+        - "retaliation"
+        - "wrongful termination"
+        - "whistleblower"
+        - "discrimination"
+    status: stub
+
+  - slug: unknown
+    label: "Unknown / uncategorized"
+    description: |
+      Fallback bucket. If your situation does not match one of the
+      populated categories, start here and refine as you learn more.
+    subtypes: []
+    playbook: null
+    router_answers:
+      counterparty_kind: []
+      keywords: []
+    status: stub

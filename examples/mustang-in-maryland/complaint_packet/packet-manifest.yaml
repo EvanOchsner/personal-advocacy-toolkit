@@ -1,0 +1,112 @@
+# packet-manifest.yaml — Mustang in Maryland (SYNTHETIC — NOT A REAL CASE)
+#
+# Conforms to schema 1.0 (see templates/packet-manifests/schema.yaml).
+# All names, numbers, addresses, and paths here are fictional.
+
+schema_version: "1.0"
+
+packet:
+  name: "mustang-in-maryland-mia"
+
+  authority:
+    name: "Maryland Insurance Administration"
+    short_code: "MIA"
+    mailing_address: |
+      Maryland Insurance Administration
+      Consumer Complaints & Investigation
+      200 St. Paul Place, Suite 2700
+      Baltimore, MD 21202
+    intake_url: "https://insurance.maryland.gov/Consumer/Pages/FileAComplaint.aspx"
+
+  complainant:
+    name: "Delia Vance"
+    mailing_address: |
+      Delia Vance
+      [address redacted in this synthetic example]
+      Towson, MD 21204
+    email: "delia.vance@example.invalid"
+
+  respondent:
+    name: "Chesapeake Indemnity Mutual"
+    role: "Insurer (fictional)"
+    reference_number: "CIM-CLS-0000-0000"
+
+  complaint:
+    source: "../drafts/mia-complaint.md"
+    title: "Consumer Complaint Narrative — Delia Vance v. Chesapeake Indemnity Mutual"
+
+  output_dir: "."
+
+  exhibits:
+    - label: "A"
+      title: "Full policy form set"
+      description: "CIM's three governing forms in effect at loss."
+      sources:
+        - "../evidence/policy/CIM-VEH-2023.md"
+        - "../evidence/policy/CIM-AV-ENDT-2023.md"
+        - "../evidence/policy/CIM-SALV-2023.md"
+
+    - label: "B"
+      title: "Correspondence compilation (20 emails, 2025-03-16 to 2025-08-15)"
+      description: "Three-layer ingested email set in chronological order."
+      sources:
+        - "../evidence/emails/readable/001_2025-03-16_delia-to-claims-intake.txt"
+        - "../evidence/emails/readable/002_2025-03-16_auto-ack.txt"
+        - "../evidence/emails/readable/003_2025-03-17_whitlock-assignment.txt"
+        - "../evidence/emails/readable/004_2025-03-19_dundalk-decline.txt"
+        - "../evidence/emails/readable/005_2025-03-19_delia-forward-to-whitlock.txt"
+        - "../evidence/emails/readable/006_2025-03-21_whitlock-approves-midlife-crisis.txt"
+        - "../evidence/emails/readable/007_2025-03-24_midlife-crisis-intake.txt"
+        - "../evidence/emails/readable/008_2025-04-02_pemberton-schedule.txt"
+        - "../evidence/emails/readable/009_2025-04-03_delia-scope-question.txt"
+        - "../evidence/emails/readable/010_2025-04-17_pemberton-valuation-delivery.txt"
+        - "../evidence/emails/readable/011_2025-04-18_delia-objects-valuation.txt"
+        - "../evidence/emails/readable/012_2025-04-21_delia-to-agent.txt"
+        - "../evidence/emails/readable/013_2025-04-21_keel-sends-forms.txt"
+        - "../evidence/emails/readable/014_2025-05-09_whitlock-formal-position.txt"
+        - "../evidence/emails/readable/015_2025-05-22_delia-written-objection.txt"
+        - "../evidence/emails/readable/016_2025-06-10_whitlock-salvage-notice.txt"
+        - "../evidence/emails/readable/017_2025-06-24_salvage-transfer-notification.txt"
+        - "../evidence/emails/readable/018_2025-06-25_delia-escalation.txt"
+        - "../evidence/emails/readable/019_2025-07-18_delia-fact-finding-midlife-crisis.txt"
+        - "../evidence/emails/readable/020_2025-08-15_midlife-crisis-opinion-letter.txt"
+
+    - label: "C"
+      title: "MAVA valuation report MAVA-2025-04-0117"
+      description: "Insurer's retained-vendor valuation of 2025-04-17."
+      source: "../evidence/valuation/MidAtlantic-Vehicle-Appraisers-valuation.md"
+      date: "2025-04-17"
+
+    - label: "D"
+      title: "Photographs of vehicle"
+      description: "Synthetic placeholders — regenerate as PNG in Phase 5."
+      sources:
+        - "../evidence/photos/photo-01-mustang-at-midlife-crisis.md"
+        - "../evidence/photos/photo-02-damage-closeup.md"
+        - "../evidence/photos/photo-03-vin-plate-placeholder.md"
+
+    - label: "E"
+      title: "Midlife Crisis Restorations opinion letter and parts-market comparables"
+      description: "Specialist-shop opinion and independent rate survey."
+      sources:
+        - "../drafts/midlife-crisis-opinion-letter.md"
+        - "../drafts/parts-market-comparables.md"
+      date: "2025-08-15"
+
+    - label: "F"
+      title: "Salvage-transfer notification (2025-06-24)"
+      description: "Core grievance — salvage transfer while negotiations ongoing."
+      source: "../evidence/emails/readable/017_2025-06-24_salvage-transfer-notification.txt"
+      date: "2025-06-24"
+
+  reference_appendices:
+    - name: "cim-policy-reference"
+      title: "Chesapeake Indemnity Mutual — Governing Documents (Compiled Reference)"
+      sources:
+        - "../evidence/policy/CIM-VEH-2023.md"
+        - "../evidence/policy/CIM-AV-ENDT-2023.md"
+        - "../evidence/policy/CIM-SALV-2023.md"
+      note: |
+        Reproduced from the policy form set as retrieved from the
+        producing agency (Meritor Insurance Group) on 2025-04-21. See
+        email 013 for chain of custody. SYNTHETIC — NOT A REAL CASE.

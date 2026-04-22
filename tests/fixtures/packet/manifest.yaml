@@ -1,0 +1,47 @@
+# Fixture manifest — used only by tests. Entirely fictional.
+schema_version: "1.0"
+
+packet:
+  name: "fixture-packet"
+
+  authority:
+    name: "Fictional Review Board"
+    short_code: "FRB"
+    mailing_address: |
+      Fictional Review Board
+      1 Nowhere Way
+      Testville, ZZ 00000
+
+  complainant:
+    name: "Test Complainant"
+    email: "complainant@example.invalid"
+
+  respondent:
+    name: "Fictional Respondent Co."
+    role: "Merchant"
+    reference_number: "TEST-0001"
+
+  complaint:
+    source: "complaint.txt"
+    title: "Consumer Complaint Narrative (Test)"
+
+  output_dir: "out/"
+
+  exhibits:
+    - title: "First Exhibit"
+      description: "A synthetic exhibit demonstrating text-exhibit handling."
+      source: "exhibit-1.txt"
+      date: "2026-01-05"
+    - title: "Second Exhibit"
+      description: "A multi-file synthetic exhibit."
+      sources:
+        - "exhibit-2a.txt"
+        - "exhibit-2b.txt"
+      date: "2026-01-06"
+
+  reference_appendices:
+    - name: "counterparty-terms"
+      title: "Counterparty Terms — Compiled Reference"
+      sources:
+        - "terms.txt"
+      note: "Assembled from the counterparty's public website (fictional)."

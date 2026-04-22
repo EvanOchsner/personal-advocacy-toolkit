@@ -1,0 +1,15 @@
+{
+  "synthetic": true,
+  "synthetic_notice": "SYNTHETIC — NOT A REAL CASE",
+  "message_id": "<20250316T0914.001@synthetic-case.example>",
+  "date": "2025-03-16T09:14:22-04:00",
+  "from": {"name": "Delia Vance", "email": "delia.vance@example.com"},
+  "to": [{"email": "claims-intake@chesapeake-indemnity-mutual.example"}],
+  "cc": [],
+  "subject": "First notice of loss — 1969 Mustang — policy CIM-CLS-0000-0000",
+  "thread_slug": "fnol-initial",
+  "beat": "initial_claim",
+  "body_text_path": "../readable/001_2025-03-16_delia-to-claims-intake.txt",
+  "raw_path": "../raw/001_2025-03-16_delia-to-claims-intake.eml",
+  "attachments": []
+}

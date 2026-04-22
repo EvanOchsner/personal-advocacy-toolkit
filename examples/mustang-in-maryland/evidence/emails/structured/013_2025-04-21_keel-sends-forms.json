@@ -1,0 +1,17 @@
+{
+  "synthetic": true,
+  "message_id": "<20250421T1538.013@meritor-insurance-group.example>",
+  "date": "2025-04-21T15:38:47-04:00",
+  "from": {"name": "Rowan Keel", "email": "rkeel@meritor-insurance-group.example"},
+  "to": [{"name": "Delia Vance", "email": "delia.vance@example.com"}],
+  "subject": "RE: Request — full policy form set for CIM-CLS-0000-0000",
+  "thread_slug": "agent-policy-retrieval",
+  "beat": "agent_policy_retrieval",
+  "body_text_path": "../readable/013_2025-04-21_keel-sends-forms.txt",
+  "raw_path": "../raw/013_2025-04-21_keel-sends-forms.eml",
+  "attachments": [
+    {"filename": "CIM-VEH-2023.pdf", "path_in_case": "evidence/policy/CIM-VEH-2023.md"},
+    {"filename": "CIM-AV-ENDT-2023.pdf", "path_in_case": "evidence/policy/CIM-AV-ENDT-2023.md"},
+    {"filename": "CIM-SALV-2023.pdf", "path_in_case": "evidence/policy/CIM-SALV-2023.md"}
+  ]
+}

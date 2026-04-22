@@ -1,0 +1,41 @@
+# advocacy-toolkit: repo-root config
+#
+# Copy to `advocacy.toml` at the repo root of a case workspace to customize.
+# All settings are optional; defaults are shown.
+#
+# Paths are interpreted relative to the config file (i.e. the repo root).
+
+[evidence]
+# Root directory whose contents are hashed and treated as append-only.
+root = "evidence"
+
+# Path to the SHA-256 manifest produced by `scripts/evidence_hash.py`.
+manifest = "evidence/MANIFEST.sha256"
+
+# Glob patterns (relative to `root`) to exclude from hashing. Exclusions do
+# not hide files from the immutability hook — they only skip hashing of
+# volatile sidecar files (e.g. .DS_Store).
+exclude = [
+    ".DS_Store",
+    "**/.DS_Store",
+    "Thumbs.db",
+]
+
+[provenance]
+# Directory where xattr/provenance snapshots are written.
+snapshot_dir = "provenance/snapshots"
+
+# Unified provenance report output.
+report = "provenance/report.json"
+
+[hooks]
+# Paths (relative to repo root) that the pre-commit hook protects from
+# mutation or deletion. Additions are allowed; modifications/deletions
+# require an explicit override.
+protected_paths = [
+    "evidence",
+]
+
+# If True, hook also refuses commits that would modify the manifest
+# without a matching hash_evidence run.
+enforce_manifest_consistency = true

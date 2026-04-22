@@ -1,0 +1,31 @@
+# CLAUDE.md — {{case_name}}
+
+*(Stub template — authored in Phase 5 from the portable sections of the
+source project's `CLAUDE.md`. Variable names use Jinja-style
+placeholders.)*
+
+## Context
+Brief description of the dispute: counterparty, dates, amount in
+dispute, forum.
+
+## Key facts and numbers
+- **Counterparty:** {{counterparty}}
+- **Matter / claim / account #:** {{matter_id}}
+- **Loss / incident date:** {{loss_date}}
+- **Amount in dispute:** {{amount_in_dispute}}
+
+## Legal framework in play
+Cite the specific statutes, regs, or contract clauses that govern this
+situation.
+
+## Exhibit inventory
+Populated as correspondence and documents land.
+
+## Tone
+Default: lawyer mode for written, casual mode for verbal. See
+`docs/concepts/tone-modes.md`.
+
+## Working preferences
+- Core arguments are built fresh against the counterparty's *current*
+  stated position, not the last one recorded here.
+- Flag when an argument is weaker than it reads, even if I didn't ask.

@@ -1,0 +1,13 @@
+{
+  "synthetic": true,
+  "message_id": "<20250317T1004.003@chesapeake-indemnity-mutual.example>",
+  "date": "2025-03-17T10:04:11-04:00",
+  "from": {"name": "Harlan Whitlock", "email": "harlan.whitlock@chesapeake-indemnity-mutual.example"},
+  "to": [{"name": "Delia Vance", "email": "delia.vance@example.com"}],
+  "subject": "Claim CIM-2025-03-5517 — adjuster assignment",
+  "thread_slug": "fnol-initial",
+  "beat": "initial_claim",
+  "body_text_path": "../readable/003_2025-03-17_whitlock-assignment.txt",
+  "raw_path": "../raw/003_2025-03-17_whitlock-assignment.eml",
+  "notes": "First appearance of 'customary-rate provisions' framing — becomes a load-bearing issue later."
+}

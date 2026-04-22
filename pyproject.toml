@@ -1,0 +1,63 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "personal-advocacy-toolkit"
+version = "0.0.0"
+description = "Evidence-integrity and packet-assembly tooling for non-technical people organizing fact-heavy disputes."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "advocacy-toolkit contributors" }]
+keywords = [
+    "legal-tech",
+    "civic-tech",
+    "evidence",
+    "chain-of-custody",
+    "consumer-protection",
+]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Legal Industry",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    # Core runtime. Kept small on purpose; most evidence-integrity tools
+    # (1A: evidence_hash, provenance, provenance_snapshot, hooks) use stdlib
+    # only. Below are the deps introduced by Phase 1 packet + manifest tools.
+    "PyYAML>=6",          # packet-manifest + correspondence-manifest config loading
+    "reportlab>=4",       # packet cover/separator/watermark PDF generation
+    "pypdf>=4",           # PDF merge + read for packet assembly
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "ruff>=0.4",
+]
+synthetic-case = [
+    # Needed to regenerate the Mustang-in-Maryland synthetic artifacts
+    # (valuation PDF, photo placeholders, MIA complaint .docx) that Phase 2
+    # currently ships as .md fallbacks.
+    "Pillow>=10",
+    "python-docx>=1",
+]
+
+[project.urls]
+Homepage = "https://github.com/EvanOchsner/personal-advocacy-toolkit"
+Issues = "https://github.com/EvanOchsner/personal-advocacy-toolkit/issues"
+
+[tool.setuptools.packages.find]
+where = ["scripts"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

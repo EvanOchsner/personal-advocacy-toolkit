@@ -1,0 +1,14 @@
+{
+  "synthetic": true,
+  "message_id": "<20250316T0915.002@chesapeake-indemnity-mutual.example>",
+  "date": "2025-03-16T09:15:07-04:00",
+  "from": {"name": "Chesapeake Indemnity Mutual Claims", "email": "no-reply@chesapeake-indemnity-mutual.example"},
+  "to": [{"name": "Delia Vance", "email": "delia.vance@example.com"}],
+  "subject": "[auto-ack] Claim received — CIM-2025-03-5517",
+  "thread_slug": "fnol-initial",
+  "beat": "initial_claim",
+  "body_text_path": "../readable/002_2025-03-16_auto-ack.txt",
+  "raw_path": "../raw/002_2025-03-16_auto-ack.eml",
+  "attachments": [],
+  "notes": "Auto-generated acknowledgement. Relevant for record of claim-number assignment and the portal limitation that triggered the later agent-policy-retrieval side-quest."
+}

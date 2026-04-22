@@ -1,0 +1,57 @@
+# Example packet manifest — a minimal, fictional generic dispute.
+#
+# All names and paths here are placeholders; replace with your own.
+# See `schema.yaml` for every supported field.
+
+schema_version: "1.0"
+
+packet:
+  name: "example-dispute-packet"
+
+  authority:
+    name: "Example Consumer Protection Office"
+    short_code: "ECPO"
+    mailing_address: |
+      Example Consumer Protection Office
+      Intake Division
+      1 Demo Plaza
+      Anytown, ZZ 00000
+
+  complainant:
+    name: "Jane Example"
+    email: "jane@example.invalid"
+
+  respondent:
+    name: "Acme Widgets, Inc."
+    role: "Merchant"
+    reference_number: "ORDER-DEMO-0001"
+
+  complaint:
+    source: "complaint-narrative.pdf"
+    title: "Consumer Complaint Narrative"
+
+  output_dir: "out/"
+
+  exhibits:
+    - title: "Order confirmation email"
+      description: "The original order and price as confirmed by the merchant."
+      source: "evidence/order-confirmation.txt"
+      date: "2026-01-05"
+    - title: "Defective-product photographs"
+      description: "Photos taken on arrival documenting the defect."
+      source: "evidence/defect-photo.txt"
+      date: "2026-01-12"
+    - title: "Merchant refusal-to-refund response"
+      description: "Written refusal to honor the advertised return policy."
+      source: "evidence/refusal-email.txt"
+      date: "2026-01-20"
+
+  reference_appendices:
+    - name: "merchant-terms-reference"
+      title: "Merchant Terms & Return Policy — Compiled Reference"
+      sources:
+        - "evidence/merchant-terms.txt"
+        - "evidence/merchant-return-policy.txt"
+      note: |
+        Compiled from the merchant's public website on the dates listed
+        in the evidence manifest. Not the officially filed version.

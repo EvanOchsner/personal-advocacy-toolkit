@@ -1,0 +1,109 @@
+# Packet manifest schema (prototype / specification)
+#
+# This file is a *commented prototype*, not a runnable manifest. Every
+# field the packet tools understand is documented here. Copy
+# `example-generic-dispute.yaml` to start a new manifest.
+#
+# Schema version follows semver. Tools check `schema_version` on load
+# and refuse manifests they don't understand.
+
+schema_version: "1.0"
+
+packet:
+  # Short identifier used in output filenames, e.g. "acme-complaint-2026-01".
+  # Required. Must match [a-z0-9-]+ to stay filesystem-safe across OSes.
+  name: "example-packet"
+
+  # The office or body the packet is addressed to. Used on the cover
+  # page and in default filename prefixes. No defaults — every packet
+  # must name its recipient.
+  authority:
+    name: "Example Regulatory Authority"      # human-readable
+    short_code: "ERA"                          # short, used in filenames
+    # Optional: free-form routing info printed on the cover page.
+    mailing_address: |
+      Example Regulatory Authority
+      Consumer Complaint Division
+      100 Main St
+      Capital City, ST 00000
+    intake_url: "https://example.gov/complaint"
+
+  # Complainant identity as it should appear on the cover page. The
+  # tools never reach outside the manifest for this.
+  complainant:
+    name: "Complainant Name"
+    # Optional fields below; include only what the authority needs.
+    mailing_address: null
+    email: null
+    phone: null
+
+  # The respondent / counterparty the complaint is against.
+  respondent:
+    name: "Respondent Name"
+    # Optional descriptive fields:
+    role: "Counterparty"            # e.g. "Insurer", "Debt Collector"
+    reference_number: null          # policy / account / case number, if any
+
+  # The lead document. Usually a narrative PDF ("Consumer Complaint
+  # Narrative") that explains what happened and what relief is sought.
+  complaint:
+    source: "drafts/complaint.pdf"  # path relative to the manifest file
+    # Optional: a docx source that should be compiled to PDF first.
+    # If both `source` and `docx_source` are given, `source` wins.
+    docx_source: null
+    title: "Consumer Complaint Narrative"
+
+  # Output location for the assembled packet. Created if missing.
+  output_dir: "complaint_packet/"
+
+  # Exhibits are attached in the order listed. Each exhibit gets a
+  # label (typically A, B, C…) auto-assigned by position unless
+  # `label:` is explicitly set.
+  exhibits:
+    - # Optional explicit label override. If omitted, tools assign
+      # sequential labels starting at "A".
+      label: "A"
+
+      # Human-readable title printed on the exhibit separator sheet.
+      title: "Exhibit Title"
+
+      # One-line description of what this exhibit demonstrates.
+      description: "What this exhibit proves, in one sentence."
+
+      # Source path relative to the manifest file. Supported types:
+      # .pdf (included as-is), .docx (compiled via soffice/libreoffice),
+      # .txt / .md (rendered to PDF via reportlab), .png/.jpg (wrapped
+      # in a PDF page).
+      source: "evidence/example-exhibit.pdf"
+
+      # Optional: if the exhibit is a multi-file bundle (e.g. a
+      # correspondence thread rendered as many text files), list them
+      # here instead of `source`. Files are concatenated in order.
+      sources: null
+
+      # Optional: suppress the separator sheet for this exhibit. Rarely
+      # useful; default false.
+      no_separator: false
+
+      # Optional: date of the underlying evidence, printed on the
+      # separator sheet when present.
+      date: "2025-01-15"
+
+  # Optional: one or more "reference appendices" — collections of
+  # governing documents (policies, contracts, terms of service,
+  # handbooks) that the authority may want to consult. These are built
+  # by `scripts/packet/compile_reference.py` and stamped with a
+  # watermark + disclaimer making clear they are *not* the official
+  # document.
+  reference_appendices:
+    - name: "counterparty-policy-reference"
+      title: "Counterparty Governing Documents — Compiled Reference"
+      # Sources are any mix of .pdf/.docx/.txt/.md files.
+      sources:
+        - "evidence/policy-form-1.pdf"
+        - "evidence/policy-form-2.pdf"
+      # The disclaimer text is fixed in the tool; the `note` is
+      # additional context printed on the cover page.
+      note: |
+        Assembled from documents produced by the counterparty during
+        the dispute. Not a substitute for the official filed form.

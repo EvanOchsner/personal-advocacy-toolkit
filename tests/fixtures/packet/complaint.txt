@@ -1,0 +1,7 @@
+COMPLAINT NARRATIVE (FIXTURE)
+
+This is a synthetic complaint-narrative file used by the
+advocacy-toolkit test suite. It is not a real complaint.
+
+The complainant alleges that the respondent did a Thing in violation
+of the Other Thing. Relief sought: a refund.

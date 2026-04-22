@@ -1,0 +1,13 @@
+{
+  "synthetic": true,
+  "message_id": "<20250421T0902.012@synthetic-case.example>",
+  "date": "2025-04-21T09:02:12-04:00",
+  "from": {"name": "Delia Vance", "email": "delia.vance@example.com"},
+  "to": [{"name": "Rowan Keel", "email": "rkeel@meritor-insurance-group.example"}],
+  "subject": "Request — full policy form set for CIM-CLS-0000-0000",
+  "thread_slug": "agent-policy-retrieval",
+  "beat": "agent_policy_retrieval",
+  "body_text_path": "../readable/012_2025-04-21_delia-to-agent.txt",
+  "raw_path": "../raw/012_2025-04-21_delia-to-agent.eml",
+  "notes": "The 'agent-policy-retrieval side-quest' — claimant has to go around the insurer's portal to the producing agency to get the actual contract text."
+}

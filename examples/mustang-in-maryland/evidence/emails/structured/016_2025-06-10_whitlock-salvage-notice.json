@@ -1,0 +1,13 @@
+{
+  "synthetic": true,
+  "message_id": "<20250610T1002.016@chesapeake-indemnity-mutual.example>",
+  "date": "2025-06-10T10:02:44-04:00",
+  "from": {"name": "Harlan Whitlock", "email": "harlan.whitlock@chesapeake-indemnity-mutual.example"},
+  "to": [{"name": "Delia Vance", "email": "delia.vance@example.com"}],
+  "subject": "Claim CIM-2025-03-5517 — final offer; salvage disposition in 14 days",
+  "thread_slug": "formal-position",
+  "beat": "formal_rejection",
+  "body_text_path": "../readable/016_2025-06-10_whitlock-salvage-notice.txt",
+  "raw_path": "../raw/016_2025-06-10_whitlock-salvage-notice.eml",
+  "notes": "Insurer threatens salvage transfer absent release — this is the document that makes the later 2025-06-24 salvage transfer a core-grievance event."
+}

@@ -1,0 +1,14 @@
+{
+  "synthetic": true,
+  "message_id": "<20250625T0810.018@synthetic-case.example>",
+  "date": "2025-06-25T08:10:28-04:00",
+  "from": {"name": "Delia Vance", "email": "delia.vance@example.com"},
+  "to": [{"name": "Harlan Whitlock", "email": "harlan.whitlock@chesapeake-indemnity-mutual.example"}],
+  "cc": [{"email": "supervisor-escalation@chesapeake-indemnity-mutual.example"}],
+  "subject": "Escalation — unauthorized salvage transfer — claim CIM-2025-03-5517",
+  "thread_slug": "salvage-transfer",
+  "beat": "core_grievance_salvage",
+  "body_text_path": "../readable/018_2025-06-25_delia-escalation.txt",
+  "raw_path": "../raw/018_2025-06-25_delia-escalation.eml",
+  "notes": "Escalation explicitly puts MIA filing on the timeline."
+}

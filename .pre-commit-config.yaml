@@ -1,0 +1,24 @@
+# advocacy-toolkit: pre-commit wiring.
+#
+# The evidence-immutability check lives in `scripts/hooks/pre_commit.py`.
+# It reads its config from `advocacy.toml` at the repo root (protected
+# paths, manifest path, etc.), so users customize behavior there, not here.
+#
+# If you would rather not use the `pre-commit` framework, run
+# `scripts/hooks/install_hooks.sh` to install a plain git hook shim that
+# calls the same Python entry point.
+
+repos:
+  - repo: local
+    hooks:
+      - id: advocacy-evidence-immutability
+        name: advocacy-toolkit evidence-immutability check
+        entry: python -m scripts.hooks.pre_commit
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+        always_run: true
+        description: >-
+          Refuse commits that modify or delete files under protected paths
+          (config-driven). Enforces the hash-manifest consistency rule when
+          enabled in advocacy.toml.

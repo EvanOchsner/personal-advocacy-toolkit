@@ -1,0 +1,13 @@
+{
+  "synthetic": true,
+  "message_id": "<20250319T1522.004@dundalk-bodywork-and-crabcakes.example>",
+  "date": "2025-03-19T15:22:40-04:00",
+  "from": {"name": "Dundalk Bodywork and Crabcakes", "email": "svc@dundalk-bodywork-and-crabcakes.example"},
+  "to": [{"name": "Delia Vance", "email": "delia.vance@example.com"}],
+  "subject": "Re: 1969 Mustang inspection — unable to accept work",
+  "thread_slug": "first-shop-decline",
+  "beat": "first_shop_refusal",
+  "body_text_path": "../readable/004_2025-03-19_dundalk-decline.txt",
+  "raw_path": "../raw/004_2025-03-19_dundalk-decline.eml",
+  "notes": "Documents the parts-sourcing rationale for needing a specialist — load-bearing for the later 'customary rate' dispute."
+}

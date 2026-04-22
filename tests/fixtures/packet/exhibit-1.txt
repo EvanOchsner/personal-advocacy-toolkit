@@ -1,0 +1,4 @@
+EXHIBIT 1 (FIXTURE)
+
+A synthetic exhibit consisting of a short text block. Used to verify
+that plain-text exhibits are rendered to PDF and assembled correctly.

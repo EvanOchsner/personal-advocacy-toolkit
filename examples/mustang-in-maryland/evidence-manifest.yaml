@@ -1,6 +1,6 @@
 schema: evidence-manifest/1.0
 root: examples/mustang-in-maryland/evidence
-generated_at: '2026-04-22T18:52:17+00:00'
+generated_at: '2026-04-22T21:04:12+00:00'
 entries:
 - path: emails/raw/001_2025-03-16_delia-to-claims-intake.eml
   kind: email_raw
@@ -248,24 +248,24 @@ entries:
   sha256: 93970ce0a1985f3a16f94cadc8a0b1c537c8dd77ddd6f7135233082398e2f7aa
 - path: photos/photo-01-mustang-at-midlife-crisis.jpg
   kind: photo
-  size: 91966
-  sha256: dc824717e5aee2893dd1a3bd2d628480ab3589b1011a120403802c54273e0a6b
+  size: 91784
+  sha256: 9343d3b7f75958dd5482b8dd4200177ddee8cc3d907699ffb2b13f90624e2ef8
 - path: photos/photo-01-mustang-at-midlife-crisis.md
   kind: photo
   size: 328
   sha256: 9cc5171a5c3e8d042936316439e5c4350d5a1bf772f1d41718e1a34198937378
 - path: photos/photo-02-damage-closeup.jpg
   kind: photo
-  size: 84082
-  sha256: 72f3359ca21851fd0bb96eb409763c1078026107d8d40e6a6fdc1fa82e4e438d
+  size: 83900
+  sha256: e60f1b0086ee5562ad1607106455f2af45b0462c06e3ef80682749b797afcdb4
 - path: photos/photo-02-damage-closeup.md
   kind: photo
   size: 290
   sha256: f8f57fd5f3f421d961285d792a83f04feb426ec42fd81868a3de2de33d3f56aa
 - path: photos/photo-03-vin-plate-placeholder.jpg
   kind: photo
-  size: 79544
-  sha256: e93d4e948713d23a9e1872795305a45d0a1cd3e76b604f2a8d681ef78058510a
+  size: 79362
+  sha256: 13df9340e7ce789a746b9fe603d77ec914e64225cc412324bff6bcc4867ebbd7
 - path: photos/photo-03-vin-plate-placeholder.md
   kind: photo
   size: 281

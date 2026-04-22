@@ -159,4 +159,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Good first contributions:
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+Apache-2.0 — see [LICENSE](LICENSE). Permissive license with explicit patent grant, chosen to keep the toolkit integrable with legal-aid and civic-tech platforms without license friction.

@@ -1,307 +1,423 @@
-"""Smoke tests for scripts.provenance (unified report)."""
+"""Tests for scripts.provenance (per-file tool) + scripts.provenance_bundle.
+
+The aggregate-mode API from Phase 6 has been replaced with the source
+project's per-file shape — see
+~/.claude/plans/validated-conjuring-balloon.md Track B for rationale.
+"""
 from __future__ import annotations
 
+import hashlib
 import json
+import plistlib
 import subprocess
 from pathlib import Path
 
-from scripts import evidence_hash, provenance, provenance_snapshot
+import pytest
+
+yaml = pytest.importorskip("yaml")
 
 
-def _git(repo: Path, *args: str) -> None:
-    subprocess.run(
-        ["git", "-C", str(repo), *args],
+from scripts import provenance  # noqa: E402
+from scripts import provenance_bundle  # noqa: E402
+from scripts.provenance import (  # noqa: E402
+    Report,
+    build_report,
+    decode_quarantine,
+    decode_wherefroms_from_hex,
+    format_human,
+    format_yaml,
+)
+
+
+# -----------------------------------------------------------------------------
+# Fixture helpers
+# -----------------------------------------------------------------------------
+
+
+def _git(cwd: Path, *args: str) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["git", "-C", str(cwd), *args],
         check=True,
         capture_output=True,
+        text=True,
     )
 
 
-def test_report_joins_manifest_and_snapshot(tmp_path: Path) -> None:
-    repo = tmp_path
-    evidence = repo / "evidence"
-    evidence.mkdir()
-    (evidence / "a.txt").write_bytes(b"alpha")
+def _init_repo(tmp_path: Path) -> Path:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git(repo, "init", "-q", "-b", "main")
+    _git(repo, "config", "user.email", "test@example.com")
+    _git(repo, "config", "user.name", "Test User")
+    return repo
 
-    manifest = repo / "MANIFEST.sha256"
-    evidence_hash.main(
-        ["--root", str(evidence), "--manifest", str(manifest), "--repo-root", str(repo)]
-    )
-    snap_dir = repo / "snaps"
-    provenance_snapshot.main(
-        ["--root", str(evidence), "--snapshot-dir", str(snap_dir), "--repo-root", str(repo)]
-    )
 
-    out = repo / "report.json"
+def _commit_file(repo: Path, rel: str, body: str, msg: str) -> str:
+    p = repo / rel
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(body)
+    _git(repo, "add", rel)
+    _git(repo, "commit", "-q", "-m", msg)
+    return _git(repo, "rev-parse", "HEAD").stdout.strip()
+
+
+def _sha256(data: str) -> str:
+    return hashlib.sha256(data.encode()).hexdigest()
+
+
+# -----------------------------------------------------------------------------
+# Section unit tests
+# -----------------------------------------------------------------------------
+
+
+def test_build_report_returns_six_sections(tmp_path: Path) -> None:
+    repo = _init_repo(tmp_path)
+    ev = repo / "evidence"
+    ev.mkdir()
+    body = "hello, provenance\n"
+    _commit_file(repo, "evidence/a.txt", body, "add a")
+
+    rep = build_report(
+        repo / "evidence" / "a.txt",
+        repo_root=repo,
+        evidence_root=ev,
+        manifest_path=ev / "missing-manifest.sha256",
+        snapshot_dir=ev / "missing-snapshots",
+        pipeline_config=repo / "data" / "pipeline_dispatch.yaml",
+    )
+    assert set(rep.sections.keys()) == {
+        "identity",
+        "git_trail",
+        "hash_manifest",
+        "download",
+        "pipeline",
+        "verdict",
+    }
+    assert rep.sections["identity"]["sha256"] == _sha256(body)
+    assert rep.sections["identity"]["git_tracked"] is True
+    assert rep.sections["git_trail"]["commit_count"] == 1
+    assert rep.sections["git_trail"]["commits"][0]["change_type"] == "initial"
+
+
+def test_git_trail_flags_content_edits_under_evidence(tmp_path: Path) -> None:
+    repo = _init_repo(tmp_path)
+    ev = repo / "evidence"
+    ev.mkdir()
+    _commit_file(repo, "evidence/a.txt", "v1\n", "add a")
+    _commit_file(repo, "evidence/a.txt", "v2\n", "edit a")
+
+    rep = build_report(
+        repo / "evidence" / "a.txt",
+        repo_root=repo,
+        evidence_root=ev,
+        manifest_path=ev / "m.sha256",
+        snapshot_dir=ev / "snaps",
+        pipeline_config=repo / "data" / "pipeline_dispatch.yaml",
+    )
+    assert rep.sections["git_trail"]["content_change_count"] == 1
+    assert any("content change" in w for w in rep.warnings)
+    assert "content edit" in rep.sections["verdict"]
+
+
+def test_hash_manifest_mismatch_flags_warning(tmp_path: Path) -> None:
+    repo = _init_repo(tmp_path)
+    ev = repo / "evidence"
+    ev.mkdir()
+    _commit_file(repo, "evidence/a.txt", "actual body\n", "add a")
+    manifest = ev / "m.sha256"
+    manifest.write_text("deadbeef" * 8 + "  a.txt\n")
+
+    rep = build_report(
+        repo / "evidence" / "a.txt",
+        repo_root=repo,
+        evidence_root=ev,
+        manifest_path=manifest,
+        snapshot_dir=ev / "snaps",
+        pipeline_config=repo / "data" / "pipeline_dispatch.yaml",
+    )
+    assert rep.sections["hash_manifest"]["matches"] is False
+    assert any("HASH MISMATCH" in w for w in rep.warnings)
+
+
+def test_verify_returns_nonzero_on_warning(tmp_path: Path) -> None:
+    repo = _init_repo(tmp_path)
+    ev = repo / "evidence"
+    ev.mkdir()
+    _commit_file(repo, "evidence/a.txt", "body\n", "add a")
+    manifest = ev / "m.sha256"
+    manifest.write_text("deadbeef" * 8 + "  a.txt\n")
+
     rc = provenance.main(
         [
-            "--manifest", str(manifest),
-            "--snapshot-dir", str(snap_dir),
-            "--out", str(out),
-            "--repo-root", str(repo),
-        ]
-    )
-    assert rc == 0
-
-    data = json.loads(out.read_text())
-    assert data["schema"] == "advocacy-toolkit/provenance-report/v1"
-    assert data["count"] == 1
-    entry = data["files"][0]
-    assert entry["path"] == "a.txt"
-    assert "sha256" in entry
-    # Snapshot join present.
-    assert entry["size"] == 5
-    assert "xattrs" in entry
-
-
-def test_report_includes_git_history_when_present(tmp_path: Path) -> None:
-    repo = tmp_path
-    evidence = repo / "evidence"
-    evidence.mkdir()
-    (evidence / "a.txt").write_bytes(b"hi")
-
-    try:
-        _git(repo, "init", "-b", "main")
-        _git(repo, "config", "user.email", "t@example.invalid")
-        _git(repo, "config", "user.name", "Test")
-        _git(repo, "add", "evidence/a.txt")
-        _git(repo, "commit", "-m", "add a")
-    except (FileNotFoundError, subprocess.CalledProcessError):
-        # git not available — the non-git case is already covered above.
-        return
-
-    manifest = repo / "MANIFEST.sha256"
-    evidence_hash.main(
-        ["--root", str(evidence), "--manifest", str(manifest), "--repo-root", str(repo)]
-    )
-    out = repo / "report.json"
-    provenance.main(
-        [
-            "--manifest", str(manifest),
-            "--snapshot-dir", str(repo / "snaps"),
-            "--out", str(out),
-            "--repo-root", str(repo),
-        ]
-    )
-    data = json.loads(out.read_text())
-    entry = data["files"][0]
-    assert "git" in entry
-    assert entry["git"]["added"] is not None
-    assert entry["git"]["last_touched"] is not None
-
-
-def test_report_includes_pipeline_sidecar(tmp_path: Path) -> None:
-    repo = tmp_path
-    evidence = repo / "evidence"
-    evidence.mkdir()
-    (evidence / "a.txt").write_bytes(b"hi")
-    (evidence / "a.txt.meta.json").write_text(
-        json.dumps({"tool": "email_eml_to_json", "version": "0.1"})
-    )
-
-    manifest = repo / "MANIFEST.sha256"
-    evidence_hash.main(
-        ["--root", str(evidence), "--manifest", str(manifest), "--repo-root", str(repo)]
-    )
-    out = repo / "report.json"
-    provenance.main(
-        [
-            "--manifest", str(manifest),
-            "--snapshot-dir", str(repo / "snaps"),
-            "--out", str(out),
-            "--repo-root", str(repo),
-        ]
-    )
-    data = json.loads(out.read_text())
-    by_path = {e["path"]: e for e in data["files"]}
-    # The .meta.json file itself is in the manifest, but the real file
-    # `a.txt` should have its pipeline sidecar joined in.
-    assert "pipeline" in by_path["a.txt"]
-    assert by_path["a.txt"]["pipeline"]["tool"] == "email_eml_to_json"
-
-
-def test_report_assigns_verdicts(tmp_path: Path) -> None:
-    repo = tmp_path
-    evidence = repo / "evidence"
-    evidence.mkdir()
-    (evidence / "a.txt").write_bytes(b"alpha")
-
-    manifest = repo / "MANIFEST.sha256"
-    evidence_hash.main(
-        ["--root", str(evidence), "--manifest", str(manifest), "--repo-root", str(repo)]
-    )
-    snap_dir = repo / "snaps"
-    provenance_snapshot.main(
-        ["--root", str(evidence), "--snapshot-dir", str(snap_dir), "--repo-root", str(repo)]
-    )
-
-    out = repo / "report.json"
-    provenance.main(
-        [
-            "--manifest", str(manifest),
-            "--snapshot-dir", str(snap_dir),
-            "--out", str(out),
-            "--repo-root", str(repo),
-        ]
-    )
-    data = json.loads(out.read_text())
-    entry = data["files"][0]
-    assert "verdict" in entry
-    assert "reason_codes" in entry
-    assert "verdict_counts" in data
-    # Without git tracking, the verdict may warn on `git-untracked`; with
-    # a full snapshot and matching hash, it must never be `fail`.
-    assert entry["verdict"] != "fail"
-
-
-def test_report_flags_missing_file_as_fail(tmp_path: Path) -> None:
-    repo = tmp_path
-    evidence = repo / "evidence"
-    evidence.mkdir()
-    (evidence / "a.txt").write_bytes(b"alpha")
-
-    manifest = repo / "MANIFEST.sha256"
-    evidence_hash.main(
-        ["--root", str(evidence), "--manifest", str(manifest), "--repo-root", str(repo)]
-    )
-    (evidence / "a.txt").unlink()
-
-    out = repo / "report.json"
-    provenance.main(
-        [
-            "--manifest", str(manifest),
-            "--snapshot-dir", str(repo / "snaps"),
-            "--out", str(out),
-            "--repo-root", str(repo),
-        ]
-    )
-    data = json.loads(out.read_text())
-    entry = data["files"][0]
-    assert entry["verdict"] == "fail"
-    assert "missing-on-disk" in entry["reason_codes"]
-
-
-def test_report_flags_sha_mismatch_in_forensic_mode(tmp_path: Path) -> None:
-    repo = tmp_path
-    evidence = repo / "evidence"
-    evidence.mkdir()
-    (evidence / "a.txt").write_bytes(b"alpha")
-
-    manifest = repo / "MANIFEST.sha256"
-    evidence_hash.main(
-        ["--root", str(evidence), "--manifest", str(manifest), "--repo-root", str(repo)]
-    )
-    # Mutate the file in place so its digest no longer matches the manifest.
-    (evidence / "a.txt").write_bytes(b"tampered")
-
-    out = repo / "report.yaml"
-    provenance.main(
-        [
-            "--manifest", str(manifest),
-            "--snapshot-dir", str(repo / "snaps"),
-            "--out", str(out),
-            "--repo-root", str(repo),
-            "--forensic",
-        ]
-    )
-    text = out.read_text()
-    assert "sha-mismatch" in text
-    assert "verdict" in text
-
-
-def test_verify_passes_on_match_and_fails_on_mismatch(tmp_path: Path) -> None:
-    repo = tmp_path
-    evidence = repo / "evidence"
-    evidence.mkdir()
-    (evidence / "a.txt").write_bytes(b"alpha")
-
-    manifest = repo / "MANIFEST.sha256"
-    evidence_hash.main(
-        ["--root", str(evidence), "--manifest", str(manifest), "--repo-root", str(repo)]
-    )
-    rc = provenance.main(
-        [
-            "--manifest", str(manifest),
-            "--snapshot-dir", str(repo / "snaps"),
+            str(repo / "evidence" / "a.txt"),
+            "--evidence-root", str(ev),
+            "--hash-manifest", str(manifest),
+            "--snapshot-dir", str(ev / "snaps"),
             "--repo-root", str(repo),
             "--verify",
         ]
     )
-    assert rc == 0
+    assert rc == 1
 
-    (evidence / "a.txt").write_bytes(b"tampered")
-    rc = provenance.main(
-        [
-            "--manifest", str(manifest),
-            "--snapshot-dir", str(repo / "snaps"),
-            "--repo-root", str(repo),
-            "--verify",
-        ]
-    )
-    assert rc != 0
+
+# -----------------------------------------------------------------------------
+# Decoder tests
+# -----------------------------------------------------------------------------
 
 
 def test_decode_quarantine_parses_fields() -> None:
-    raw = "0081;5f2b1c00;Safari;ABCDEF01-2345-6789-ABCD-EF0123456789"
-    decoded = provenance.decode_quarantine(raw)
-    assert decoded["flags"] == "0081"
-    assert decoded["agent"] == "Safari"
-    assert decoded["uuid"] == "ABCDEF01-2345-6789-ABCD-EF0123456789"
-    assert "timestamp" in decoded
+    raw = "0081;67380000;Safari;ABCD-1234-5678"
+    out = decode_quarantine(raw)
+    assert out is not None
+    assert out["flag"] == "0081"
+    assert out["app"] == "Safari"
+    assert out["uuid"] == "ABCD-1234-5678"
+    assert out["timestamp_iso"] is not None
 
 
-def test_forensic_on_mustang_fixture_every_entry_has_verdict(tmp_path: Path) -> None:
-    """End-to-end smoke against the synthetic Mustang example tree."""
-    repo = Path(__file__).resolve().parents[1]
-    manifest = repo / "examples/mustang-in-maryland/.evidence-manifest.sha256"
-    snap_dir = repo / "examples/mustang-in-maryland/provenance/snapshots"
-    if not manifest.exists() or not snap_dir.exists():
-        return  # example tree not present in this checkout
+def test_decode_wherefroms_parses_hex_bplist() -> None:
+    urls = ["https://example.com/form", "https://example.com/index"]
+    bplist = plistlib.dumps(urls, fmt=plistlib.FMT_BINARY)
+    hex_blob = bplist.hex()
+    assert decode_wherefroms_from_hex(hex_blob) == urls
 
-    out = tmp_path / "mustang-forensic.yaml"
+
+def test_decode_wherefroms_handles_garbage() -> None:
+    assert decode_wherefroms_from_hex("not-hex") == []
+    assert decode_wherefroms_from_hex("deadbeef") == []
+
+
+# -----------------------------------------------------------------------------
+# Pipeline dispatcher
+# -----------------------------------------------------------------------------
+
+
+def test_pipeline_dispatches_email_three_layer(tmp_path: Path) -> None:
+    repo = _init_repo(tmp_path)
+    ev = repo / "evidence"
+    (ev / "emails" / "raw").mkdir(parents=True)
+    (ev / "emails" / "structured").mkdir(parents=True)
+    (ev / "emails" / "readable").mkdir(parents=True)
+
+    raw = ev / "emails" / "raw" / "001_2025-03-16_first-message.eml"
+    raw.write_text("From: a@example.com\n")
+    sibling = ev / "emails" / "structured" / "001_2025-03-16_first-message.json"
+    sibling.write_text(
+        json.dumps(
+            {
+                "message_id": "<001@example.com>",
+                "from": "a@example.com",
+                "subject": "hi",
+                "date": "2025-03-16T09:00Z",
+            }
+        )
+    )
+    _git(repo, "add", "evidence")
+    _git(repo, "commit", "-q", "-m", "add emails")
+
+    cfg = tmp_path / "pipeline.yaml"
+    cfg.write_text(
+        "rules:\n"
+        "  - path_prefix: \"emails/\"\n"
+        "    extensions: [\".eml\", \".json\", \".txt\"]\n"
+        "    handler: email_three_layer\n"
+        "    config:\n"
+        "      filename_stem_re: \"^(\\\\d+)_(\\\\d{4}-\\\\d{2}-\\\\d{2})_(.+)$\"\n"
+        "      json_layer_dir: \"structured\"\n"
+        "      raw_layer_dir: \"raw\"\n"
+        "      readable_layer_dir: \"readable\"\n"
+    )
+
+    rep = build_report(
+        raw,
+        repo_root=repo,
+        evidence_root=ev,
+        manifest_path=ev / "m.sha256",
+        snapshot_dir=ev / "snaps",
+        pipeline_config=cfg,
+    )
+    pipe = rep.sections["pipeline"]
+    assert pipe["kind"] == "email-three-layer"
+    assert pipe["stem"] == "001_2025-03-16_first-message"
+    assert pipe["message_id"] == "<001@example.com>"
+    assert "json_sibling" in pipe
+
+
+def test_pipeline_falls_through_when_no_rule_matches(tmp_path: Path) -> None:
+    repo = _init_repo(tmp_path)
+    ev = repo / "evidence"
+    ev.mkdir()
+    _commit_file(repo, "evidence/random.bin", "\x00\x01", "add bin")
+    cfg = tmp_path / "pipeline.yaml"
+    cfg.write_text("rules: []\n")
+
+    rep = build_report(
+        repo / "evidence" / "random.bin",
+        repo_root=repo,
+        evidence_root=ev,
+        manifest_path=ev / "m.sha256",
+        snapshot_dir=ev / "snaps",
+        pipeline_config=cfg,
+    )
+    assert rep.sections["pipeline"]["kind"] == "none"
+
+
+# -----------------------------------------------------------------------------
+# Output formatters
+# -----------------------------------------------------------------------------
+
+
+def test_format_yaml_works_without_pyyaml_available() -> None:
+    """The emitter has a stdlib-only fallback so regulators/attorneys
+    can read `--forensic` output without installing PyYAML."""
+    report = Report(
+        abs_path="/tmp/x",
+        rel_path="x",
+        repo_root=Path("/tmp"),
+        evidence_root=Path("/tmp/evidence"),
+    )
+    report.sections["identity"] = {"sha256": "abc", "size_bytes": 42}
+    report.sections["verdict"] = "git: add-only ✓"
+    out = format_yaml(report)
+    assert "rel_path:" in out
+    assert "identity:" in out
+    assert "sha256:" in out
+
+
+def test_format_human_renders_verdict_and_flags() -> None:
+    report = Report(
+        abs_path="/tmp/x",
+        rel_path="x",
+        repo_root=Path("/tmp"),
+        evidence_root=Path("/tmp/evidence"),
+    )
+    report.warn("example warning")
+    report.sections["identity"] = {
+        "rel_path": "x",
+        "size_bytes": 10,
+        "sha256": "a" * 64,
+        "git_blob_sha1": "b" * 40,
+        "git_tracked": True,
+    }
+    report.sections["git_trail"] = {
+        "commits": [],
+        "commit_count": 0,
+        "content_change_count": 0,
+    }
+    report.sections["hash_manifest"] = {"applies": False}
+    report.sections["download"] = {
+        "live": {
+            "present": False,
+            "attribute_names": [],
+            "download_urls": [],
+            "quarantine": None,
+        },
+        "snapshots": [],
+    }
+    report.sections["pipeline"] = {"kind": "none"}
+    report.sections["verdict"] = "git: ⚠ untracked; xattr: none"
+    out = format_human(report)
+    assert "**Verdict:**" in out
+    assert "example warning" in out
+    assert "## Identity" in out
+
+
+# -----------------------------------------------------------------------------
+# Bundle
+# -----------------------------------------------------------------------------
+
+
+def test_bundle_on_synthetic_tree(tmp_path: Path) -> None:
+    repo = _init_repo(tmp_path)
+    ev = repo / "evidence"
+    ev.mkdir()
+    _commit_file(repo, "evidence/a.txt", "aaa\n", "add a")
+    _commit_file(repo, "evidence/b.txt", "bbb\n", "add b")
+
+    manifest = repo / ".evidence-manifest.sha256"
+    a_hash = _sha256("aaa\n")
+    b_hash = _sha256("bbb\n")
+    manifest.write_text(f"{a_hash}  a.txt\n{b_hash}  b.txt\n")
+    pipeline_cfg = tmp_path / "pipeline.yaml"
+    pipeline_cfg.write_text("rules: []\n")
+
+    bundle = provenance_bundle.build_bundle(
+        manifest,
+        repo_root=repo,
+        evidence_root=ev,
+        snapshot_dir=ev / "snaps",
+        pipeline_config=pipeline_cfg,
+    )
+    assert bundle["count"] == 2
+    assert bundle["verdict_counts"]["fail"] == 0
+    paths = [f["path"] for f in bundle["files"]]
+    assert "a.txt" in paths and "b.txt" in paths
+
+
+def test_bundle_flags_missing_file_as_fail(tmp_path: Path) -> None:
+    repo = _init_repo(tmp_path)
+    ev = repo / "evidence"
+    ev.mkdir()
+    manifest = repo / "m.sha256"
+    manifest.write_text("deadbeef" * 8 + "  not-here.txt\n")
+    pipeline_cfg = tmp_path / "pipeline.yaml"
+    pipeline_cfg.write_text("rules: []\n")
+
+    bundle = provenance_bundle.build_bundle(
+        manifest,
+        repo_root=repo,
+        evidence_root=ev,
+        snapshot_dir=ev / "snaps",
+        pipeline_config=pipeline_cfg,
+    )
+    assert bundle["verdict_counts"]["fail"] == 1
+    assert bundle["files"][0]["note"] == "missing-on-disk"
+
+
+# -----------------------------------------------------------------------------
+# Mustang end-to-end smoke
+# -----------------------------------------------------------------------------
+
+
+def test_mustang_emails_eml_via_cli(capsys) -> None:
+    """End-to-end: `provenance` against a real Mustang email file.
+
+    All six sections render; pipeline dispatcher routes to
+    email-three-layer; verdict line includes the git-trail status."""
+    repo = Path(__file__).resolve().parent.parent
+    eml = (
+        repo
+        / "examples"
+        / "mustang-in-maryland"
+        / "evidence"
+        / "emails"
+        / "raw"
+        / "020_2025-08-15_midlife-crisis-opinion-letter.eml"
+    )
+    if not eml.exists():
+        pytest.skip("Mustang fixture not present")
+    ev_root = repo / "examples" / "mustang-in-maryland" / "evidence"
+    hash_mf = repo / "examples" / "mustang-in-maryland" / ".evidence-manifest.sha256"
+    snap_dir = repo / "examples" / "mustang-in-maryland" / "provenance" / "snapshots"
+
     rc = provenance.main(
         [
-            "--manifest", str(manifest),
+            str(eml),
+            "--evidence-root", str(ev_root),
+            "--hash-manifest", str(hash_mf),
             "--snapshot-dir", str(snap_dir),
-            "--out", str(out),
-            "--repo-root", str(repo),
-            "--forensic",
-        ]
-    )
-    assert rc == 0
-    text = out.read_text(encoding="utf-8")
-    # YAML output.
-    assert "schema:" in text
-    # Every entry must carry a verdict.
-    verdict_count = text.count("verdict:")
-    # One verdict per file, plus we also emit `verdict_counts:` at the top.
-    assert verdict_count >= 2
-    # The fixture hashes on disk match the manifest today, so no sha
-    # mismatches should be reported in forensic mode.
-    assert "sha-mismatch" not in text
-
-
-def test_verify_on_mustang_fixture_passes(tmp_path: Path) -> None:
-    repo = Path(__file__).resolve().parents[1]
-    manifest = repo / "examples/mustang-in-maryland/.evidence-manifest.sha256"
-    snap_dir = repo / "examples/mustang-in-maryland/provenance/snapshots"
-    if not manifest.exists() or not snap_dir.exists():
-        return
-    rc = provenance.main(
-        [
-            "--manifest", str(manifest),
-            "--snapshot-dir", str(snap_dir),
-            "--verify",
             "--repo-root", str(repo),
         ]
     )
+    out = capsys.readouterr().out
     assert rc == 0
-
-
-def test_decode_wherefroms_parses_plist() -> None:
-    import plistlib
-    payload = plistlib.dumps(["https://example.com/post", "https://example.com/file.pdf"])
-    decoded = provenance.decode_wherefroms("hex:" + payload.hex())
-    assert decoded["urls"] == [
-        "https://example.com/post",
-        "https://example.com/file.pdf",
-    ]
+    for section_header in (
+        "## Identity",
+        "## Git trail",
+        "## Hash manifest",
+        "## Download provenance",
+        "## Pipeline provenance",
+    ):
+        assert section_header in out
+    assert "**Verdict:**" in out
+    assert "email-three-layer" in out

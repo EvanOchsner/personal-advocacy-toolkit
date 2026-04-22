@@ -28,11 +28,11 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import hashlib
 import string
 import sys
 from pathlib import Path
 
+from scripts.packet._hash import sha256_file as _sha256_file
 from scripts.packet._manifest import (
     ManifestError,
     PacketManifest,
@@ -57,14 +57,6 @@ def _read_hash_manifest(path: Path) -> dict[str, str]:
             digest, rel = line.split("  ", 1)
             out[rel.strip()] = digest.strip()
     return out
-
-
-def _sha256_file(path: Path) -> str:
-    h = hashlib.sha256()
-    with path.open("rb") as fh:
-        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
-            h.update(chunk)
-    return h.hexdigest()
 
 
 def _expected_labels(n: int) -> list[str]:

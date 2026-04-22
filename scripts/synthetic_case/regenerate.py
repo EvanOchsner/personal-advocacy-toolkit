@@ -381,18 +381,18 @@ def _render_photo(out: Path, spec: PhotoSpec) -> None:
     # Border rectangle to reinforce "this is a placeholder" feel.
     draw.rectangle([(20, 20), (W - 20, H - 20)], outline=(255, 255, 255), width=4)
 
-    # EXIF: explicitly empty. We pass exif=b"" to save() so Pillow
-    # does not inherit any metadata; and we also ensure no GPS or
-    # camera-identifying fields are present. A UserComment carrying
-    # the SYNTHETIC stamp is attached via piexif.
-    exif_bytes = _build_synthetic_exif()
+    # No EXIF at all. The SYNTHETIC stamp is rendered visibly onto the
+    # image above; leaving EXIF empty means the publication-safety CI
+    # gate (scripts/ci/local_postchecks.sh, `exif_scrub`) passes cleanly
+    # on the example tree without needing per-tag allowlisting. The
+    # visible watermark is the durable attestation here.
     out.parent.mkdir(parents=True, exist_ok=True)
     img.save(
         out,
         format="JPEG",
         quality=85,
         optimize=True,
-        exif=exif_bytes,
+        exif=b"",
     )
 
 

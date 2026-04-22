@@ -1,0 +1,47 @@
+# pipeline_dispatch.yaml — pipeline-provenance dispatch rules
+#
+# Each rule matches a file by its path (relative to the evidence root)
+# and its extension. The first matching rule wins. The `handler` name is
+# looked up in scripts/provenance_handlers.py's HANDLERS registry.
+#
+# Rules are ordered; put more-specific ones first.
+
+rules:
+  # Three-layer email pipeline: raw/*.eml → structured/*.json → readable/*.txt.
+  # All three layers share a filename stem. The handler parses the stem,
+  # walks to the sibling structured/*.json, and surfaces Message-ID +
+  # headers + extraction metadata.
+  - path_prefix: "emails/"
+    extensions: [".eml", ".json", ".txt"]
+    handler: email_three_layer
+    config:
+      filename_stem_re: "^(\\d+)_(\\d{4}-\\d{2}-\\d{2})_(.+)$"
+      json_layer_dir: "structured"
+      raw_layer_dir: "raw"
+      readable_layer_dir: "readable"
+
+  # Policy / governing-document catalog: the evidence/policy/README.md
+  # lists each form with provenance notes; the handler surfaces every
+  # line that mentions the file's basename.
+  - path_prefix: "policy/"
+    extensions: [".pdf", ".md"]
+    handler: readme_catalog
+    config:
+      catalog_path: "policy/README.md"
+
+  # Legal-research artifacts: the rendered PDF / downloaded HTML is
+  # accompanied by a sibling .md with YAML frontmatter recording the
+  # source URL, retrieval date, citation, etc.
+  - path_prefix: "legal_research/"
+    extensions: [".pdf", ".html", ".htm"]
+    handler: yaml_frontmatter_sibling
+    config:
+      sibling_suffix: ".md"
+      surface_keys:
+        - pdf_sha256
+        - source_html_sha256
+        - source_url
+        - retrieved_date
+        - citation
+        - authority
+        - extraction_tool

@@ -41,24 +41,40 @@ leaves a `<file>.meta.json` sidecar recording: the input's hash, the
 tool version, the timestamp, and any parameters used. A reader can
 reconstruct the pipeline without trusting the author.
 
-## The unified report
+## Two views: per-file and bundle
+
+### Per-file deep dive
 
 ```
-python -m scripts.provenance.py   # or: python -m scripts.provenance
+python -m scripts.provenance PATH
 ```
 
-This emits `provenance/report.json` with one entry per file in the
-manifest, joining in:
+Surfaces six sections for one file: Identity, Git trail, Hash manifest,
+Download provenance, Pipeline provenance, Verdict. This is the "what do
+we know about this specific exhibit?" tool. Add `--forensic` for a
+structured YAML version suitable for a regulator or attorney handoff —
+the YAML emitter is stdlib-only, so the recipient doesn't need to
+install PyYAML to read it.
 
-- the digest from the manifest,
-- size / mtime / xattrs from the most recent snapshot,
-- the first and most recent git commit touching that file,
-- any pipeline-metadata sidecar for that file.
+The Pipeline section is config-driven
+(`data/pipeline_dispatch.yaml`): for an email, it walks to the sibling
+JSON and surfaces Message-ID + headers + extraction metadata; for a
+policy-catalog PDF it surfaces the README mentions; for a legal-
+research artifact it surfaces the YAML frontmatter from the sibling
+`.md`. Add a handler there to cover a new content type.
 
-The report is the single document you hand to an attorney or regulator
-alongside the evidence tree. Everything in it is independently
-verifiable: they can re-hash the file, re-read xattrs from a copy of the
-repo, pull the commit from a git remote, and inspect the sidecar.
+### Whole-packet attestation
+
+```
+python -m scripts.provenance_bundle --manifest M --out report.yaml
+```
+
+Runs the per-file tool over every entry in a SHA-256 manifest and
+concatenates the results into one YAML attestation document. This is
+the single document you hand to an attorney or regulator alongside the
+evidence tree. Everything in it is independently verifiable: they can
+re-hash the file, re-read xattrs from a copy of the repo, pull the
+commit from a git remote, and inspect the sidecar.
 
 ## What a reviewer looks for
 

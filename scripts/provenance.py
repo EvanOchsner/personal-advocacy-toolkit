@@ -1,459 +1,888 @@
 #!/usr/bin/env python3
-"""Build a unified provenance report for a case workspace.
+"""Provenance reader — per-file forensic inspection.
 
-Joins four sources into a single document (JSON by default, YAML when
-`--forensic` is set):
+Given one path inside the repo, surface every forensic fact the workspace
+records about it:
 
-1. The SHA-256 manifest produced by `evidence_hash.py`.
-2. The most recent provenance snapshot (xattrs + mtimes) under
-   `provenance.snapshot_dir`.
-3. Git history for each tracked file (first and last commit touching it),
-   if the workspace is a git repo.
-4. Pipeline metadata sidecars (`<file>.meta.json`), when present — these
-   are written by ingestion scripts (e.g. email EML → JSON → TXT) to
-   record what transformed the file.
+  1. Identity     — rel_path, size, ext, current SHA-256, git blob SHA-1,
+                    git-tracked flag.
+  2. Git trail    — `git log --follow` over the file, classifying each
+                    commit as `initial` / `content` / `rename-or-metadata`
+                    by comparing blob SHAs against the previous commit.
+  3. Hash manifest — recorded SHA vs on-disk; mismatch / missing / OK.
+  4. Download     — live xattrs (`xattr -l`) plus every historical entry
+                    from `provenance_snapshots/` matching the basename.
+                    Decodes `com.apple.metadata:kMDItemWhereFroms` (binary
+                    plist → URL list) and `com.apple.quarantine`.
+  5. Pipeline     — config-driven dispatcher
+                    (`data/pipeline_dispatch.yaml`) that surfaces
+                    content-type-specific sidecar data (email headers,
+                    catalog mentions, sibling YAML frontmatter, etc.).
+  6. Verdict      — one-line human summary combining the above.
 
-Each entry carries a verdict (``pass`` / ``warn`` / ``fail``) and a
-``reason_codes`` list explaining it. ``--verify`` is the short-circuit
-path: recompute every manifest digest on disk, print any mismatches, and
-exit non-zero if anything drifted. ``--forensic`` expands the full
-report as YAML — with xattr decoders for macOS WhereFroms / quarantine
-fields — for regulator or attorney handoff.
+Usage:
+    python -m scripts.provenance PATH             # human-readable report
+    python -m scripts.provenance PATH --forensic  # YAML for lawyer/regulator
+    python -m scripts.provenance PATH --verify    # silent unless warnings; exit 1 on any ⚠
 
-The report is designed for a non-technical reader (regulator, attorney,
-journalist) to skim: one row per evidence file, with every derivable
-fact visible. An attorney can then subpoena git server logs or platform
-records corresponding to the timestamps and xattr URLs.
+For the whole-packet attestation case ("produce one document of
+provenance for a regulator"), see `scripts/provenance_bundle.py`.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import plistlib
+import re
 import subprocess
 import sys
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from scripts._config import Config, load_config
-from scripts.evidence_hash import read_manifest, sha256_file
 
 
-# A snapshot older than this is still used, but entries it backs are
-# marked with a `stale-snapshot` warning.
-SNAPSHOT_STALE_SECONDS = 30 * 24 * 3600
+# -----------------------------------------------------------------------------
+# Helpers
+# -----------------------------------------------------------------------------
 
 
-def latest_snapshot(snapshot_dir: Path) -> dict[str, Any] | None:
-    if not snapshot_dir.exists():
-        return None
-    candidates = sorted(snapshot_dir.glob("*.json"))
-    if not candidates:
-        return None
-    with open(candidates[-1], encoding="utf-8") as fh:
-        return json.load(fh)
+def sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
 
 
-def git_history_for(repo_root: Path, rel_path: str) -> dict[str, Any] | None:
-    """Return first/last commit touching `rel_path`, or None if not in git."""
-    try:
-        first = subprocess.run(
-            [
-                "git",
-                "-C",
-                str(repo_root),
-                "log",
-                "--diff-filter=A",
-                "--follow",
-                "--format=%H%x09%an%x09%aI",
-                "--",
-                rel_path,
-            ],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        last = subprocess.run(
-            [
-                "git",
-                "-C",
-                str(repo_root),
-                "log",
-                "-1",
-                "--format=%H%x09%an%x09%aI",
-                "--",
-                rel_path,
-            ],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-    except FileNotFoundError:
-        return None
-    if first.returncode != 0 and last.returncode != 0:
-        return None
-
-    def _parse(line: str) -> dict[str, str] | None:
-        line = line.strip().splitlines()[-1] if line.strip() else ""
-        if not line:
-            return None
-        parts = line.split("\t")
-        if len(parts) != 3:
-            return None
-        return {"sha": parts[0], "author": parts[1], "date": parts[2]}
-
-    return {
-        "added": _parse(first.stdout),
-        "last_touched": _parse(last.stdout),
-    }
+def _run(cmd: list[str], cwd: Path) -> tuple[int, str, str]:
+    r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, check=False)
+    return r.returncode, r.stdout, r.stderr
 
 
-def git_is_tracked(repo_root: Path, rel_path: str) -> bool | None:
-    """Return True/False if git can answer, None if git is unavailable."""
-    try:
-        result = subprocess.run(
-            [
-                "git",
-                "-C",
-                str(repo_root),
-                "ls-files",
-                "--error-unmatch",
-                "--",
-                rel_path,
-            ],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-    except FileNotFoundError:
-        return None
-    return result.returncode == 0
+def _run_bytes(cmd: list[str], cwd: Path) -> tuple[int, bytes]:
+    r = subprocess.run(cmd, cwd=cwd, capture_output=True, check=False)
+    return r.returncode, r.stdout
 
 
-def load_pipeline_meta(evidence_root: Path, rel_path: str) -> dict[str, Any] | None:
-    sidecar = evidence_root / f"{rel_path}.meta.json"
-    if not sidecar.exists():
-        return None
-    try:
-        with open(sidecar, encoding="utf-8") as fh:
-            return json.load(fh)
-    except (OSError, json.JSONDecodeError):
-        return None
+# -----------------------------------------------------------------------------
+# Report dataclass
+# -----------------------------------------------------------------------------
 
 
-def decode_wherefroms(raw: str) -> dict[str, Any]:
-    """Decode `com.apple.metadata:kMDItemWhereFroms` into URL list.
+@dataclass
+class Report:
+    abs_path: str
+    rel_path: str
+    repo_root: Path
+    evidence_root: Path
+    sections: dict[str, Any] = field(default_factory=dict)
+    warnings: list[str] = field(default_factory=list)
 
-    The xattr is a binary plist listing URLs (origin page + download URL).
-    The snapshot stores it as `hex:<...>` when not UTF-8 decodable, which
-    is the usual case for this particular xattr.
-    """
-    out: dict[str, Any] = {}
-    try:
-        if raw.startswith("hex:"):
-            payload = bytes.fromhex(raw[4:])
-        else:
-            # Best-effort: the value may have been stored as latin-1 bytes.
-            payload = raw.encode("latin-1", errors="replace")
-        urls = plistlib.loads(payload)
-        if isinstance(urls, list):
-            out["urls"] = [str(u) for u in urls if u]
-    except Exception as exc:  # pragma: no cover - defensive
-        out["decode_error"] = f"{type(exc).__name__}: {exc}"
-    return out
+    def warn(self, msg: str) -> None:
+        self.warnings.append(msg)
 
-
-def decode_quarantine(raw: str) -> dict[str, Any]:
-    """Decode `com.apple.quarantine` semicolon-separated fields.
-
-    Format: ``flags;hex-timestamp;agent;uuid``. The timestamp is a
-    hex-encoded seconds-since-epoch integer.
-    """
-    out: dict[str, Any] = {"raw": raw}
-    parts = raw.split(";")
-    if len(parts) >= 1:
-        out["flags"] = parts[0]
-    if len(parts) >= 2:
+    @property
+    def under_evidence(self) -> bool:
         try:
-            ts = int(parts[1], 16)
-            out["timestamp"] = datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
-        except ValueError:
-            out["timestamp_raw"] = parts[1]
-    if len(parts) >= 3:
-        out["agent"] = parts[2]
-    if len(parts) >= 4:
-        out["uuid"] = parts[3]
-    return out
+            p = (self.repo_root / self.rel_path).resolve()
+            p.relative_to(self.evidence_root.resolve())
+            return True
+        except (ValueError, OSError):
+            return False
 
 
-def expand_xattrs(xattrs: dict[str, str]) -> dict[str, Any]:
-    """Decode known macOS xattrs; leave unknown ones as-is."""
-    out: dict[str, Any] = {}
-    for name, value in xattrs.items():
-        if name == "com.apple.metadata:kMDItemWhereFroms":
-            decoded = decode_wherefroms(value)
-            out[name] = {"raw": value, **decoded}
-        elif name == "com.apple.quarantine":
-            out[name] = decode_quarantine(value)
-        else:
-            out[name] = value
-    return out
+# -----------------------------------------------------------------------------
+# Section 1: Identity
+# -----------------------------------------------------------------------------
 
 
-def _classify(reasons: list[str]) -> str:
-    fail_codes = {
-        "sha-mismatch",
-        "missing-on-disk",
-        "xattr-decode-failure",
-    }
-    if any(r in fail_codes for r in reasons):
-        return "fail"
-    if reasons:
-        return "warn"
-    return "pass"
-
-
-def build_report(cfg: Config, *, forensic: bool = False) -> dict[str, Any]:
-    manifest = read_manifest(cfg.manifest_path)
-    snap = latest_snapshot(cfg.snapshot_dir)
-    snap_by_path: dict[str, dict[str, Any]] = {}
-    snap_captured_at: datetime | None = None
-    if snap:
-        for e in snap.get("entries", []):
-            snap_by_path[e["path"]] = e
-        captured = snap.get("captured_at")
-        if captured:
-            try:
-                snap_captured_at = datetime.fromisoformat(captured)
-            except ValueError:
-                snap_captured_at = None
-
-    now = datetime.now(timezone.utc)
-    snap_stale = False
-    if snap_captured_at is not None:
-        age = (now - snap_captured_at).total_seconds()
-        snap_stale = age > SNAPSHOT_STALE_SECONDS
-
-    files: list[dict[str, Any]] = []
-    counts = {"pass": 0, "warn": 0, "fail": 0}
-    for digest, rel in manifest:
-        entry: dict[str, Any] = {"path": rel, "sha256": digest}
-        reasons: list[str] = []
-
-        on_disk = cfg.evidence_root / rel
-        if not on_disk.exists():
-            reasons.append("missing-on-disk")
-        else:
-            if forensic:
-                try:
-                    actual = sha256_file(on_disk)
-                except OSError as exc:
-                    reasons.append("missing-on-disk")
-                    entry["sha256_error"] = str(exc)
-                else:
-                    if actual != digest:
-                        reasons.append("sha-mismatch")
-                        entry["sha256_actual"] = actual
-
-        s = snap_by_path.get(rel)
-        if s:
-            entry["size"] = s.get("size")
-            entry["mtime"] = s.get("mtime")
-            raw_xattrs = s.get("xattrs", {}) or {}
-            if forensic:
-                try:
-                    entry["xattrs"] = expand_xattrs(raw_xattrs)
-                except Exception:
-                    reasons.append("xattr-decode-failure")
-                    entry["xattrs"] = raw_xattrs
-            else:
-                entry["xattrs"] = raw_xattrs
-            if snap_stale:
-                reasons.append("stale-snapshot")
-        else:
-            reasons.append("missing-snapshot")
-
-        rel_from_repo = str(cfg.evidence_root.relative_to(cfg.repo_root) / rel)
-        git = git_history_for(cfg.repo_root, rel_from_repo)
-        if git:
-            entry["git"] = git
-        tracked = git_is_tracked(cfg.repo_root, rel_from_repo)
-        if tracked is False:
-            reasons.append("git-untracked")
-
-        meta = load_pipeline_meta(cfg.evidence_root, rel)
-        if meta is not None:
-            entry["pipeline"] = meta
-
-        verdict = _classify(reasons)
-        entry["verdict"] = verdict
-        entry["reason_codes"] = reasons
-        counts[verdict] += 1
-        files.append(entry)
-
+def section_identity(path: Path, report: Report) -> dict[str, Any]:
+    stat = path.stat()
+    sha = sha256_file(path)
+    rc, blob, _ = _run(["git", "hash-object", str(path)], cwd=report.repo_root)
+    blob_sha = blob.strip() if rc == 0 else None
+    rc, _, _ = _run(
+        ["git", "ls-files", "--error-unmatch", str(path)], cwd=report.repo_root
+    )
+    tracked = rc == 0
     return {
-        "schema": "advocacy-toolkit/provenance-report/v1",
-        "generated_at": now.isoformat(),
-        "repo_root": str(cfg.repo_root),
-        "evidence_root": str(cfg.evidence_root),
-        "manifest": str(cfg.manifest_path),
-        "snapshot": snap.get("captured_at") if snap else None,
-        "snapshot_stale": snap_stale,
-        "count": len(files),
-        "verdict_counts": counts,
-        "files": files,
+        "abs_path": str(path),
+        "rel_path": report.rel_path,
+        "size_bytes": stat.st_size,
+        "extension": path.suffix.lower(),
+        "sha256": sha,
+        "git_blob_sha1": blob_sha,
+        "git_tracked": tracked,
     }
 
 
-def verify(cfg: Config) -> int:
-    """Recompute SHA-256 for every manifest entry; exit non-zero on mismatch."""
-    expected = read_manifest(cfg.manifest_path)
-    if not expected:
-        print(f"no manifest found at {cfg.manifest_path}", file=sys.stderr)
-        return 2
+# -----------------------------------------------------------------------------
+# Section 2: Git trail
+# -----------------------------------------------------------------------------
 
-    problems: list[str] = []
-    for digest, rel in expected:
-        p = cfg.evidence_root / rel
-        if not p.exists():
-            problems.append(f"missing: {rel}")
-            continue
-        try:
-            actual = sha256_file(p)
-        except OSError as exc:
-            problems.append(f"unreadable: {rel}: {exc}")
-            continue
-        if actual != digest:
-            problems.append(
-                f"hash-mismatch: {rel}\n  expected {digest}\n  actual   {actual}"
+
+def section_git(path: Path, report: Report) -> dict[str, Any]:
+    """Walk the file's history with --follow; classify each commit.
+
+    Content-edits to files under the configured evidence root are flagged
+    as warnings — post-placement content changes are the primary forensic
+    red flag for evidence integrity.
+    """
+    rc, out, _ = _run(
+        [
+            "git",
+            "log",
+            "--follow",
+            "--name-status",
+            "--format=%x00COMMIT%x00%H%x00%h%x00%ai%x00%an%x00%s",
+            "--",
+            str(path),
+        ],
+        cwd=report.repo_root,
+    )
+    commits: list[dict[str, Any]] = []
+    if rc == 0 and out.strip():
+        blocks = out.split("\x00COMMIT\x00")
+        for block in blocks:
+            block = block.strip()
+            if not block:
+                continue
+            head, _, body = block.partition("\n")
+            parts = head.split("\x00")
+            if len(parts) < 5:
+                continue
+            full_sha, short_sha, date, author, subject = parts[:5]
+            status = None
+            path_at_commit: str | None = None
+            for ns_line in body.splitlines():
+                ns_line = ns_line.strip()
+                if not ns_line:
+                    continue
+                fields = ns_line.split("\t")
+                code = fields[0]
+                if code.startswith("R") and len(fields) >= 3:
+                    status, path_at_commit = "rename", fields[2]
+                elif code == "A" and len(fields) >= 2:
+                    status, path_at_commit = "add", fields[1]
+                elif code == "M" and len(fields) >= 2:
+                    status, path_at_commit = "modify", fields[1]
+                elif code == "D" and len(fields) >= 2:
+                    status, path_at_commit = "delete", fields[1]
+                elif len(fields) >= 2:
+                    status, path_at_commit = code, fields[-1]
+                break
+            blob = None
+            if path_at_commit:
+                rc2, out2, _ = _run(
+                    ["git", "ls-tree", full_sha, path_at_commit],
+                    cwd=report.repo_root,
+                )
+                if rc2 == 0 and out2.strip():
+                    blob_parts = out2.strip().split()
+                    if len(blob_parts) >= 3 and blob_parts[1] == "blob":
+                        blob = blob_parts[2]
+            commits.append(
+                {
+                    "short_sha": short_sha,
+                    "full_sha": full_sha,
+                    "date": date,
+                    "author": author,
+                    "subject": subject,
+                    "status": status,
+                    "path_at_commit": path_at_commit,
+                    "blob_sha": blob,
+                }
             )
 
-    if problems:
-        for line in problems:
-            print(line, file=sys.stderr)
-        return 1
-    print(f"ok: {len(expected)} files verified against {cfg.manifest_path}")
-    return 0
+    # Classify each commit oldest→newest by comparing blob SHAs.
+    ordered = list(reversed(commits))
+    prev_blob = None
+    content_changes: list[dict[str, Any]] = []
+    for c in ordered:
+        if prev_blob is None:
+            c["change_type"] = "initial"
+        else:
+            c["change_type"] = (
+                "content" if c["blob_sha"] != prev_blob else "rename-or-metadata"
+            )
+        if c["change_type"] == "content":
+            content_changes.append(c)
+        prev_blob = c["blob_sha"] or prev_blob
+
+    if report.under_evidence and content_changes:
+        names = ", ".join(
+            f"{c['short_sha']} ({c['subject'][:50]})" for c in content_changes
+        )
+        report.warn(
+            f"evidence file has {len(content_changes)} post-placement "
+            f"content change(s): {names}"
+        )
+    if not commits:
+        report.warn("file has no git history (not tracked, or never committed)")
+    return {
+        "commits": commits,
+        "commit_count": len(commits),
+        "content_change_count": len(content_changes),
+    }
 
 
-def _dump_yaml(data: Any, fh: Any) -> None:
-    """Write `data` as YAML. Uses PyYAML when available; else a tiny fallback.
+# -----------------------------------------------------------------------------
+# Section 3: Hash manifest
+# -----------------------------------------------------------------------------
 
-    The fallback handles the specific shapes this report emits (nested
-    dicts, lists of dicts, scalars) and is good enough for human review.
-    """
+
+def _read_manifest(manifest_path: Path) -> dict[str, str]:
+    """Read a shasum-style manifest as {posix_relpath: hex_digest}."""
+    out: dict[str, str] = {}
+    if not manifest_path.exists():
+        return out
+    for line in manifest_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = line.split("  ", 1)
+        if len(parts) != 2:
+            continue
+        out[parts[1].strip()] = parts[0].strip()
+    return out
+
+
+def section_manifest(
+    path: Path, identity: dict[str, Any], manifest_path: Path, report: Report
+) -> dict[str, Any]:
+    """Look up the file in the hash manifest."""
+    # Manifest paths are relative to the evidence root.
     try:
-        import yaml  # type: ignore[import-not-found]
-    except ModuleNotFoundError:
-        _fallback_yaml(data, fh, indent=0)
-        return
-    yaml.safe_dump(data, fh, sort_keys=True, default_flow_style=False, allow_unicode=True)
+        rel_to_evidence = str(path.resolve().relative_to(report.evidence_root.resolve()))
+    except ValueError:
+        rel_to_evidence = None
+
+    result: dict[str, Any] = {
+        "applies": report.under_evidence,
+        "manifest_path": str(manifest_path),
+        "relative_key": rel_to_evidence,
+        "recorded_sha256": None,
+        "matches": None,
+    }
+    if not result["applies"]:
+        return result
+    if not manifest_path.exists():
+        report.warn(f"hash manifest not present at {manifest_path}")
+        return result
+    manifest = _read_manifest(manifest_path)
+    if rel_to_evidence and rel_to_evidence in manifest:
+        recorded = manifest[rel_to_evidence]
+        result["recorded_sha256"] = recorded
+        result["matches"] = recorded == identity["sha256"]
+        if not result["matches"]:
+            report.warn(
+                f"HASH MISMATCH: manifest records {recorded}, "
+                f"on-disk file hashes to {identity['sha256']}"
+            )
+        return result
+    report.warn(
+        f"file is under evidence/ but not recorded in {manifest_path.name}"
+    )
+    return result
 
 
-def _fallback_yaml(data: Any, fh: Any, *, indent: int) -> None:
-    pad = "  " * indent
-    if isinstance(data, dict):
-        if not data:
-            fh.write("{}\n")
-            return
-        for k in sorted(data.keys()):
-            v = data[k]
-            if isinstance(v, (dict, list)) and v:
-                fh.write(f"{pad}{k}:\n")
-                _fallback_yaml(v, fh, indent=indent + 1)
-            else:
-                fh.write(f"{pad}{k}: {_yaml_scalar(v)}\n")
-    elif isinstance(data, list):
-        if not data:
-            fh.write("[]\n")
-            return
-        for item in data:
-            if isinstance(item, (dict, list)) and item:
-                fh.write(f"{pad}-\n")
-                _fallback_yaml(item, fh, indent=indent + 1)
-            else:
-                fh.write(f"{pad}- {_yaml_scalar(item)}\n")
+# -----------------------------------------------------------------------------
+# Section 4: Download provenance (xattr live + all snapshots)
+# -----------------------------------------------------------------------------
+
+
+QUARANTINE_RE = re.compile(r"^([0-9a-f]+);([0-9a-f]+);([^;]+);([^;]*)$", re.IGNORECASE)
+
+
+def decode_quarantine(value: str) -> dict[str, Any] | None:
+    """Decode `com.apple.quarantine` semicolon-separated fields."""
+    m = QUARANTINE_RE.match(value.strip())
+    if not m:
+        return None
+    flag, hex_ts, app, uuid = m.groups()
+    try:
+        ts = int(hex_ts, 16)
+        iso = datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
+    except ValueError:
+        iso = None
+    return {
+        "flag": flag,
+        "timestamp_hex": hex_ts,
+        "timestamp_iso": iso,
+        "app": app,
+        "uuid": uuid,
+    }
+
+
+def decode_wherefroms_from_hex(raw_hex: str) -> list[str]:
+    """Decode hex-encoded binary plist to URL list. Empty on failure."""
+    try:
+        data = bytes.fromhex(raw_hex.replace(" ", "").replace("\n", ""))
+        plist = plistlib.loads(data)
+    except (ValueError, plistlib.InvalidFileException):
+        return []
+    if isinstance(plist, list):
+        return [str(x) for x in plist if x]
+    return []
+
+
+def live_xattr(path: Path, repo_root: Path) -> dict[str, Any]:
+    """Read live xattrs via `xattr -l`; decode WhereFroms + quarantine."""
+    rc, out = _run_bytes(["xattr", "-l", str(path)], cwd=repo_root)
+    if rc != 0 or not out:
+        return {
+            "present": False,
+            "attributes": {},
+            "download_urls": [],
+            "quarantine": None,
+        }
+    text = out.decode("utf-8", errors="replace")
+    attrs: dict[str, str] = {}
+    current_key = None
+    current_val: list[str] = []
+    for line in text.splitlines():
+        m = re.match(r"^([a-zA-Z0-9._#:]+):\s?(.*)$", line)
+        if m:
+            if current_key is not None:
+                attrs[current_key] = "\n".join(current_val).rstrip()
+            current_key = m.group(1)
+            current_val = [m.group(2)]
+        else:
+            current_val.append(line)
+    if current_key is not None:
+        attrs[current_key] = "\n".join(current_val).rstrip()
+
+    download_urls: list[str] = []
+    if "com.apple.metadata:kMDItemWhereFroms" in attrs:
+        rc2, raw_bytes = _run_bytes(
+            ["xattr", "-px", "com.apple.metadata:kMDItemWhereFroms", str(path)],
+            cwd=repo_root,
+        )
+        if rc2 == 0 and raw_bytes:
+            download_urls = decode_wherefroms_from_hex(
+                raw_bytes.decode("ascii", errors="replace")
+            )
+
+    quarantine = None
+    if "com.apple.quarantine" in attrs:
+        quarantine = decode_quarantine(attrs["com.apple.quarantine"])
+
+    return {
+        "present": True,
+        "attribute_names": sorted(attrs.keys()),
+        "download_urls": download_urls,
+        "quarantine": quarantine,
+    }
+
+
+def all_snapshot_entries(snapshot_dir: Path, basename: str) -> list[dict[str, Any]]:
+    """Walk every snapshot file; return every entry matching `basename`.
+
+    Supports both the JSON snapshot format
+    (`provenance_snapshot.py` current output — `{entries: [{path, xattrs,
+    ...}, ...]}`) and the legacy text format
+    (`File: <path>` / `====` dividers / xattr block) from the source
+    project.
+    """
+    entries: list[dict[str, Any]] = []
+    if not snapshot_dir.exists():
+        return entries
+    for sf in sorted(snapshot_dir.iterdir()):
+        if not sf.is_file():
+            continue
+        suffix = sf.suffix.lower()
+        try:
+            if suffix == ".json":
+                entries.extend(_json_snapshot_entries(sf, basename))
+            elif suffix == ".txt":
+                entries.extend(_text_snapshot_entries(sf, basename))
+        except (OSError, json.JSONDecodeError):
+            continue
+    return entries
+
+
+def _json_snapshot_entries(sf: Path, basename: str) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    with sf.open("r", encoding="utf-8") as fh:
+        data = json.load(fh)
+    for e in data.get("entries", []) or []:
+        p = str(e.get("path", ""))
+        if Path(p).name == basename:
+            out.append(
+                {
+                    "snapshot": str(sf),
+                    "captured_at": data.get("captured_at"),
+                    "filename_in_snapshot": p,
+                    "xattrs": e.get("xattrs", {}) or {},
+                    "mtime": e.get("mtime"),
+                    "size": e.get("size"),
+                }
+            )
+    return out
+
+
+def _text_snapshot_entries(sf: Path, basename: str) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    text = sf.read_text(encoding="utf-8", errors="replace")
+    blocks = re.split(r"^={10,}\s*\n", text, flags=re.MULTILINE)
+    for i, block in enumerate(blocks):
+        lines = block.splitlines()
+        if not lines:
+            continue
+        if lines[0].startswith("File: "):
+            filename = lines[0][len("File: "):].strip()
+            if Path(filename).name == basename:
+                body = blocks[i + 1] if i + 1 < len(blocks) else ""
+                body = body.split("\n========================================", 1)[0]
+                out.append(
+                    {
+                        "snapshot": str(sf),
+                        "filename_in_snapshot": filename,
+                        "body": body.rstrip(),
+                    }
+                )
+    return out
+
+
+def section_download(
+    path: Path, snapshot_dir: Path, report: Report
+) -> dict[str, Any]:
+    live = live_xattr(path, report.repo_root)
+    snaps = all_snapshot_entries(snapshot_dir, path.name)
+    if not live["present"] and not snaps:
+        report.warn(
+            "no download provenance (no live xattr on disk, "
+            "no snapshot entry for this basename)"
+        )
+    return {"live": live, "snapshots": snaps}
+
+
+# -----------------------------------------------------------------------------
+# Section 5: Pipeline dispatcher
+# -----------------------------------------------------------------------------
+
+
+def section_pipeline(
+    path: Path, pipeline_config: Path, report: Report
+) -> dict[str, Any]:
+    """Dispatch to a pipeline handler via data/pipeline_dispatch.yaml."""
+    from scripts.provenance_handlers import dispatch
+
+    return dispatch(path, pipeline_config, report)
+
+
+# -----------------------------------------------------------------------------
+# Section 6: Verdict
+# -----------------------------------------------------------------------------
+
+
+def section_verdict(
+    report: Report,
+    identity: dict[str, Any],
+    git: dict[str, Any],
+    manifest: dict[str, Any],
+    download: dict[str, Any],
+) -> str:
+    """One-line human summary combining sections 1–4."""
+    bits: list[str] = []
+    n = git["commit_count"]
+    content_changes = git.get("content_change_count", 0)
+    under_evidence = report.under_evidence
+    if n == 0:
+        bits.append("git: ⚠ untracked")
+    elif under_evidence and content_changes > 0:
+        bits.append(f"git: ⚠ {content_changes} content edit(s)")
+    elif under_evidence and n == 1:
+        bits.append("git: add-only ✓")
+    elif under_evidence and n > 1:
+        bits.append(f"git: {n} commits (renames only) ✓")
     else:
-        fh.write(f"{pad}{_yaml_scalar(data)}\n")
+        bits.append(f"git: {n} commit(s)")
+    if manifest.get("applies"):
+        if manifest.get("matches") is True:
+            bits.append("hash: matches manifest ✓")
+        elif manifest.get("matches") is False:
+            bits.append("hash: ⚠ MISMATCH")
+        else:
+            bits.append("hash: ⚠ not in manifest")
+    live_present = download["live"]["present"]
+    snap_count = len(download["snapshots"])
+    if live_present and snap_count:
+        bits.append(f"xattr: live + {snap_count} snapshot(s) ✓")
+    elif snap_count:
+        bits.append(f"xattr: snapshot-only ({snap_count})")
+    elif live_present:
+        bits.append("xattr: live-only (not yet snapshotted)")
+    else:
+        bits.append("xattr: none")
+    return "; ".join(bits)
 
 
-def _yaml_scalar(v: Any) -> str:
-    if v is None:
-        return "null"
-    if isinstance(v, bool):
-        return "true" if v else "false"
-    if isinstance(v, (int, float)):
-        return str(v)
-    s = str(v)
-    # Quote if it contains YAML-sensitive characters.
-    if any(c in s for c in ":#\n") or s.strip() != s or s == "":
-        return json.dumps(s, ensure_ascii=False)
-    return s
+# -----------------------------------------------------------------------------
+# Build report
+# -----------------------------------------------------------------------------
+
+
+def build_report(
+    path: Path,
+    *,
+    repo_root: Path,
+    evidence_root: Path,
+    manifest_path: Path,
+    snapshot_dir: Path,
+    pipeline_config: Path,
+) -> Report:
+    """Assemble the 6-section report for one file."""
+    rel = path.resolve().relative_to(repo_root).as_posix()
+    report = Report(
+        abs_path=str(path.resolve()),
+        rel_path=rel,
+        repo_root=repo_root.resolve(),
+        evidence_root=evidence_root.resolve(),
+    )
+
+    identity = section_identity(path, report)
+    report.sections["identity"] = identity
+
+    git_info = section_git(path, report)
+    report.sections["git_trail"] = git_info
+
+    manifest_info = section_manifest(path, identity, manifest_path, report)
+    report.sections["hash_manifest"] = manifest_info
+
+    download = section_download(path, snapshot_dir, report)
+    report.sections["download"] = download
+
+    report.sections["pipeline"] = section_pipeline(path, pipeline_config, report)
+
+    report.sections["verdict"] = section_verdict(
+        report, identity, git_info, manifest_info, download
+    )
+    return report
+
+
+# -----------------------------------------------------------------------------
+# Output formatters
+# -----------------------------------------------------------------------------
+
+
+def format_human(report: Report) -> str:
+    """Markdown-ish human-readable report."""
+    lines: list[str] = []
+    ident = report.sections["identity"]
+    lines.append(f"# Provenance: {ident['rel_path']}")
+    lines.append("")
+    lines.append(f"**Verdict:** {report.sections['verdict']}")
+    if report.warnings:
+        lines.append("")
+        lines.append("**Flags:**")
+        for w in report.warnings:
+            lines.append(f"- ⚠ {w}")
+    lines.append("")
+
+    # Identity
+    lines.append("## Identity")
+    lines.append(f"- path: `{ident['rel_path']}`")
+    lines.append(f"- size: {ident['size_bytes']:,} bytes")
+    lines.append(f"- sha256: `{ident['sha256']}`")
+    lines.append(f"- git blob sha1: `{ident['git_blob_sha1'] or '(not tracked)'}`")
+    lines.append(f"- git tracked: {ident['git_tracked']}")
+    lines.append("")
+
+    # Git trail
+    lines.append("## Git trail")
+    git = report.sections["git_trail"]
+    if not git["commits"]:
+        lines.append("- (no commits)")
+    else:
+        for c in git["commits"]:
+            tag = {
+                "initial": "[initial]",
+                "content": "[⚠ content edit]",
+                "rename-or-metadata": "[rename/metadata]",
+            }.get(c.get("change_type", ""), "")
+            path_note = ""
+            if c.get("path_at_commit") and c["path_at_commit"] != report.rel_path:
+                path_note = f"  (as `{c['path_at_commit']}`)"
+            lines.append(
+                f"- {c['short_sha']}  {c['date']}  {tag}  {c['subject']}{path_note}"
+            )
+    lines.append("")
+
+    # Hash manifest
+    lines.append("## Hash manifest")
+    m = report.sections["hash_manifest"]
+    if not m["applies"]:
+        lines.append(
+            "- not applicable (only files under the evidence root are "
+            "covered by the hash manifest)"
+        )
+    else:
+        lines.append(f"- manifest: `{m['manifest_path']}`")
+        lines.append(f"- recorded: `{m['recorded_sha256'] or '(missing)'}`")
+        lines.append(f"- on-disk:  `{ident['sha256']}`")
+        lines.append(f"- matches:  {m['matches']}")
+    lines.append("")
+
+    # Download
+    lines.append("## Download provenance")
+    d = report.sections["download"]
+    live = d["live"]
+    if live["present"]:
+        lines.append("- live xattr on disk:")
+        lines.append(f"  - attributes: {', '.join(live['attribute_names'])}")
+        for url in live["download_urls"]:
+            lines.append(f"  - download URL: {url}")
+        if live["quarantine"]:
+            q = live["quarantine"]
+            lines.append(
+                f"  - quarantine: app={q['app']}, ts={q['timestamp_iso']}, "
+                f"uuid={q['uuid']}"
+            )
+    else:
+        lines.append("- live xattr: none on disk")
+    if d["snapshots"]:
+        lines.append(f"- historical snapshots ({len(d['snapshots'])}):")
+        for entry in d["snapshots"]:
+            snap = entry.get("snapshot", "")
+            lines.append(
+                f"  - from `{snap}` (file: {entry.get('filename_in_snapshot', '?')})"
+            )
+            xattrs = entry.get("xattrs") or {}
+            for name, val in xattrs.items():
+                lines.append(f"      {name}: {val}")
+            body = entry.get("body")
+            if body:
+                for line in body.splitlines():
+                    if line.strip():
+                        lines.append(f"      {line}")
+    else:
+        lines.append("- historical snapshots: none matching this basename")
+    lines.append("")
+
+    # Pipeline
+    lines.append("## Pipeline provenance")
+    p = report.sections["pipeline"]
+    kind = p.get("kind", "none")
+    lines.append(f"- kind: {kind}")
+    # Surface all non-"kind" keys as a simple bullet list.
+    for k, v in p.items():
+        if k == "kind":
+            continue
+        if isinstance(v, (dict, list)):
+            lines.append(f"- {k}:")
+            _render_nested(lines, v, indent=1)
+        else:
+            lines.append(f"- {k}: {v}")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _render_nested(lines: list[str], obj: Any, *, indent: int) -> None:
+    pad = "  " * indent
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            if isinstance(v, (dict, list)) and v:
+                lines.append(f"{pad}- {k}:")
+                _render_nested(lines, v, indent=indent + 1)
+            else:
+                lines.append(f"{pad}- {k}: {v}")
+    elif isinstance(obj, list):
+        for item in obj:
+            if isinstance(item, (dict, list)) and item:
+                lines.append(f"{pad}-")
+                _render_nested(lines, item, indent=indent + 1)
+            else:
+                lines.append(f"{pad}- {item}")
+
+
+def format_yaml(report: Report) -> str:
+    """Hand-rolled YAML emitter so `--forensic` works without PyYAML.
+
+    Regulator/attorney handoffs shouldn't require the recipient to
+    install PyYAML to read the report.
+    """
+    def emit(value: Any, indent: int = 0) -> list[str]:
+        pad = "  " * indent
+        out: list[str] = []
+        if isinstance(value, dict):
+            if not value:
+                out.append(f"{pad}{{}}")
+                return out
+            for k, v in value.items():
+                if isinstance(v, (dict, list)) and v:
+                    out.append(f"{pad}{k}:")
+                    out.extend(emit(v, indent + 1))
+                else:
+                    out.append(f"{pad}{k}: {_scalar(v)}")
+        elif isinstance(value, list):
+            if not value:
+                out.append(f"{pad}[]")
+                return out
+            for item in value:
+                if isinstance(item, (dict, list)) and item:
+                    sublines = emit(item, indent + 1)
+                    if sublines:
+                        first = sublines[0].lstrip()
+                        out.append(f"{pad}- {first}")
+                        out.extend(sublines[1:])
+                else:
+                    out.append(f"{pad}- {_scalar(item)}")
+        else:
+            out.append(f"{pad}{_scalar(value)}")
+        return out
+
+    def _scalar(v: Any) -> str:
+        if v is None:
+            return "null"
+        if isinstance(v, bool):
+            return "true" if v else "false"
+        if isinstance(v, (int, float)):
+            return str(v)
+        s = str(v)
+        if (
+            any(ch in s for ch in (":", "#", "\n", '"', "'"))
+            or s.strip() != s
+            or s == ""
+        ):
+            return json.dumps(s, ensure_ascii=False)
+        return s
+
+    payload = {
+        "rel_path": report.rel_path,
+        "abs_path": report.abs_path,
+        "warnings": report.warnings,
+        "sections": report.sections,
+    }
+    return "\n".join(emit(payload)) + "\n"
+
+
+# -----------------------------------------------------------------------------
+# Config resolution
+# -----------------------------------------------------------------------------
+
+
+def _resolve_paths(
+    cfg: Config, args: argparse.Namespace
+) -> tuple[Path, Path, Path, Path]:
+    """Resolve (repo_root, evidence_root, manifest_path, snapshot_dir)."""
+    repo_root = cfg.repo_root
+    evidence_root = (
+        args.evidence_root.resolve() if args.evidence_root else cfg.evidence_root
+    )
+    manifest_path = (
+        args.hash_manifest.resolve() if args.hash_manifest else cfg.manifest_path
+    )
+    snapshot_dir = (
+        args.snapshot_dir.resolve() if args.snapshot_dir else cfg.snapshot_dir
+    )
+
+    # Auto-fallback for examples where the config's evidence_root doesn't
+    # match the target file's location: look for a sibling `evidence/`
+    # directory next to the manifest.
+    if not evidence_root.exists() and manifest_path.exists():
+        sibling = manifest_path.parent / "evidence"
+        if sibling.exists():
+            evidence_root = sibling.resolve()
+
+    return repo_root, evidence_root, manifest_path, snapshot_dir
+
+
+# -----------------------------------------------------------------------------
+# Main
+# -----------------------------------------------------------------------------
+
+
+DEFAULT_PIPELINE_CONFIG = Path("data/pipeline_dispatch.yaml")
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--manifest", type=Path, help="SHA-256 manifest path.")
+    ap = argparse.ArgumentParser(
+        description="Per-file forensic provenance inspection.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    ap.add_argument("path", type=Path, help="Path to a file in the repo.")
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument(
+        "--forensic", action="store_true", help="YAML output for external handoff."
+    )
+    mode.add_argument(
+        "--verify",
+        action="store_true",
+        help="Silent unless warnings; exit 1 on any ⚠.",
+    )
+    ap.add_argument(
+        "--hash-manifest", type=Path, help="Hash manifest path (default from config)."
+    )
+    ap.add_argument(
+        "--snapshot-dir",
+        type=Path,
+        help="Historical snapshot directory (default from config).",
+    )
     ap.add_argument(
         "--evidence-root",
         type=Path,
-        help="Evidence root (overrides config). Defaults to the manifest's "
-        "sibling `evidence/` directory when it exists, else config.",
+        help="Evidence root (default from config; auto-falls back to "
+        "manifest's sibling `evidence/` dir).",
     )
-    ap.add_argument("--snapshot-dir", type=Path, help="Snapshot directory.")
-    ap.add_argument("--out", type=Path, help="Report output path (default from config).")
-    ap.add_argument("--config", type=Path, help="Path to advocacy.toml.")
+    ap.add_argument(
+        "--pipeline-config",
+        type=Path,
+        default=None,
+        help="Pipeline dispatch YAML (default: data/pipeline_dispatch.yaml).",
+    )
     ap.add_argument("--repo-root", type=Path, help="Repo root.")
-    ap.add_argument("--stdout", action="store_true", help="Also print the report to stdout.")
-    ap.add_argument(
-        "--verify",
-        action="store_true",
-        help="Recompute SHA-256 for every manifest entry; exit non-zero on mismatch.",
-    )
-    ap.add_argument(
-        "--forensic",
-        action="store_true",
-        help="Emit a full YAML report with expanded xattrs and verdicts.",
-    )
+    ap.add_argument("--config", type=Path, help="Path to advocacy.toml.")
     args = ap.parse_args(argv)
 
+    p = Path(args.path).resolve()
+    if not p.exists():
+        print(f"error: {p} does not exist", file=sys.stderr)
+        return 2
+    if not p.is_file():
+        print(f"error: {p} is not a regular file", file=sys.stderr)
+        return 2
+
     cfg = load_config(repo_root=args.repo_root, config_path=args.config)
-    if args.manifest is not None:
-        cfg.manifest_path = args.manifest.resolve()
-    if args.snapshot_dir is not None:
-        cfg.snapshot_dir = args.snapshot_dir.resolve()
-    if args.evidence_root is not None:
-        cfg.evidence_root = args.evidence_root.resolve()
-    elif args.manifest is not None and not cfg.evidence_root.exists():
-        # Fall back to the manifest's sibling `evidence/` directory if the
-        # configured root doesn't exist on disk. Lets `--manifest
-        # path/to/.evidence-manifest.sha256` work against an example tree
-        # without requiring a separate advocacy.toml.
-        sibling = cfg.manifest_path.parent / "evidence"
-        if sibling.exists():
-            cfg.evidence_root = sibling.resolve()
+    try:
+        p.relative_to(cfg.repo_root)
+    except ValueError:
+        print(
+            f"error: {p} is outside the repo ({cfg.repo_root})", file=sys.stderr
+        )
+        return 2
+
+    repo_root, evidence_root, manifest_path, snapshot_dir = _resolve_paths(cfg, args)
+    pipeline_config = (
+        args.pipeline_config.resolve()
+        if args.pipeline_config
+        else (repo_root / DEFAULT_PIPELINE_CONFIG).resolve()
+    )
+
+    report = build_report(
+        p,
+        repo_root=repo_root,
+        evidence_root=evidence_root,
+        manifest_path=manifest_path,
+        snapshot_dir=snapshot_dir,
+        pipeline_config=pipeline_config,
+    )
 
     if args.verify:
-        return verify(cfg)
-
-    report = build_report(cfg, forensic=args.forensic)
-    out = (args.out or cfg.report_path).resolve()
-    out.parent.mkdir(parents=True, exist_ok=True)
-    with open(out, "w", encoding="utf-8") as fh:
-        if args.forensic:
-            _dump_yaml(report, fh)
-        else:
-            json.dump(report, fh, indent=2, sort_keys=True)
-            fh.write("\n")
-    fmt = "YAML" if args.forensic else "JSON"
-    print(f"wrote provenance report ({fmt}, {report['count']} files) to {out}")
-    if args.stdout:
-        if args.forensic:
-            _dump_yaml(report, sys.stdout)
-        else:
-            print(json.dumps(report, indent=2, sort_keys=True))
+        if report.warnings:
+            for w in report.warnings:
+                print(f"⚠ {w}", file=sys.stderr)
+            return 1
+        return 0
+    if args.forensic:
+        sys.stdout.write(format_yaml(report))
+    else:
+        sys.stdout.write(format_human(report))
     return 0
 
 

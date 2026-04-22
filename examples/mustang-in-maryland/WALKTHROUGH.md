@@ -200,29 +200,54 @@ sources, so reportlab + pypdf should suffice.)
 
 ---
 
-## 6. Generate a unified provenance report
+## 6. Generate provenance reports
+
+### 6a. Per-file deep dive
+
+When you want every forensic fact about one specific file, run the
+per-file tool:
 
 ```sh
 python -m scripts.provenance \
-  --manifest examples/mustang-in-maryland/.evidence-manifest.sha256 \
+  examples/mustang-in-maryland/evidence/emails/raw/020_2025-08-15_midlife-crisis-opinion-letter.eml \
+  --evidence-root examples/mustang-in-maryland/evidence \
+  --hash-manifest examples/mustang-in-maryland/.evidence-manifest.sha256 \
   --snapshot-dir examples/mustang-in-maryland/provenance/snapshots \
-  --out examples/mustang-in-maryland/provenance/report.json \
   --repo-root .
 ```
 
-Expected output: `wrote provenance report (N files) to
-.../provenance/report.json`.
+Expected output: six markdown sections (Identity, Git trail, Hash
+manifest, Download provenance, Pipeline provenance) plus a one-line
+**Verdict** summarizing the forensic status. For the example above,
+the Pipeline section routes to `email-three-layer` and surfaces the
+Message-ID plus from/to/subject headers from the sibling JSON.
 
-The report joins:
+Add `--forensic` for a structured YAML version suitable for a
+regulator or attorney handoff. The YAML emitter is stdlib-only — the
+recipient doesn't need PyYAML installed to parse it.
 
-- SHA-256 from the manifest.
-- size / mtime / xattrs from the most recent snapshot.
-- git `first` and `last_touched` commit for each file (if the
-  workspace is a git repo).
-- pipeline metadata sidecars (`<file>.meta.json`) where present.
+### 6b. Whole-packet attestation bundle
 
-This is the document handed to an attorney or regulator alongside
-the packet. See
+When preparing a regulator/attorney handoff, produce one attestation
+document over the full manifest:
+
+```sh
+python -m scripts.provenance_bundle \
+  --manifest examples/mustang-in-maryland/.evidence-manifest.sha256 \
+  --evidence-root examples/mustang-in-maryland/evidence \
+  --snapshot-dir examples/mustang-in-maryland/provenance/snapshots \
+  --out examples/mustang-in-maryland/provenance/report.yaml \
+  --repo-root .
+```
+
+Expected output: `wrote provenance bundle (72 files) to
+.../report.yaml [pass=69, warn=3, fail=0]`. The warn rows are worth
+inspecting (usually `no-download-provenance` for files that originated
+in-tree and never had an xattr); the bundle YAML lists each one with
+its full per-file sections inline.
+
+The bundle aggregates the per-file tool's output; `pass`/`warn`/`fail`
+counts come from the per-file warnings list. See
 [`docs/concepts/chain-of-custody.md`](../../docs/concepts/chain-of-custody.md)
 for what a reviewer looks for.
 
@@ -353,7 +378,7 @@ corpus for the test suite; a green run confirms end-to-end integrity.
 |  3   | `ingest.email_*`                | three-layer email corpus                                    |
 |  4   | `intake.*`                      | classification + authorities + deadlines                    |
 |  5   | `packet.build`                  | merged packet PDF + exhibit PDFs + appendix PDF             |
-|  6   | `provenance`                    | unified provenance report (JSON)                            |
+|  6   | `provenance` + `provenance_bundle` | per-file forensic report + whole-packet attestation YAML |
 |  7   | `letters.draft`                 | .docx letters per kind                                      |
 |  8   | `manifest.evidence_manifest` + `status.case_dashboard` | unified evidence-manifest + Markdown dashboard |
 |  9   | `publish.pii_scrub --dry-run`   | sidecar JSON report (no file changes)                       |

@@ -77,13 +77,19 @@ def test_compile_reference_markdown_emits_banner_and_sources(tmp_path: Path):
 
     assert out.is_file()
     text = out.read_text(encoding="utf-8")
-    assert "SYNTHETIC" in text and "COMPILED REFERENCE" in text
+    # Top disclaimer + per-section callouts.
+    assert text.count("COMPILED REFERENCE") >= 3  # top + callouts + bottom
+    # Top and bottom disclaimers both present.
+    assert text.startswith("# ⚠️ COMPILED REFERENCE")
+    assert "## ⚠️ COMPILED REFERENCE — NOT AN ORIGINAL DOCUMENT ⚠️" in text
     assert "Fictional Counterparty Reference" in text
     assert "First fictional policy document." in text
     assert "Second fictional policy document." in text
     # Section headers for each source.
     assert "Source 1:" in text
     assert "Source 2:" in text
+    # SHA-256 listing in the disclaimers.
+    assert "SHA-256:" in text
 
 
 def test_compile_reference_markdown_requires_sources(tmp_path: Path):
@@ -94,3 +100,71 @@ def test_compile_reference_markdown_requires_sources(tmp_path: Path):
             sources=[],
             output=tmp_path / "x.md",
         )
+
+
+def test_markdown_fidelity_report_flags_thin_sources(tmp_path: Path, capsys):
+    """The fidelity report prints chars/page for each source and flags any
+    below the floor (silent-extraction-failure guardrail)."""
+    src = tmp_path / "tiny.md"
+    src.write_text("x\n", encoding="utf-8")  # well under 200 chars/page
+    out = tmp_path / "ref.md"
+
+    compile_reference_markdown(
+        title="Test",
+        counterparty="Test Co.",
+        sources=[src],
+        output=out,
+    )
+    err = capsys.readouterr().err
+    assert "chars/page" in err
+    assert "WARN" in err
+    assert "likely failed text extraction" in err
+
+
+def test_compile_reference_pdf_is_byte_deterministic(tmp_path: Path):
+    """Two runs of compile_reference (PDF) produce byte-identical output
+    given identical inputs. Relies on pikepdf's deterministic /ID + pinned
+    creationDate/modDate."""
+    src = tmp_path / "policy.md"
+    src.write_text("# Policy\n\nGoverning document text.\n", encoding="utf-8")
+
+    out1 = tmp_path / "ref-1.pdf"
+    out2 = tmp_path / "ref-2.pdf"
+    compile_reference(
+        title="Det-Test",
+        counterparty="Test Co.",
+        sources=[src],
+        output=out1,
+    )
+    compile_reference(
+        title="Det-Test",
+        counterparty="Test Co.",
+        sources=[src],
+        output=out2,
+    )
+    assert out1.read_bytes() == out2.read_bytes(), (
+        "compile_reference PDFs should be byte-identical across runs with "
+        "identical inputs; pikepdf determinism is broken."
+    )
+
+
+def test_compile_reference_markdown_is_deterministic(tmp_path: Path):
+    """Same deterministic guarantee for the markdown path."""
+    src = tmp_path / "policy.md"
+    src.write_text("content\n", encoding="utf-8")
+
+    out1 = tmp_path / "ref-1.md"
+    out2 = tmp_path / "ref-2.md"
+    compile_reference_markdown(
+        title="Det-Test",
+        counterparty="Test Co.",
+        sources=[src],
+        output=out1,
+    )
+    compile_reference_markdown(
+        title="Det-Test",
+        counterparty="Test Co.",
+        sources=[src],
+        output=out2,
+    )
+    assert out1.read_bytes() == out2.read_bytes()

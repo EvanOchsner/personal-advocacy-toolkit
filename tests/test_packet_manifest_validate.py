@@ -171,3 +171,57 @@ def test_hash_match_clean(tmp_path: Path):
     assert schema_errors == []
     assert integrity_errors == [], integrity_errors
     assert code == 0
+
+
+def test_hash_root_inferred_when_manifest_sibling_of_evidence(tmp_path: Path):
+    """Hash manifest at `case/.evidence-manifest.sha256` with keys relative
+    to `case/evidence/` — the default `hash_root` should be the manifest's
+    parent, but the validator is expected to fall back to
+    `parent/evidence` when the keys don't resolve at parent.
+    """
+    m = _write_minimal_tree(tmp_path, _GOOD_EXHIBITS)
+    ev = tmp_path / "evidence"
+    # Manifest lives alongside `evidence/`, not inside it.
+    hash_manifest = tmp_path / ".evidence-manifest.sha256"
+    lines = [f"{_sha256(ev / n)}  {n}" for n in ("a.txt", "b.txt", "c.txt")]
+    hash_manifest.write_text("\n".join(lines) + "\n")
+
+    code, _, integrity_errors = validate(m, hash_manifest)
+    assert integrity_errors == [], integrity_errors
+    assert code == 0
+
+
+def test_source_outside_hash_root_is_silently_skipped(tmp_path: Path):
+    """Exhibits pointing at non-evidence paths (e.g. drafts/) must not
+    be flagged as missing from the hash manifest."""
+    exhibits = _GOOD_EXHIBITS + """
+    - label: "D"
+      title: "Outside draft"
+      description: "not under hash root"
+      source: "drafts/note.md"
+"""
+    m = _write_minimal_tree(tmp_path, exhibits)
+    # _write_minimal_tree creates drafts/; just drop the file in.
+    (tmp_path / "drafts" / "note.md").write_text("synthetic note")
+    ev = tmp_path / "evidence"
+    lines = [f"{_sha256(ev / n)}  {n}" for n in ("a.txt", "b.txt", "c.txt")]
+    hash_manifest = ev / "manifest.sha256"
+    hash_manifest.write_text("\n".join(lines) + "\n")
+
+    code, _, integrity_errors = validate(m, hash_manifest)
+    # drafts/note.md is outside the evidence/ hash root — must not error.
+    assert integrity_errors == [], integrity_errors
+    assert code == 0
+
+
+def test_source_under_hash_root_but_missing_flagged_as_stale(tmp_path: Path):
+    """If a source lives under hash_root but isn't in the manifest,
+    that's a stale-manifest integrity error (not silently skipped)."""
+    m = _write_minimal_tree(tmp_path, _GOOD_EXHIBITS)
+    ev = tmp_path / "evidence"
+    # Hash manifest only has a.txt — b.txt and c.txt are missing.
+    hash_manifest = ev / "manifest.sha256"
+    hash_manifest.write_text(f"{_sha256(ev / 'a.txt')}  a.txt\n")
+    code, _, integrity_errors = validate(m, hash_manifest)
+    assert code == 2
+    assert any("b.txt" in e and "stale" in e for e in integrity_errors)

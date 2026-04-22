@@ -128,16 +128,39 @@ def check_exhibit_sources_exist(manifest: PacketManifest) -> list[str]:
     return errors
 
 
+def _infer_hash_root(hash_manifest_path: Path, expected: dict[str, str]) -> Path:
+    """Pick a root against which the hash manifest's keys resolve to files.
+
+    `scripts.evidence_hash` writes keys relative to its ``--root`` flag,
+    which is frequently a subdirectory (e.g. ``evidence/``) rather than
+    the manifest's own directory. Try the manifest's parent first, then
+    ``parent / "evidence"``, and fall back to parent.
+    """
+    parent = hash_manifest_path.parent.resolve()
+    if not expected:
+        return parent
+    sample_key = next(iter(expected))
+    for candidate in (parent, parent / "evidence"):
+        if (candidate / sample_key).exists():
+            return candidate.resolve()
+    return parent
+
+
 def check_hashes(
-    manifest: PacketManifest, hash_manifest_path: Path
+    manifest: PacketManifest,
+    hash_manifest_path: Path,
+    hash_root: Path | None = None,
 ) -> list[str]:
+    """Verify exhibit source hashes against a shasum-style manifest.
+
+    Sources that live outside ``hash_root`` are silently skipped — the
+    hash manifest legitimately covers only the evidence tree, while a
+    packet may reference drafts or other non-evidence sources.
+    """
     if not hash_manifest_path.exists():
         return [f"hash manifest not found: {hash_manifest_path}"]
     expected = _read_hash_manifest(hash_manifest_path)
-    # Paths in the hash manifest are relative to its directory (shasum
-    # style). Callers typically run `shasum -a 256` from the evidence
-    # root, so resolve relative to that.
-    hash_root = hash_manifest_path.parent.resolve()
+    root = (hash_root or _infer_hash_root(hash_manifest_path, expected)).resolve()
 
     errors: list[str] = []
     for ex in manifest.exhibits:
@@ -145,17 +168,15 @@ def check_hashes(
             if not src.exists():
                 continue  # already reported by the existence check
             try:
-                rel = src.resolve().relative_to(hash_root).as_posix()
+                rel = src.resolve().relative_to(root).as_posix()
             except ValueError:
-                errors.append(
-                    f"exhibit {ex.label}: source {src} is not under hash "
-                    f"manifest root {hash_root} — cannot verify hash"
-                )
+                # Source is outside the hash manifest's scope — skip.
                 continue
             want = expected.get(rel)
             if want is None:
                 errors.append(
-                    f"exhibit {ex.label}: no hash for {rel} in {hash_manifest_path.name}"
+                    f"exhibit {ex.label}: {rel} is under the hash-manifest root "
+                    f"but missing from {hash_manifest_path.name} (manifest is stale)"
                 )
                 continue
             got = _sha256_file(src)
@@ -168,7 +189,9 @@ def check_hashes(
 
 
 def validate(
-    manifest_path: Path, hash_manifest: Path | None = None
+    manifest_path: Path,
+    hash_manifest: Path | None = None,
+    hash_root: Path | None = None,
 ) -> tuple[int, list[str], list[str]]:
     """Return (exit_code, schema_errors, integrity_errors)."""
     try:
@@ -180,7 +203,7 @@ def validate(
     integrity.extend(check_exhibit_ordering(manifest))
     integrity.extend(check_exhibit_sources_exist(manifest))
     if hash_manifest is not None:
-        integrity.extend(check_hashes(manifest, hash_manifest))
+        integrity.extend(check_hashes(manifest, hash_manifest, hash_root))
 
     if integrity:
         return INTEGRITY_EXIT, [], integrity
@@ -218,10 +241,20 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Optional shasum-style manifest for integrity checks.",
     )
+    p.add_argument(
+        "--hash-root",
+        type=Path,
+        default=None,
+        help=(
+            "Directory the hash manifest's paths are relative to. Defaults "
+            "to the hash manifest's directory, falling back to "
+            "<hash-manifest dir>/evidence."
+        ),
+    )
     args = p.parse_args(argv)
 
     code, schema_errors, integrity_errors = validate(
-        args.manifest, args.hash_manifest
+        args.manifest, args.hash_manifest, args.hash_root
     )
     _print_report(args.manifest, code, schema_errors, integrity_errors)
     return code

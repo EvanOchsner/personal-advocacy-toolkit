@@ -8,23 +8,29 @@ Airgap posture (see scripts/app/__init__.py for full docstring):
     - The markdown renderer used for entity notes does NOT emit
       anchor tags for external URL schemes.
 
-Routes (PR 2 scope — timeline + file-serving land in PR 3):
+Routes:
     GET /                    -> rendered index.html
     GET /static/<path>       -> read-only static asset
     GET /api/graph           -> {entities, relationships}
     GET /api/entity/<id>     -> entity drilldown JSON
+    GET /api/timeline        -> aggregated timeline markers (events +
+                                correspondence + deadlines) as JSON
+    GET /file/<rel-path>     -> read-only case file, extension-allowlisted
 """
 from __future__ import annotations
 
 import json
 import mimetypes
 import re
+import urllib.parse
 from dataclasses import dataclass
+from datetime import date as date_cls
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
-from scripts.intake._common import DISCLAIMER
+from scripts.intake._common import DISCLAIMER, data_dir, load_yaml
 
+from scripts.app._aggregate import build_timeline
 from scripts.app._loaders import LoadedCaseMap, load_case_map
 from scripts.app._markdown import render as render_markdown
 
@@ -49,6 +55,29 @@ _STATIC_DIR = _PACKAGE_ROOT / "static"
 
 _STATIC_EXT_ALLOWLIST = frozenset({".css", ".js", ".svg", ".png", ".ico", ".woff2"})
 
+# Force sensible text MIME types for extensions Python's mimetypes
+# module doesn't know about reliably across platforms, so the browser
+# displays them inline instead of offering a download.
+_MIME_OVERRIDES = {
+    ".yaml": "text/yaml; charset=utf-8",
+    ".yml": "text/yaml; charset=utf-8",
+    ".md": "text/markdown; charset=utf-8",
+    ".eml": "message/rfc822",
+    ".txt": "text/plain; charset=utf-8",
+}
+
+# Case-file serving allowlist. Users should be able to open primary
+# source materials; anything outside this set (scripts, binaries,
+# dotfiles) is refused.
+_FILE_EXT_ALLOWLIST = frozenset(
+    {
+        ".pdf", ".txt", ".md", ".yaml", ".yml",
+        ".eml", ".json", ".html", ".csv",
+        ".png", ".jpg", ".jpeg", ".gif", ".svg",
+        ".docx",
+    }
+)
+
 _ENTITY_API_RE = re.compile(r"^/api/entity/([A-Za-z0-9][A-Za-z0-9_-]*)$")
 
 
@@ -59,26 +88,49 @@ class Response:
     body: bytes
 
 
-def make_app(case_dir: Path) -> Callable[[dict, Callable], Iterable[bytes]]:
+def make_app(
+    case_dir: Path,
+    *,
+    correspondence_manifest: Path | None = None,
+) -> Callable[[dict, Callable], Iterable[bytes]]:
     """Return a WSGI callable bound to the given case directory.
 
     The case is loaded once at app-construction time. Users who edit
     entities.yaml / events.yaml must restart the server. This keeps the
     app stateless and avoids partial-reload races.
+
+    If `correspondence_manifest` is given, its entries contribute to
+    the /api/timeline aggregation. Deadlines are auto-computed from
+    case-facts.yaml when it carries situation_type + jurisdiction.state
+    + loss.date.
     """
     loaded = load_case_map(case_dir)
+
+    corresp: dict[str, Any] | None = None
+    if correspondence_manifest is not None:
+        corresp_path = Path(correspondence_manifest).resolve()
+        if corresp_path.is_file():
+            corresp = load_yaml(corresp_path)
+
+    deadlines = _compute_case_deadlines(loaded)
+
+    markers = build_timeline(
+        loaded,
+        correspondence_manifest=corresp,
+        deadlines=deadlines,
+    )
 
     def app(environ: dict, start_response: Callable) -> Iterable[bytes]:
         method = environ.get("REQUEST_METHOD", "GET")
         path = environ.get("PATH_INFO", "/") or "/"
-        resp = _route(method, path, loaded)
+        resp = _route(method, path, loaded, markers)
         start_response(resp.status, _with_defaults(resp.headers))
         return [resp.body]
 
     return app
 
 
-def _route(method: str, path: str, loaded: LoadedCaseMap) -> Response:
+def _route(method: str, path: str, loaded: LoadedCaseMap, markers) -> Response:
     if method not in ("GET", "HEAD"):
         return _text_response("405 Method Not Allowed", "method not allowed")
 
@@ -90,6 +142,12 @@ def _route(method: str, path: str, loaded: LoadedCaseMap) -> Response:
 
     if path == "/api/graph":
         return _json_response(_graph_payload(loaded))
+
+    if path == "/api/timeline":
+        return _json_response(_timeline_payload(markers))
+
+    if path.startswith("/file/"):
+        return _serve_case_file(loaded, path[len("/file/") :])
 
     m = _ENTITY_API_RE.match(path)
     if m:
@@ -125,6 +183,70 @@ def _render_index(loaded: LoadedCaseMap) -> Response:
         headers=[("Content-Type", "text/html; charset=utf-8")],
         body=html.encode("utf-8"),
     )
+
+
+def _timeline_payload(markers) -> dict[str, Any]:
+    return {
+        "markers": [m.to_dict() for m in markers],
+        "disclaimer": DISCLAIMER,
+    }
+
+
+def _serve_case_file(loaded: LoadedCaseMap, rel: str) -> Response:
+    # URL-decode (tests exercise both decoded and raw paths).
+    rel = urllib.parse.unquote(rel)
+    if not rel or rel.startswith("/") or ".." in rel.split("/"):
+        return _text_response("404 Not Found", "not found")
+    target = (loaded.case_dir / rel).resolve()
+    try:
+        target.relative_to(loaded.case_dir)
+    except ValueError:
+        return _text_response("404 Not Found", "not found")
+    if not target.is_file():
+        return _text_response("404 Not Found", "not found")
+    ext = target.suffix.lower()
+    if ext not in _FILE_EXT_ALLOWLIST:
+        return _text_response("403 Forbidden", f"extension not allowed: {ext}")
+    mime = _MIME_OVERRIDES.get(ext)
+    if mime is None:
+        guessed, _ = mimetypes.guess_type(str(target))
+        mime = guessed or "application/octet-stream"
+    return Response(
+        status="200 OK",
+        headers=[
+            ("Content-Type", mime),
+            # `inline` so the browser renders the file in-tab; PDFs,
+            # text, images, and HTML all behave sensibly here.
+            ("Content-Disposition", f'inline; filename="{target.name}"'),
+        ],
+        body=target.read_bytes(),
+    )
+
+
+def _compute_case_deadlines(loaded: LoadedCaseMap) -> dict[str, Any] | None:
+    cf = loaded.case_facts or {}
+    situation = cf.get("situation_type")
+    jurisdiction = (cf.get("jurisdiction") or {}).get("state")
+    loss_date_str = ((cf.get("loss") or {}).get("date")) or ""
+    if not (situation and jurisdiction and loss_date_str):
+        return None
+    try:
+        loss_date = date_cls.fromisoformat(str(loss_date_str))
+    except (ValueError, TypeError):
+        return None
+    # deadline_calc is best-effort: if the deadlines table is missing
+    # or the (situation, jurisdiction) pair is unknown, skip without
+    # breaking the timeline.
+    try:
+        from scripts.intake import deadline_calc as dc
+        # data_dir() walks up from cwd; anchor explicitly from this file
+        # so it also works when the case dir lives outside the repo.
+        repo_data_dir = data_dir(Path(__file__).parent)
+        data = load_yaml(repo_data_dir / "deadlines.yaml")
+        inputs = dc.ClockInputs(loss_date=loss_date)
+        return dc.compute_deadlines(data, situation, str(jurisdiction), inputs)
+    except Exception:
+        return None
 
 
 def _serve_static(rel: str) -> Response:

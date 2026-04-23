@@ -142,6 +142,116 @@
     panel.appendChild(footer);
   }
 
+  function renderRefs(container, refs) {
+    if (!refs) return;
+    const groups = [
+      ["correspondence", refs.correspondence],
+      ["letters", refs.letters],
+      ["evidence", refs.evidence],
+    ];
+    for (const [label, list] of groups) {
+      if (!list || !list.length) continue;
+      const sec = el("section", { class: "panel-section" });
+      sec.appendChild(el("h3", { text: label }));
+      const ul = el("ul", { class: "panel-refs-list" });
+      for (const p of list) {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = "/file/" + encodeURI(p);
+        a.textContent = p;
+        a.target = "_blank";
+        a.rel = "noopener";
+        li.appendChild(a);
+        ul.appendChild(li);
+      }
+      sec.appendChild(ul);
+      container.appendChild(sec);
+    }
+  }
+
+  function renderTimelineMarker(marker) {
+    const panel = document.getElementById("panel");
+    if (!panel) return;
+    panel.innerHTML = "";
+
+    const header = el("header", { class: "panel-header" });
+    header.appendChild(el("h2", { text: marker.title || "(untitled)" }));
+    header.appendChild(
+      el("span", {
+        class: "panel-role-chip",
+        text: marker.kind || "event",
+      })
+    );
+    panel.appendChild(header);
+
+    const meta = el("p", { class: "panel-empty-note" });
+    meta.textContent = `${marker.date} · source: ${marker.source}`;
+    panel.appendChild(meta);
+
+    if (marker.summary) {
+      const s = el("p", { text: marker.summary });
+      panel.appendChild(s);
+    }
+
+    if (marker.entity_ids && marker.entity_ids.length) {
+      const sec = el("section", { class: "panel-section" });
+      sec.appendChild(el("h3", { text: "Entities" }));
+      const ul = el("ul", { class: "panel-event-list" });
+      for (const id of marker.entity_ids) {
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.textContent = id;
+        btn.className = "entity-link";
+        btn.addEventListener("click", () => {
+          if (window.CaseMap && window.CaseMap.selectEntity) {
+            window.CaseMap.selectEntity(id);
+          }
+        });
+        li.appendChild(btn);
+        ul.appendChild(li);
+      }
+      sec.appendChild(ul);
+      panel.appendChild(sec);
+    }
+
+    if (marker.ref && marker.ref.refs) {
+      renderRefs(panel, marker.ref.refs);
+    }
+
+    // Correspondence marker exposes its source file directly.
+    if (marker.source === "correspondence" && marker.ref && marker.ref.source_path) {
+      const sec = el("section", { class: "panel-section" });
+      sec.appendChild(el("h3", { text: "Source" }));
+      const ul = el("ul", { class: "panel-refs-list" });
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = "/file/" + encodeURI(marker.ref.source_path);
+      a.textContent = marker.ref.source_path;
+      a.target = "_blank";
+      a.rel = "noopener";
+      li.appendChild(a);
+      ul.appendChild(li);
+      sec.appendChild(ul);
+      panel.appendChild(sec);
+    }
+
+    // Deadline marker: render the "verify with counsel" + authority ref.
+    if (marker.source === "deadlines" && marker.ref) {
+      const dl = el("dl", { class: "panel-resolved" });
+      for (const k of ["deadline_kind", "clock_starts", "clock_date", "status", "authority_ref", "verify"]) {
+        const v = marker.ref[k];
+        if (!v) continue;
+        dl.appendChild(el("dt", { text: k }));
+        dl.appendChild(el("dd", { text: String(v) }));
+      }
+      const sec = el("section", { class: "panel-section" });
+      sec.appendChild(el("h3", { text: "Deadline details" }));
+      sec.appendChild(dl);
+      panel.appendChild(sec);
+    }
+  }
+
   window.CaseMap = window.CaseMap || {};
-  window.CaseMap.panel = { render: render };
+  window.CaseMap.panel = { render: render, renderTimelineMarker: renderTimelineMarker };
 })();

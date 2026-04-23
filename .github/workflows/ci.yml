@@ -69,6 +69,7 @@ jobs:
           uv run python -m scripts.letters.draft --help
           uv run python -m scripts.status.case_dashboard --help
           uv run python -m scripts.publish.pii_scrub --help
+          uv run python -m scripts.app --help
           uv run python -m scripts.app.validate --help
 
       - name: Case-map schema validator (examples/mustang-in-maryland)

@@ -105,6 +105,61 @@ def test_entity_api_bad_path_shape_returns_404(app) -> None:
     assert status.startswith("404")
 
 
+def test_timeline_api(app) -> None:
+    status, headers, body = _call(app, "/api/timeline")
+    assert status.startswith("200")
+    assert headers["content-type"].startswith("application/json")
+    payload = json.loads(body)
+    assert "markers" in payload
+    assert len(payload["markers"]) >= 15  # at least the events.yaml set
+    for m in payload["markers"]:
+        assert m["date"]
+        assert m["kind"] in {"event", "correspondence", "deadline"}
+
+
+def test_timeline_is_sorted(app) -> None:
+    _, _, body = _call(app, "/api/timeline")
+    markers = json.loads(body)["markers"]
+    dates = [m["date"] for m in markers]
+    assert dates == sorted(dates)
+
+
+def test_case_file_serves_text(app) -> None:
+    status, headers, body = _call(app, "/file/case-facts.yaml")
+    assert status.startswith("200")
+    assert headers["content-type"].startswith("text/") or "yaml" in headers["content-type"]
+    assert headers["content-disposition"].startswith("inline")
+    assert b"Delia Vance" in body
+
+
+def test_case_file_path_traversal_blocked(app) -> None:
+    status, _, _ = _call(app, "/file/../../../etc/passwd")
+    assert status.startswith("404")
+
+
+def test_case_file_absolute_path_blocked(app) -> None:
+    status, _, _ = _call(app, "/file//etc/passwd")
+    assert status.startswith("404")
+
+
+def test_case_file_extension_not_allowlisted(app, tmp_path: Path) -> None:
+    # Drop a .sh file into the case dir and confirm the server refuses.
+    case_dir = CASE_DIR
+    sentinel = case_dir / "_serve_test.sh"
+    sentinel.write_text("echo hi\n", encoding="utf-8")
+    try:
+        status, _, body = _call(app, "/file/_serve_test.sh")
+        assert status.startswith("403")
+        assert b"extension not allowed" in body
+    finally:
+        sentinel.unlink()
+
+
+def test_case_file_missing_is_404(app) -> None:
+    status, _, _ = _call(app, "/file/does/not/exist.pdf")
+    assert status.startswith("404")
+
+
 def test_unknown_route_is_404(app) -> None:
     status, _, _ = _call(app, "/nope")
     assert status.startswith("404")

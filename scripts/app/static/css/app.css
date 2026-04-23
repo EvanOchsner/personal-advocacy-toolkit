@@ -248,6 +248,109 @@ body {
   margin-bottom: 4px;
 }
 
+.timeline-panel {
+  border-top: 1px solid var(--border);
+  background: var(--panel-bg);
+  padding: 12px 24px 8px;
+}
+
+.timeline-legend {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 2px;
+}
+
+.legend-event { background: #27a; }
+.legend-correspondence { background: #2a7; border-radius: 2px; }
+.legend-deadline {
+  background: #a22;
+  border-radius: 2px;
+  transform: rotate(45deg);
+}
+
+.legend-sep { color: var(--border); }
+.legend-note { font-style: italic; }
+
+#timeline {
+  min-height: 180px;
+}
+
+#timeline svg {
+  width: 100%;
+  height: 180px;
+  display: block;
+}
+
+.timeline-empty {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 16px 0;
+}
+
+.timeline-lane {
+  stroke: var(--border);
+  stroke-width: 0.75;
+  stroke-dasharray: 2 3;
+}
+
+.timeline-lane-label {
+  font-size: 10px;
+  fill: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.timeline-tick {
+  stroke: var(--border);
+  stroke-width: 0.5;
+}
+
+.timeline-tick-label {
+  font-size: 10px;
+  fill: var(--muted);
+  text-anchor: middle;
+}
+
+.timeline-marker {
+  cursor: pointer;
+  stroke: #222;
+  stroke-width: 0.8;
+  transition: stroke-width 120ms;
+}
+
+.timeline-marker:hover {
+  stroke: var(--focus);
+  stroke-width: 2;
+}
+
+.panel-refs-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 12px;
+}
+
+.panel-refs-list a {
+  color: var(--accent);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.panel-refs-list a:hover {
+  text-decoration: underline;
+}
+
 .app-footer {
   border-top: 1px solid var(--border);
   padding: 8px 24px;

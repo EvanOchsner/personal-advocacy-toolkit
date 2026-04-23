@@ -38,10 +38,20 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Do not auto-open the browser after bind.",
     )
+    p.add_argument(
+        "--correspondence-manifest",
+        type=Path,
+        default=None,
+        help="Optional correspondence-manifest.yaml (from "
+        "scripts.manifest.correspondence_manifest) to include on the timeline.",
+    )
     args = p.parse_args(argv)
 
     try:
-        app = make_app(args.case_dir)
+        app = make_app(
+            args.case_dir,
+            correspondence_manifest=args.correspondence_manifest,
+        )
     except CaseMapError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2

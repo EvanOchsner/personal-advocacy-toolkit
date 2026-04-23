@@ -32,7 +32,8 @@
 
     <aside id="panel" class="drilldown" aria-live="polite">
       <div class="panel-empty">
-        <p>Select an entity in the graph to see details.</p>
+        <p>Select an entity in the graph, or a marker on the timeline,
+          to see details.</p>
         <p class="panel-empty-note">
           All details shown are loaded from files on disk under the case
           directory. Nothing here is inferred from outside sources.
@@ -40,6 +41,19 @@
       </div>
     </aside>
   </main>
+
+  <section class="timeline-panel" aria-label="Case timeline">
+    <div class="timeline-legend">
+      <span class="legend-dot legend-event"></span>event
+      <span class="legend-dot legend-correspondence"></span>correspondence
+      <span class="legend-dot legend-deadline"></span>deadline
+      <span class="legend-sep">—</span>
+      <span class="legend-note">
+        Select an entity to colour markers that touch it; click a marker for details.
+      </span>
+    </div>
+    <div id="timeline"></div>
+  </section>
 
   <footer class="app-footer">
     <p>{{ disclaimer }}</p>
@@ -51,5 +65,6 @@
   <script src="/static/js/app.js"></script>
   <script src="/static/js/graph.js"></script>
   <script src="/static/js/panel.js"></script>
+  <script src="/static/js/timeline.js"></script>
 </body>
 </html>

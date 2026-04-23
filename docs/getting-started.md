@@ -25,6 +25,9 @@ New here? Do these four things, in order:
    Every command is real and should complete in under a minute.
 4. **Start Tutorial 01** to set up your own case:
    [`tutorials/01-setting-up-your-case.md`](tutorials/01-setting-up-your-case.md).
+   Tutorials 02–05 cover ingest, triage, packet assembly, and going
+   public safely. Tutorial 06 covers the case-map app:
+   [`tutorials/06-case-map-app.md`](tutorials/06-case-map-app.md).
 
 ## Concept docs (read before making decisions)
 
@@ -38,6 +41,9 @@ New here? Do these four things, in order:
   vs. casual mode; when to use which.
 - [`concepts/pii-and-publication.md`](concepts/pii-and-publication.md)
   — read before publishing *anything* derived from a real case.
+- [`concepts/case-map-app.md`](concepts/case-map-app.md) — the local
+  browser UI for visualising parties and timeline; airgap caveats
+  and paranoid-mode recipe.
 
 ## Playbooks (pick the one that fits your situation)
 

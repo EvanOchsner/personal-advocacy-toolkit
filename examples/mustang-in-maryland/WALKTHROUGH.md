@@ -366,8 +366,32 @@ uv run python -m scripts.publish.pii_scrub \
 uv run pytest
 ```
 
-Expected: all 130 tests pass. The synthetic case is the fixture
-corpus for the test suite; a green run confirms end-to-end integrity.
+Expected: all tests pass. The synthetic case is the fixture corpus
+for the test suite; a green run confirms end-to-end integrity.
+
+---
+
+## 11. Explore the case visually (case-map app)
+
+```sh
+uv run python -m scripts.app --case-dir examples/mustang-in-maryland
+```
+
+Opens a local browser at `http://127.0.0.1:8765/` with a three-column
+entity graph (self/allies, neutrals, adversaries) and a horizontal
+timeline aggregating the 15 events from `events.yaml` plus any
+deadlines the intake supports. Click an entity to filter / colour the
+timeline; click a timeline marker to see its details in the side
+panel.
+
+The server binds 127.0.0.1 only, runs a strict
+Content-Security-Policy, and has no outbound network calls. See
+[`docs/concepts/case-map-app.md`](../../docs/concepts/case-map-app.md)
+for the airgap posture and
+[`docs/tutorials/06-case-map-app.md`](../../docs/tutorials/06-case-map-app.md)
+for a guided tour.
+
+Exit with Ctrl-C.
 
 ---
 
@@ -385,6 +409,7 @@ corpus for the test suite; a green run confirms end-to-end integrity.
 |  8   | `manifest.evidence_manifest` + `status.case_dashboard` | unified evidence-manifest + Markdown dashboard |
 |  9   | `publish.pii_scrub --dry-run`   | sidecar JSON report (no file changes)                       |
 | 10   | `pytest`                        | green test suite                                            |
+| 11   | `scripts.app`                   | local browser UI — three-column graph + timeline            |
 
 ---
 

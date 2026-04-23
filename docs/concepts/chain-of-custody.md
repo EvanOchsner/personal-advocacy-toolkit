@@ -46,7 +46,7 @@ reconstruct the pipeline without trusting the author.
 ### Per-file deep dive
 
 ```
-python -m scripts.provenance PATH
+uv run python -m scripts.provenance PATH
 ```
 
 Surfaces six sections for one file: Identity, Git trail, Hash manifest,
@@ -66,7 +66,7 @@ research artifact it surfaces the YAML frontmatter from the sibling
 ### Whole-packet attestation
 
 ```
-python -m scripts.provenance_bundle --manifest M --out report.yaml
+uv run python -m scripts.provenance_bundle --manifest M --out report.yaml
 ```
 
 Runs the per-file tool over every entry in a SHA-256 manifest and

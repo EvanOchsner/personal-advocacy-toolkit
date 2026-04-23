@@ -32,7 +32,7 @@ For each entry:
 
 Usage:
 
-    python -m scripts.publish.docx_apply_replies \\
+    uv run python -m scripts.publish.docx_apply_replies \\
         <unpacked-dir>/ <replies.json> \\
         [--author Claude] [--initials C] \\
         [--edit-mode reply|tracked|silent] \\
@@ -151,7 +151,6 @@ def _append_before_close(xml_text: str, close_tag: str, new_xml: str) -> str:
     first so we can insert children.
     """
     # Self-closing form like '<w:comments xmlns:w="..."/>' — expand.
-    open_tag = close_tag.split(":", 1)[-1] if ":" in close_tag else close_tag
     self_close = re.compile(
         rf"<({re.escape(close_tag)})(\s[^>]*?)?/>", re.DOTALL
     )

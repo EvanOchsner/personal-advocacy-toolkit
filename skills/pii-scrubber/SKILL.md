@@ -35,7 +35,7 @@ into `drafts/` first, scrub the copy, and keep the raw untouched.
 2. **Dry run first — always.**
 
    ```
-   python -m scripts.publish.pii_scrub \
+   uv run python -m scripts.publish.pii_scrub \
        --root drafts/ \
        --substitutions substitutions.yaml \
        --report scrub_report.json
@@ -60,7 +60,7 @@ into `drafts/` first, scrub the copy, and keep the raw untouched.
 5. **Apply only with explicit user confirmation.**
 
    ```
-   python -m scripts.publish.pii_scrub \
+   uv run python -m scripts.publish.pii_scrub \
        --root drafts/ \
        --substitutions substitutions.yaml \
        --report scrub_report.json \

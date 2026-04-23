@@ -11,7 +11,7 @@ on its own. Consumed by the skill's "prepare a regulator handoff"
 workflow.
 
 Usage:
-    python -m scripts.provenance_bundle \\
+    uv run python -m scripts.provenance_bundle \\
         --manifest PATH \\
         --out PATH.yaml \\
         [--evidence-root PATH] [--snapshot-dir PATH]
@@ -31,7 +31,6 @@ from scripts.provenance import (
     Report,
     _resolve_paths,
     build_report,
-    format_yaml,
 )
 
 

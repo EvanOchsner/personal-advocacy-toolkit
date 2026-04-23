@@ -6,7 +6,7 @@ YAML/TOML schema as `scripts/manifest/correspondence_manifest.py` so you
 can narrow a mbox to e.g. a single counterparty on first pass.
 
 Usage:
-    python -m scripts.ingest.mbox_split INPUT.mbox --out-dir DIR [--prefix all] \
+    uv run python -m scripts.ingest.mbox_split INPUT.mbox --out-dir DIR [--prefix all] \
         [--filter-config cfg.yaml]
 
 Output filenames: `<prefix>_<NNNN>_<sanitized-subject>.eml`.

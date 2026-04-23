@@ -14,24 +14,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
         with:
+          enable-cache: true
           python-version: "3.11"
-          cache: "pip"
 
       - name: Install package (with dev extras)
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e ".[dev]"
+        run: uv sync --extra dev
 
       - name: Ruff lint
         # ruff is declared in pyproject.toml [project.optional-dependencies].dev
         # and configured under [tool.ruff]. Fail CI on any lint error.
-        run: ruff check .
+        run: uv run ruff check .
 
       - name: Pytest
-        run: pytest -v
+        run: uv run pytest -v
 
   # Second job: sanity-check the synthetic walkthrough's static tool invocations
   # (no side effects — just --help on every documented CLI, to catch argparse
@@ -43,36 +41,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
         with:
+          enable-cache: true
           python-version: "3.11"
-          cache: "pip"
 
       - name: Install package
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e .
+        run: uv sync
 
       - name: Smoke-test CLI help output
         run: |
           set -e
-          python -m scripts.evidence_hash --help
-          python -m scripts.provenance --help
-          python -m scripts.provenance_snapshot --help
-          python -m scripts.ingest.email_eml_to_json --help
-          python -m scripts.ingest.email_json_to_txt --help
-          python -m scripts.ingest.mbox_split --help
-          python -m scripts.manifest.correspondence_manifest --help
-          python -m scripts.intake.situation_classify --help || true
-          python -m scripts.intake.authorities_lookup --help || true
-          python -m scripts.intake.deadline_calc --help || true
-          python -m scripts.packet.build --help
-          python -m scripts.packet.appendix_cover --help
-          python -m scripts.packet.compile_reference --help
-          python -m scripts.letters.draft --help
-          python -m scripts.status.case_dashboard --help
-          python -m scripts.publish.pii_scrub --help
+          uv run python -m scripts.evidence_hash --help
+          uv run python -m scripts.provenance --help
+          uv run python -m scripts.provenance_snapshot --help
+          uv run python -m scripts.ingest.email_eml_to_json --help
+          uv run python -m scripts.ingest.email_json_to_txt --help
+          uv run python -m scripts.ingest.mbox_split --help
+          uv run python -m scripts.manifest.correspondence_manifest --help
+          uv run python -m scripts.intake.situation_classify --help || true
+          uv run python -m scripts.intake.authorities_lookup --help || true
+          uv run python -m scripts.intake.deadline_calc --help || true
+          uv run python -m scripts.packet.build --help
+          uv run python -m scripts.packet.appendix_cover --help
+          uv run python -m scripts.packet.compile_reference --help
+          uv run python -m scripts.letters.draft --help
+          uv run python -m scripts.status.case_dashboard --help
+          uv run python -m scripts.publish.pii_scrub --help
 
   # Publication-safety post-checks: exercise the Phase 3C scrubbers against
   # examples/ and templates/ and assert that nothing survives. A failure
@@ -85,16 +81,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
         with:
+          enable-cache: true
           python-version: "3.11"
-          cache: "pip"
 
       - name: Install package (with synthetic-case extras for Pillow/python-docx)
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e ".[dev,synthetic-case]"
+        run: uv sync --extra dev --extra synthetic-case
 
       - name: EXIF scrub post-check (examples/)
         # exif_scrub exits 1 if any image has surviving EXIF/GPS/XMP tags.
@@ -105,7 +99,7 @@ jobs:
         run: |
           set -e
           mkdir -p /tmp/postcheck
-          python -m scripts.publish.exif_scrub --root examples/ \
+          uv run python -m scripts.publish.exif_scrub --root examples/ \
             | tee /tmp/postcheck/exif.log
           echo "--- EXIF post-check report ---"
           cat /tmp/postcheck/exif.log
@@ -124,7 +118,7 @@ jobs:
             COUNT=$((COUNT + 1))
             OUT="/tmp/postcheck/docx/$(echo "$DOCX" | tr '/' '_').docx"
             echo "scrubbing: $DOCX"
-            if ! python -m scripts.publish.docx_metadata_scrub --in "$DOCX" --out "$OUT"; then
+            if ! uv run python -m scripts.publish.docx_metadata_scrub --in "$DOCX" --out "$OUT"; then
               FAIL=$((FAIL + 1))
             fi
           done < <(find examples templates -type f -name '*.docx' -print0 2>/dev/null)
@@ -144,7 +138,7 @@ jobs:
         run: |
           set -e
           mkdir -p /tmp/postcheck
-          python -m scripts.publish.pii_scrub \
+          uv run python -m scripts.publish.pii_scrub \
             --root examples/ \
             --substitutions ci/example-subs.yaml \
             --report /tmp/postcheck/pii_scrub_report.json

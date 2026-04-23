@@ -16,7 +16,7 @@ Usage (as a library):
 
 Usage (CLI):
 
-    python -m scripts.publish.pdf_redact \\
+    uv run python -m scripts.publish.pdf_redact \\
         --in in.pdf --out out.pdf \\
         --spec redactions.json \\
         --substitutions substitutions.yaml

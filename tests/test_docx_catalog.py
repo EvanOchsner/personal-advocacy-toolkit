@@ -42,7 +42,7 @@ def _document(paragraphs: list[tuple[str, list[int]]]) -> str:
     Each comment_id gets a commentRangeStart/End wrapping the body_text.
     """
     out = [
-        f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
         f'<w:document xmlns:w="{W_NS}"><w:body>',
     ]
     for text, ids in paragraphs:

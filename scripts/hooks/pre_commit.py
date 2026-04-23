@@ -14,8 +14,8 @@ name, not a `--force` flag, so the act of overriding is visible in shell
 history or CI logs.
 
 Usage:
-    python -m scripts.hooks.pre_commit           # invoked from .git/hooks
-    python -m scripts.hooks.pre_commit --staged  # explicit (default)
+    uv run python -m scripts.hooks.pre_commit           # invoked from .git/hooks
+    uv run python -m scripts.hooks.pre_commit --staged  # explicit (default)
 
 The hook reads staged file changes from `git diff --cached --name-status`,
 so it is safe to invoke from any git hook entry point.
@@ -124,7 +124,7 @@ def check(repo_root: Path) -> int:
         print(
             "advocacy-toolkit pre-commit: protected-path additions were staged but\n"
             f"the hash manifest ({manifest_rel}) was not updated. Run\n"
-            "  python -m scripts.evidence_hash\n"
+            "  uv run python -m scripts.evidence_hash\n"
             "and re-stage the manifest before committing.",
             file=sys.stderr,
         )

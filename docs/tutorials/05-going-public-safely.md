@@ -96,7 +96,7 @@ unscrubbed working copy intact.
 ## 3. Dry-run the PII scrub
 
 ```sh
-python -m scripts.publish.pii_scrub \
+uv run python -m scripts.publish.pii_scrub \
   --root publish/ \
   --substitutions publish/substitutions.yaml \
   --report publish/.scrub-dryrun-report.json
@@ -117,7 +117,7 @@ Review the report. Common surprises:
 ## 4. Apply the scrub
 
 ```sh
-python -m scripts.publish.pii_scrub \
+uv run python -m scripts.publish.pii_scrub \
   --root publish/ \
   --substitutions publish/substitutions.yaml \
   --report publish/.scrub-report.json \
@@ -135,7 +135,7 @@ If your publish tree includes PDFs with visible PII that you want to
 redact:
 
 ```sh
-python -m scripts.publish.pdf_redact \
+uv run python -m scripts.publish.pdf_redact \
   --in publish/some-letter.pdf \
   --out publish/some-letter-redacted.pdf \
   --spec publish/redactions.json \
@@ -159,7 +159,7 @@ than no scrubber.
 For any .docx in the publish tree:
 
 ```sh
-python -m scripts.publish.docx_metadata_scrub \
+uv run python -m scripts.publish.docx_metadata_scrub \
   --in publish/draft.docx \
   --out publish/draft-clean.docx
 ```
@@ -172,7 +172,7 @@ output and asserts each known-sensitive field is empty.
 ## 7. EXIF scrub for images
 
 ```sh
-python -m scripts.publish.exif_scrub --root publish/ --apply
+uv run python -m scripts.publish.exif_scrub --root publish/ --apply
 ```
 
 Re-saves each image through Pillow without EXIF. Drops GPS, camera
@@ -192,7 +192,7 @@ history before pushing publicly:
 git clone /path/to/case /tmp/case-scratch
 
 # 2. Run the sanitizer against the scratch clone
-python -m scripts.publish.history_sanitizer \
+uv run python -m scripts.publish.history_sanitizer \
   --scratch-dir /tmp/case-scratch \
   --substitutions publish/substitutions.yaml
 ```
@@ -227,7 +227,7 @@ If you're publishing a sanitized complaint packet:
 
 ```sh
 # Point a separate packet-manifest at the scrubbed sources
-python -m scripts.packet.build publish/packet-manifest.yaml -v
+uv run python -m scripts.packet.build publish/packet-manifest.yaml -v
 ```
 
 The builder regenerates the PDF from the scrubbed sources. It will

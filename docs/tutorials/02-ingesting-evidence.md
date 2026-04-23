@@ -41,7 +41,7 @@ evidence/<kind>/
 Split the mbox into individual .eml files:
 
 ```sh
-python -m scripts.ingest.mbox_split path/to/All.mbox \
+uv run python -m scripts.ingest.mbox_split path/to/All.mbox \
   --out-dir evidence/emails/raw \
   --prefix claim
 ```
@@ -54,7 +54,7 @@ dispute, write a filter config. See
 for the schema. Then:
 
 ```sh
-python -m scripts.ingest.mbox_split path/to/All.mbox \
+uv run python -m scripts.ingest.mbox_split path/to/All.mbox \
   --out-dir evidence/emails/raw \
   --prefix claim \
   --filter-config search.yaml
@@ -66,7 +66,7 @@ If you already have individual .eml files (exported from Mail.app,
 saved from Outlook, etc.), skip `mbox_split` and go straight to:
 
 ```sh
-python -m scripts.ingest.email_eml_to_json \
+uv run python -m scripts.ingest.email_eml_to_json \
   evidence/emails/raw \
   --out-dir evidence/emails/structured
 ```
@@ -79,7 +79,7 @@ the raw .eml bytes as `source_sha256`.
 ### Render the human-readable layer
 
 ```sh
-python -m scripts.ingest.email_json_to_txt \
+uv run python -m scripts.ingest.email_json_to_txt \
   evidence/emails/structured \
   --out-dir evidence/emails/readable
 ```
@@ -94,7 +94,7 @@ belong to this dispute, independent of where they live on disk. It's
 the bridge between raw inbox and packet.
 
 ```sh
-python -m scripts.manifest.correspondence_manifest \
+uv run python -m scripts.manifest.correspondence_manifest \
   --config search.yaml \
   --out correspondence-manifest.yaml \
   evidence/emails/raw
@@ -103,7 +103,7 @@ python -m scripts.manifest.correspondence_manifest \
 Or pass already-parsed JSON directly (faster, no re-parse):
 
 ```sh
-python -m scripts.manifest.correspondence_manifest \
+uv run python -m scripts.manifest.correspondence_manifest \
   --config search.yaml \
   --out correspondence-manifest.yaml \
   evidence/emails/structured
@@ -139,7 +139,7 @@ For harassment, scam, and landlord-listing situations you often need
 to preserve a web page before it changes:
 
 ```sh
-python -m scripts.ingest.screenshot_capture \
+uv run python -m scripts.ingest.screenshot_capture \
   "https://example.com/post/12345" \
   --out-dir evidence/screenshots
 ```
@@ -150,8 +150,8 @@ URL, timestamp, SHA-256, and backend used.
 Best results require playwright:
 
 ```sh
-pip install playwright
-playwright install chromium
+uv pip install playwright
+uv run playwright install chromium
 ```
 
 Without playwright the tool falls back to headless Chrome if
@@ -170,8 +170,8 @@ shape.
 After any ingest run:
 
 ```sh
-python -m scripts.evidence_hash --root evidence --manifest .evidence-manifest.sha256
-python -m scripts.provenance_snapshot --root evidence
+uv run python -m scripts.evidence_hash --root evidence --manifest .evidence-manifest.sha256
+uv run python -m scripts.provenance_snapshot --root evidence
 ```
 
 The manifest is regeneratable; just re-run it. The snapshot gets a
@@ -190,9 +190,9 @@ ls evidence/emails/readable/   # 20 .txt
 Re-hash and snapshot:
 
 ```sh
-python -m scripts.evidence_hash \
+uv run python -m scripts.evidence_hash \
   --root evidence --manifest .evidence-manifest.sha256
-python -m scripts.provenance_snapshot --root evidence
+uv run python -m scripts.provenance_snapshot --root evidence
 ```
 
 You should see ~45 entries across the emails + policy + valuation +

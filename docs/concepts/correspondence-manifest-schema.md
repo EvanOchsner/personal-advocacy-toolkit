@@ -57,7 +57,7 @@ identifiers:
 Run:
 
 ```bash
-python -m scripts.manifest.correspondence_manifest \
+uv run python -m scripts.manifest.correspondence_manifest \
     --config scripts/manifest/example-correspondence.yaml \
     --out   data/correspondence/manifest.yaml \
     data/correspondence/raw/

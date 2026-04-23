@@ -22,7 +22,7 @@ Library entry point: `compile_reference(...)`.
 
 CLI:
 
-    python -m scripts.packet.compile_reference \\
+    uv run python -m scripts.packet.compile_reference \\
         --title "Acme Terms Reference" \\
         --counterparty "Acme Widgets, Inc." \\
         --output out/acme-terms-reference.pdf \\
@@ -319,9 +319,9 @@ def _render_section_callout(counterparty: str) -> list[str]:
     return [
         f"> ⚠️ **COMPILED REFERENCE — NOT A {counterparty.upper()} DOCUMENT**",
         ">",
-        f"> This section is extracted from a source PDF and inserted into a "
-        f"locally-assembled compilation. Do not cite this rendering — cite "
-        f"the source file listed above.",
+        "> This section is extracted from a source PDF and inserted into a "
+        "locally-assembled compilation. Do not cite this rendering — cite "
+        "the source file listed above.",
     ]
 
 

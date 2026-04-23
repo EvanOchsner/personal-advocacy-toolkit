@@ -26,7 +26,7 @@ can see the whole picture, and does the user's framing hold up?
 2. **Pull the candidate authorities.** Run:
 
    ```
-   python -m scripts.intake.authorities_lookup \
+   uv run python -m scripts.intake.authorities_lookup \
        --situation <situation_type> \
        --jurisdiction <state>
    ```

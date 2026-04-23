@@ -4,7 +4,7 @@ human-readable `.txt` transcript — the form that's easy to skim, diff,
 print, or paste into a packet.
 
 Usage:
-    python -m scripts.ingest.email_json_to_txt INPUT [INPUT ...] \
+    uv run python -m scripts.ingest.email_json_to_txt INPUT [INPUT ...] \
         --out-dir data/correspondence/txt/ \
         [--overwrite]
 

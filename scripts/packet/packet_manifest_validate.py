@@ -18,10 +18,10 @@ Exit codes:
     2 — integrity errors (missing files, hash mismatch, label gap)
 
 Usage:
-    python -m scripts.packet.packet_manifest_validate \\
+    uv run python -m scripts.packet.packet_manifest_validate \\
         examples/mustang-in-maryland/complaint_packet/packet-manifest.yaml
 
-    python -m scripts.packet.packet_manifest_validate \\
+    uv run python -m scripts.packet.packet_manifest_validate \\
         path/to/packet-manifest.yaml \\
         --hash-manifest evidence/manifest.sha256
 """
@@ -29,7 +29,6 @@ from __future__ import annotations
 
 import argparse
 import string
-import sys
 from pathlib import Path
 
 from scripts.packet._hash import sha256_file as _sha256_file

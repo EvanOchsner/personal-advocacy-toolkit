@@ -113,9 +113,9 @@ def test_config_file_sets_defaults(tmp_path: Path) -> None:
     manifest = tmp_path / "custom_manifest.sha256"
     cfg = tmp_path / "advocacy.toml"
     cfg.write_text(
-        f'[evidence]\n'
-        f'root = "evidence"\n'
-        f'manifest = "custom_manifest.sha256"\n'
+        '[evidence]\n'
+        'root = "evidence"\n'
+        'manifest = "custom_manifest.sha256"\n'
     )
     rc = evidence_hash.main(["--repo-root", str(tmp_path), "--config", str(cfg)])
     assert rc == 0

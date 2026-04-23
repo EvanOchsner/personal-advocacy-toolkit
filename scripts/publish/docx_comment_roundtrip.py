@@ -31,14 +31,14 @@ the anchor elements. Other parts of the zip are copied byte-for-byte
 Usage:
     # Strip comments from a .docx going to a counterparty; keep sidecar
     # so we can restore them to the author's working copy later.
-    python -m scripts.publish.docx_comment_roundtrip \\
+    uv run python -m scripts.publish.docx_comment_roundtrip \\
         --extract \\
         --in draft-with-comments.docx \\
         --out draft-clean.docx \\
         --sidecar comments-sidecar.yaml
 
     # Restore comments back onto the stripped copy.
-    python -m scripts.publish.docx_comment_roundtrip \\
+    uv run python -m scripts.publish.docx_comment_roundtrip \\
         --inject \\
         --in draft-clean.docx \\
         --sidecar comments-sidecar.yaml \\
@@ -152,7 +152,6 @@ def _strip_anchors(document_bytes: bytes) -> tuple[bytes, list[dict[str, Any]]]:
     """
     root = ET.fromstring(document_bytes)
     anchors: list[dict[str, Any]] = []
-    position = 0
     # Walk every parent so we know where to delete from. We use a pre-order
     # traversal storing a trail of (parent, index) pairs for each anchor.
     _walk_and_strip(root, anchors, position_counter=[0])

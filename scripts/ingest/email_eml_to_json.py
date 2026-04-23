@@ -6,7 +6,7 @@ packet, analysis) can consume a directory of JSONs without re-parsing
 MIME. One `.eml` produces exactly one `.json` by the same stem.
 
 Usage:
-    python -m scripts.ingest.email_eml_to_json INPUT [INPUT ...] \
+    uv run python -m scripts.ingest.email_eml_to_json INPUT [INPUT ...] \
         --out-dir data/correspondence/json/ \
         [--manifest data/correspondence/manifest.yaml] \
         [--overwrite]

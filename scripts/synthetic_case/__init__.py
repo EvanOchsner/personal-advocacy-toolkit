@@ -5,7 +5,7 @@ Pillow / reportlab / python-docx were not available in that authoring
 environment. This package regenerates the real PDF / JPEG / DOCX
 artifacts from their canonical markdown sources.
 
-CLI entry point: ``python -m scripts.synthetic_case.regenerate``.
+CLI entry point: ``uv run python -m scripts.synthetic_case.regenerate``.
 
 Every output is stamped ``SYNTHETIC -- NOT A REAL CASE`` in both
 visible content (header/footer/watermark) and file metadata

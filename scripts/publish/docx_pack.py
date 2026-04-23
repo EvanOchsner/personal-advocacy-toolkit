@@ -26,8 +26,8 @@ Library API:
 
 Usage:
 
-    python -m scripts.publish.docx_pack <input-dir>/ <output.docx>
-    python -m scripts.publish.docx_pack <input-dir>/ <output.docx> \\
+    uv run python -m scripts.publish.docx_pack <input-dir>/ <output.docx>
+    uv run python -m scripts.publish.docx_pack <input-dir>/ <output.docx> \\
         --original <reference.docx>
 """
 from __future__ import annotations

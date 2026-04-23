@@ -6,16 +6,19 @@ New here? Do these four things, in order:
    toolkit fits your situation. If you are in a criminal matter or
    need a lawyer immediately, this toolkit is not the right first
    step.
-2. **Install the package:**
+2. **Install [uv](https://docs.astral.sh/uv/getting-started/installation/)
+   and sync the project:**
    ```sh
-   pip install -e .
+   uv sync
    ```
-   Python 3.11 or 3.12. Optional extras for specific features:
+   Python 3.11 or 3.12 (uv will provision the interpreter if needed).
+   Optional extras for specific features:
    ```sh
-   pip install -e ".[publish]"          # scrubbers (Pillow, pypdf, reportlab)
-   pip install -e ".[synthetic-case]"   # regenerate the synthetic example
-   pip install -e ".[dev]"              # pytest + ruff
+   uv sync --extra publish          # scrubbers (Pillow, pypdf, reportlab)
+   uv sync --extra synthetic-case   # regenerate the synthetic example
+   uv sync --extra dev              # pytest + ruff
    ```
+   Every CLI in the docs is run via `uv run` — no virtualenv to activate.
 3. **Run the synthetic walkthrough end-to-end** to confirm your
    environment works:
    [`examples/mustang-in-maryland/WALKTHROUGH.md`](../examples/mustang-in-maryland/WALKTHROUGH.md).

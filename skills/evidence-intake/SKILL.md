@@ -32,13 +32,13 @@ hand-edit the derived layers; rerun the ingester.
 
 | Evidence type  | Script                                           |
 |----------------|--------------------------------------------------|
-| Single `.eml`  | `python -m scripts.ingest.email_eml_to_json`     |
-| Mailbox export | `python -m scripts.ingest.mbox_split` → loop EML |
-| Readable email | `python -m scripts.ingest.email_json_to_txt`     |
-| SMS / iMessage | `python -m scripts.ingest.sms_export`            |
-| Screenshot / webpage capture | `python -m scripts.ingest.screenshot_capture` |
-| Voicemail (metadata only)    | `python -m scripts.ingest.voicemail_meta`     |
-| Medical EOB / billing        | `python -m scripts.ingest.medical_eob`        |
+| Single `.eml`  | `uv run python -m scripts.ingest.email_eml_to_json`     |
+| Mailbox export | `uv run python -m scripts.ingest.mbox_split` → loop EML |
+| Readable email | `uv run python -m scripts.ingest.email_json_to_txt`     |
+| SMS / iMessage | `uv run python -m scripts.ingest.sms_export`            |
+| Screenshot / webpage capture | `uv run python -m scripts.ingest.screenshot_capture` |
+| Voicemail (metadata only)    | `uv run python -m scripts.ingest.voicemail_meta`     |
+| Medical EOB / billing        | `uv run python -m scripts.ingest.medical_eob`        |
 
 Each script has `--help`; use it. Each also appends to a
 correspondence manifest via `scripts/ingest/_manifest.py` so the
@@ -63,7 +63,7 @@ provenance report sees the new item.
 4. **Re-hash the evidence tree.** After ingest:
 
    ```
-   python -m scripts.evidence_hash --root evidence/
+   uv run python -m scripts.evidence_hash --root evidence/
    ```
 
    This updates the SHA-256 manifest that `scripts/provenance.py`
@@ -86,12 +86,12 @@ enters the pipeline as:
 cp incoming.eml evidence/emails/raw/018_2025-06-25_delia-escalation.eml
 
 # layer 2: canonical JSON
-python -m scripts.ingest.email_eml_to_json \
+uv run python -m scripts.ingest.email_eml_to_json \
     --input evidence/emails/raw/018_2025-06-25_delia-escalation.eml \
     --output evidence/emails/structured/
 
 # layer 3: readable transcript
-python -m scripts.ingest.email_json_to_txt \
+uv run python -m scripts.ingest.email_json_to_txt \
     --input evidence/emails/structured/018_2025-06-25_delia-escalation.json \
     --output evidence/emails/readable/
 ```

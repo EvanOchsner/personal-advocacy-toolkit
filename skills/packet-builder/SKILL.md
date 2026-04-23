@@ -62,7 +62,7 @@ for a filled-in synthetic reference.
 7. **Build.**
 
    ```
-   python -m scripts.packet.build path/to/packet-manifest.yaml
+   uv run python -m scripts.packet.build path/to/packet-manifest.yaml
    ```
 
    The builder writes a unified `packet.pdf` plus per-exhibit

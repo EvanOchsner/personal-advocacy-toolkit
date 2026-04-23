@@ -39,7 +39,7 @@ Confirm `scrub_report.json` is clean.
 For every `.docx` in the publication set:
 
 ```
-python -m scripts.publish.docx_metadata_scrub \
+uv run python -m scripts.publish.docx_metadata_scrub \
     --in drafts/complaint.docx \
     --out publish/complaint.docx
 ```
@@ -54,7 +54,7 @@ want.
 For every image in the publication set:
 
 ```
-python -m scripts.publish.exif_scrub --root publish/images/ --apply
+uv run python -m scripts.publish.exif_scrub --root publish/images/ --apply
 ```
 
 Mandatory post-check: the script re-opens each output and verifies
@@ -68,7 +68,7 @@ real identifiers and is about to become a public repo. This is
 destructive — it rewrites history.
 
 ```
-python -m scripts.publish.history_sanitizer \
+uv run python -m scripts.publish.history_sanitizer \
     --scratch-dir /abs/path/to/fresh-clone \
     --substitutions substitutions.yaml
 ```

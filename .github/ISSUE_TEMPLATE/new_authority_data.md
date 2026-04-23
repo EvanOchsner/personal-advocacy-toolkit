@@ -68,8 +68,8 @@ dropped.
 - [ ] My entry follows the same shape.
 - [ ] I have run the tool against my new entry to confirm it loads:
       ```
-      python -m scripts.intake.authorities_lookup --situation <slug> --jurisdiction <STATE>
-      python -m scripts.intake.deadline_calc --situation <slug> --jurisdiction <STATE> --loss-date 2025-01-01
+      uv run python -m scripts.intake.authorities_lookup --situation <slug> --jurisdiction <STATE>
+      uv run python -m scripts.intake.deadline_calc --situation <slug> --jurisdiction <STATE> --loss-date 2025-01-01
       ```
 
 ## Willingness to own follow-up

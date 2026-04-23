@@ -6,7 +6,6 @@ import hashlib
 import textwrap
 from pathlib import Path
 
-import pytest
 
 from scripts.packet.packet_manifest_validate import validate
 

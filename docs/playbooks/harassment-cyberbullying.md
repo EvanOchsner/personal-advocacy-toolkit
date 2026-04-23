@@ -30,7 +30,7 @@ destroy your evidence. You need tamper-evident copies first.
   **Install playwright for evidence-grade capture** (prototype
   backend):
   ```
-  pip install playwright && playwright install chromium
+  uv pip install playwright && uv run playwright install chromium
   ```
 - `scripts/evidence_hash.py` + `scripts/provenance_snapshot.py` —
   hash and snapshot the captures as soon as they land.

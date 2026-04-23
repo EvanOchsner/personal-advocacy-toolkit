@@ -20,6 +20,27 @@ so phase agents don't regress them.)*
    describe mechanics. They do not say "argue this" or "cite that case
    against them."
 
+## Local setup
+
+The project is managed with [uv](https://docs.astral.sh/uv/). One-time
+install (e.g. `curl -LsSf https://astral.sh/uv/install.sh | sh` or
+`brew install uv`), then from the repo root:
+
+```sh
+uv sync --extra dev            # runtime + pytest + ruff
+uv run pytest                  # full test suite
+uv run ruff check .            # lint
+```
+
+Add `--extra synthetic-case` or `--extra publish` when working on those
+subsystems. Every CLI in the docs is invoked as `uv run python -m scripts.X`
+— `uv run` resolves the project venv automatically; there is no activation
+step.
+
+Before pushing, the publication-safety and banned-terms post-checks can be
+rehearsed locally with `bash scripts/ci/local_postchecks.sh`, which mirrors
+the CI job.
+
 ## Authorship model
 
 The initial build is split across phase-scoped subagent tracks. See

@@ -6,13 +6,13 @@ Reads data/deadlines.yaml. Every output line includes a
 only; it is not legal advice.
 
 Usage:
-    python -m scripts.intake.deadline_calc \\
+    uv run python -m scripts.intake.deadline_calc \\
         --situation insurance_dispute \\
         --jurisdiction MD \\
         --loss-date 2025-03-15
 
     # Provide extra reference dates (denial, last_act, notice-of-loss):
-    python -m scripts.intake.deadline_calc \\
+    uv run python -m scripts.intake.deadline_calc \\
         --situation insurance_dispute --jurisdiction MD \\
         --loss-date 2025-03-15 \\
         --notice-of-loss 2025-03-16 \\

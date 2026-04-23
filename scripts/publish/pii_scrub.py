@@ -2,7 +2,7 @@
 """PII detector + replacer for publishing derivatives.
 
 Usage:
-    python -m scripts.publish.pii_scrub \\
+    uv run python -m scripts.publish.pii_scrub \\
         --root drafts/ \\
         --substitutions substitutions.yaml \\
         [--report scrub_report.json] \\

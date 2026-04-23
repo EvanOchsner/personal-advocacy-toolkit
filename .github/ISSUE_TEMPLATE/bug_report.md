@@ -8,9 +8,9 @@ assignees: ''
 
 **Thanks for reporting.** Before you open this, please confirm:
 
-- [ ] The bug is reproducible on a fresh clone with `pip install -e .`.
+- [ ] The bug is reproducible on a fresh clone with `uv sync`.
 - [ ] You are running Python 3.11 or 3.12.
-- [ ] You have read the tool's docstring (`python -m scripts.X --help`
+- [ ] You have read the tool's docstring (`uv run python -m scripts.X --help`
       or the script header) and confirmed the behavior is not
       as-designed.
 
@@ -37,7 +37,7 @@ line if the docs implied different behavior).
 # minimal reproducer. Include `pwd` at the top so we know where you
 # were.
 pwd
-python -m scripts.X --foo bar
+uv run python -m scripts.X --foo bar
 ```
 
 ## Environment

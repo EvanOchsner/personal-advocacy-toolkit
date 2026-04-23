@@ -37,7 +37,7 @@ then let `scripts/intake/situation_classify.py` do the routing.
    not the final case-intake). Then run:
 
    ```
-   python -m scripts.intake.situation_classify \
+   uv run python -m scripts.intake.situation_classify \
        --answers intake-answers.yaml \
        --out case-intake.yaml
    ```

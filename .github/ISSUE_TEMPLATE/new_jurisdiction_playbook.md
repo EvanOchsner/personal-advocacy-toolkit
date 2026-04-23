@@ -56,10 +56,10 @@ To make a playbook worked, you need to:
       synthetic Mustang shape as the example).
 - [ ] The four toolkit commands run cleanly against the new data:
       ```
-      python -m scripts.intake.situation_classify ...
-      python -m scripts.intake.authorities_lookup --situation <slug> --jurisdiction <STATE>
-      python -m scripts.intake.deadline_calc     --situation <slug> --jurisdiction <STATE> --loss-date 2025-01-01
-      python -m scripts.letters.draft --kind foia --intake <fixture>.yaml --out /tmp/test.docx
+      uv run python -m scripts.intake.situation_classify ...
+      uv run python -m scripts.intake.authorities_lookup --situation <slug> --jurisdiction <STATE>
+      uv run python -m scripts.intake.deadline_calc     --situation <slug> --jurisdiction <STATE> --loss-date 2025-01-01
+      uv run python -m scripts.letters.draft --kind foia --intake <fixture>.yaml --out /tmp/test.docx
       ```
 
 ## Scope

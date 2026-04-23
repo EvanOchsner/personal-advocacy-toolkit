@@ -28,7 +28,7 @@ the user memorizing flags.
    the default human format for display:
 
    ```
-   python -m scripts.intake.authorities_lookup \
+   uv run python -m scripts.intake.authorities_lookup \
        --situation insurance_dispute \
        --jurisdiction MD
    ```
@@ -36,7 +36,7 @@ the user memorizing flags.
    For a machine-readable handoff to `packet-builder`:
 
    ```
-   python -m scripts.intake.authorities_lookup \
+   uv run python -m scripts.intake.authorities_lookup \
        --situation insurance_dispute \
        --jurisdiction MD \
        --format json

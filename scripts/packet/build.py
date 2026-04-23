@@ -21,7 +21,7 @@ High-level assembly:
 
 Usage:
 
-    python -m scripts.packet.build path/to/packet-manifest.yaml
+    uv run python -m scripts.packet.build path/to/packet-manifest.yaml
 """
 
 from __future__ import annotations
@@ -34,7 +34,6 @@ from ._convert import to_pdf
 from ._manifest import (
     Exhibit,
     PacketManifest,
-    ReferenceAppendix,
     load_manifest,
 )
 from ._pdfutil import (

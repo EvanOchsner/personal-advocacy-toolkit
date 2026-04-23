@@ -108,7 +108,7 @@ user. The third column is written for a non-technical reader.
 |---|---|---|
 | `content change(s) after placement` (git trail) | The file was modified after its initial commit under `evidence/`. For a real evidence file this is a serious red flag. | "This file was edited after it was recorded as evidence. Name the commit and ask whether the change was intentional — evidence files are supposed to be write-once." |
 | `HASH MISMATCH` (hash manifest) | The recorded SHA-256 disagrees with what's on disk right now. | "The file on disk no longer matches the hash we recorded. Something changed the file without updating the manifest. Investigate before relying on this file." |
-| `not recorded in manifest` | The file is under `evidence/` but no SHA-256 was captured for it. | "This file hasn't been hashed yet. Run `python -m scripts.evidence_hash` to record it before using it in a packet." |
+| `not recorded in manifest` | The file is under `evidence/` but no SHA-256 was captured for it. | "This file hasn't been hashed yet. Run `uv run python -m scripts.evidence_hash` to record it before using it in a packet." |
 | `no git history / not tracked` | The file isn't committed to version control. | "This file isn't yet committed, so there's no durable timestamp on it. Acceptable for work-in-progress; flag-worthy for anything a complaint packet references." |
 | `no download provenance` | No live xattr on disk AND no historical snapshot for this basename. | "We don't know how this file arrived — no download URL, no quarantine timestamp. Probably copied through a process that strips xattrs (tar, cloud sync, AirDrop, screenshot). Weaker paper trail than a direct download." |
 | `no live xattr; snapshot available` | The file's live xattrs were stripped but we have a historical snapshot. | "The xattrs got removed at some point — probably by a copy or sync. The snapshot we took earlier still records where it came from; use that as the durable record." |
@@ -123,25 +123,25 @@ what it said. Don't invent a narrative.
 Per-file deep dive (human report):
 
 ```
-python -m scripts.provenance PATH
+uv run python -m scripts.provenance PATH
 ```
 
 Per-file deep dive (YAML for regulator / attorney):
 
 ```
-python -m scripts.provenance PATH --forensic
+uv run python -m scripts.provenance PATH --forensic
 ```
 
 Per-file verify-only (silent unless warnings; exit 1 on any ⚠):
 
 ```
-python -m scripts.provenance PATH --verify
+uv run python -m scripts.provenance PATH --verify
 ```
 
 Whole-packet attestation bundle:
 
 ```
-python -m scripts.provenance_bundle \
+uv run python -m scripts.provenance_bundle \
   --manifest PATH_TO_MANIFEST \
   --out attestation.yaml
 ```
@@ -158,10 +158,10 @@ Run from the repo root, before doing anything that might strip
 xattrs:
 
 ```
-python -m scripts.evidence_hash --root <evidence-tree>
-python -m scripts.provenance_snapshot --root <evidence-tree>
+uv run python -m scripts.evidence_hash --root <evidence-tree>
+uv run python -m scripts.provenance_snapshot --root <evidence-tree>
 # Then, later, when preparing a handoff:
-python -m scripts.provenance_bundle --manifest <path-to-.sha256> --out bundle.yaml
+uv run python -m scripts.provenance_bundle --manifest <path-to-.sha256> --out bundle.yaml
 ```
 
 Order matters. Hash before snapshot so the snapshot covers the

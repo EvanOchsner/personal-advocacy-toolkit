@@ -2,7 +2,7 @@
 """Strip identifying metadata from a .docx without touching document content.
 
 Usage:
-    python -m scripts.publish.docx_metadata_scrub \\
+    uv run python -m scripts.publish.docx_metadata_scrub \\
         --in draft.docx --out clean.docx
 
 A .docx is a ZIP of XML parts. We rewrite:
@@ -22,7 +22,6 @@ scrubbing, the output is DELETED and we raise.
 from __future__ import annotations
 
 import argparse
-import shutil
 import sys
 import zipfile
 from pathlib import Path

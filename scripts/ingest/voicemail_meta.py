@@ -41,7 +41,7 @@ extras ignored):
 `direction` accepts: incoming, outgoing, missed, voicemail (case-insensitive).
 
 Usage:
-    python -m scripts.ingest.voicemail_meta call_log.csv \
+    uv run python -m scripts.ingest.voicemail_meta call_log.csv \
         --out-dir data/voicemail/ \
         [--manifest data/voicemail/manifest.yaml] \
         [--force]

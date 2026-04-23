@@ -31,20 +31,20 @@ to prove the file has not been altered.
 Regenerate the manifest any time you add a new file:
 
 ```
-python -m scripts.evidence_hash
+uv run python -m scripts.evidence_hash
 ```
 
 Verify (without rewriting) that every tracked file still matches:
 
 ```
-python -m scripts.evidence_hash --verify
+uv run python -m scripts.evidence_hash --verify
 ```
 
 Verify **and** flag any untracked files that appeared under the evidence
 root since the last run:
 
 ```
-python -m scripts.evidence_hash --check
+uv run python -m scripts.evidence_hash --check
 ```
 
 The manifest is a regular text file. Attorneys and regulators can open
@@ -93,7 +93,7 @@ committed, so the xattr evidence becomes a permanent part of the repo.
 Capture a snapshot:
 
 ```
-python -m scripts.provenance_snapshot
+uv run python -m scripts.provenance_snapshot
 ```
 
 On Linux, xattrs will usually be empty; that's fine. The snapshot still

@@ -13,7 +13,7 @@ Input can be:
   - or any mix of the above.
 
 Usage:
-    python -m scripts.manifest.correspondence_manifest \
+    uv run python -m scripts.manifest.correspondence_manifest \
         --config cfg.yaml \
         --out manifest.yaml \
         path/to/inbox.mbox path/to/eml-dir/

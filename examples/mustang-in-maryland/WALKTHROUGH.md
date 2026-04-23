@@ -17,9 +17,11 @@ All commands below assume:
 
 - You are in the **repo root**, not in `examples/mustang-in-maryland/`,
   unless otherwise noted. (The scripts are Python modules invoked via
-  `python -m scripts.X`; they must be run from the directory
+  `uv run python -m scripts.X`; they must be run from the directory
   containing the `scripts/` package.)
-- You ran `pip install -e .` from the repo root.
+- You ran `uv sync` from the repo root (see
+  [Install](../../README.md#install) for the one-time
+  [uv](https://docs.astral.sh/uv/) setup).
 
 ```sh
 cd /path/to/personal-advocacy-toolkit
@@ -47,7 +49,7 @@ You should see:
 ## 1. Hash the evidence tree
 
 ```sh
-python -m scripts.evidence_hash \
+uv run python -m scripts.evidence_hash \
   --root examples/mustang-in-maryland/evidence \
   --manifest examples/mustang-in-maryland/.evidence-manifest.sha256
 ```
@@ -61,7 +63,7 @@ README). The manifest is a plain text file, one line per file,
 Verify against the tree:
 
 ```sh
-python -m scripts.evidence_hash \
+uv run python -m scripts.evidence_hash \
   --root examples/mustang-in-maryland/evidence \
   --manifest examples/mustang-in-maryland/.evidence-manifest.sha256 \
   --verify
@@ -74,7 +76,7 @@ Expected: `ok: N files verified against .../.evidence-manifest.sha256`.
 ## 2. Capture the provenance snapshot
 
 ```sh
-python -m scripts.provenance_snapshot \
+uv run python -m scripts.provenance_snapshot \
   --root examples/mustang-in-maryland/evidence \
   --snapshot-dir examples/mustang-in-maryland/provenance/snapshots
 ```
@@ -96,7 +98,7 @@ the JSON→TXT step from the structured layer (safe — it's just
 regeneration):
 
 ```sh
-python -m scripts.ingest.email_json_to_txt \
+uv run python -m scripts.ingest.email_json_to_txt \
   examples/mustang-in-maryland/evidence/emails/structured \
   --out-dir /tmp/mustang-txt-demo
 ```
@@ -108,7 +110,7 @@ landing in `/tmp/mustang-txt-demo/`. Compare to the shipped
 You can also re-validate the EML→JSON direction:
 
 ```sh
-python -m scripts.ingest.email_eml_to_json \
+uv run python -m scripts.ingest.email_eml_to_json \
   examples/mustang-in-maryland/evidence/emails/raw \
   --out-dir /tmp/mustang-json-demo
 ```
@@ -134,7 +136,7 @@ situation: "Classic-car agreed-value policy, insurer deducted from payout and mo
 loss_date: "2025-03-15"
 YAML
 
-python -m scripts.intake.situation_classify \
+uv run python -m scripts.intake.situation_classify \
   --answers /tmp/mustang-answers.yaml \
   --out /tmp/mustang-intake.yaml
 ```
@@ -144,7 +146,7 @@ rules printed (`counterparty_kind=insurer`, plus keyword hits such
 as `salvage`). Output file is a minimal `case-intake.yaml`.
 
 ```sh
-python -m scripts.intake.authorities_lookup \
+uv run python -m scripts.intake.authorities_lookup \
   --situation insurance_dispute --jurisdiction MD
 ```
 
@@ -154,7 +156,7 @@ scope. Every entry carries a `status` (populated / stub) and the
 global disclaimer banner.
 
 ```sh
-python -m scripts.intake.deadline_calc \
+uv run python -m scripts.intake.deadline_calc \
   --situation insurance_dispute --jurisdiction MD \
   --loss-date 2025-03-15 \
   --notice-of-loss 2025-03-16 \
@@ -170,7 +172,7 @@ Expected: one deadline entry per rule in `data/deadlines.yaml` for
 ## 5. Build the complaint packet
 
 ```sh
-python -m scripts.packet.build \
+uv run python -m scripts.packet.build \
   examples/mustang-in-maryland/complaint_packet/packet-manifest.yaml \
   -v
 ```
@@ -208,7 +210,7 @@ When you want every forensic fact about one specific file, run the
 per-file tool:
 
 ```sh
-python -m scripts.provenance \
+uv run python -m scripts.provenance \
   examples/mustang-in-maryland/evidence/emails/raw/020_2025-08-15_midlife-crisis-opinion-letter.eml \
   --evidence-root examples/mustang-in-maryland/evidence \
   --hash-manifest examples/mustang-in-maryland/.evidence-manifest.sha256 \
@@ -232,7 +234,7 @@ When preparing a regulator/attorney handoff, produce one attestation
 document over the full manifest:
 
 ```sh
-python -m scripts.provenance_bundle \
+uv run python -m scripts.provenance_bundle \
   --manifest examples/mustang-in-maryland/.evidence-manifest.sha256 \
   --evidence-root examples/mustang-in-maryland/evidence \
   --snapshot-dir examples/mustang-in-maryland/provenance/snapshots \
@@ -256,7 +258,7 @@ for what a reviewer looks for.
 ## 7. Draft a letter from case facts
 
 ```sh
-python -m scripts.letters.draft \
+uv run python -m scripts.letters.draft \
   --kind demand \
   --intake examples/mustang-in-maryland/case-facts.yaml \
   --out /tmp/mustang-demand-letter.docx
@@ -270,10 +272,10 @@ pulled from `case-facts.yaml`. Disclaimer footer auto-appended.
 Try the other kinds:
 
 ```sh
-python -m scripts.letters.draft --kind foia         --intake examples/mustang-in-maryland/case-facts.yaml --out /tmp/mustang-foia.docx
-python -m scripts.letters.draft --kind preservation --intake examples/mustang-in-maryland/case-facts.yaml --out /tmp/mustang-preservation.docx
-python -m scripts.letters.draft --kind withdrawal   --intake examples/mustang-in-maryland/case-facts.yaml --out /tmp/mustang-withdrawal.docx
-python -m scripts.letters.draft --kind cease-desist --intake examples/mustang-in-maryland/case-facts.yaml --out /tmp/mustang-cease-desist.docx
+uv run python -m scripts.letters.draft --kind foia         --intake examples/mustang-in-maryland/case-facts.yaml --out /tmp/mustang-foia.docx
+uv run python -m scripts.letters.draft --kind preservation --intake examples/mustang-in-maryland/case-facts.yaml --out /tmp/mustang-preservation.docx
+uv run python -m scripts.letters.draft --kind withdrawal   --intake examples/mustang-in-maryland/case-facts.yaml --out /tmp/mustang-withdrawal.docx
+uv run python -m scripts.letters.draft --kind cease-desist --intake examples/mustang-in-maryland/case-facts.yaml --out /tmp/mustang-cease-desist.docx
 ```
 
 FOIA auto-targets the authority from `data/authorities.yaml` (MIA
@@ -289,7 +291,7 @@ First generate the unified evidence manifest (infers `kind` per file
 from `data/kind_inference.yaml`):
 
 ```sh
-python -m scripts.manifest.evidence_manifest \
+uv run python -m scripts.manifest.evidence_manifest \
   --root examples/mustang-in-maryland/evidence \
   --out examples/mustang-in-maryland/evidence-manifest.yaml
 ```
@@ -299,7 +301,7 @@ Expected: `wrote 68 entries (6 kinds) to .../evidence-manifest.yaml`.
 Then render the dashboard:
 
 ```sh
-python -m scripts.status.case_dashboard \
+uv run python -m scripts.status.case_dashboard \
   --intake examples/mustang-in-maryland/case-facts.yaml \
   --manifest examples/mustang-in-maryland/evidence-manifest.yaml \
   --packet-dir examples/mustang-in-maryland/complaint_packet/
@@ -335,7 +337,7 @@ extra_banned:
   - "414 Aigburth Vale"
 YAML
 
-python -m scripts.publish.pii_scrub \
+uv run python -m scripts.publish.pii_scrub \
   --root examples/mustang-in-maryland/drafts \
   --substitutions /tmp/mustang-subs.yaml \
   --report /tmp/mustang-scrub-dryrun.json
@@ -350,7 +352,7 @@ The scrubber would refuse to run against `evidence/` — try it to see
 the safety rail:
 
 ```sh
-python -m scripts.publish.pii_scrub \
+uv run python -m scripts.publish.pii_scrub \
   --root examples/mustang-in-maryland/evidence \
   --substitutions /tmp/mustang-subs.yaml
 # Expected: "refused: refusing to scrub under an 'evidence/' path" and exit 2
@@ -361,7 +363,7 @@ python -m scripts.publish.pii_scrub \
 ## 10. Verify via tests
 
 ```sh
-pytest
+uv run pytest
 ```
 
 Expected: all 130 tests pass. The synthetic case is the fixture

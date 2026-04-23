@@ -24,7 +24,7 @@ Emits a JSON catalog that:
 
 Usage:
 
-    python -m scripts.publish.docx_catalog <unpacked-dir>/ \\
+    uv run python -m scripts.publish.docx_catalog <unpacked-dir>/ \\
         [--claude Claude] \\
         [--commenters .claude-commenters.yaml] \\
         [--out catalog.json]

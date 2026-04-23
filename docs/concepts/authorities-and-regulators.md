@@ -25,7 +25,7 @@ Authorities are indexed by two dimensions:
 Running the lookup:
 
 ```sh
-python -m scripts.intake.authorities_lookup \
+uv run python -m scripts.intake.authorities_lookup \
   --situation insurance_dispute --jurisdiction MD
 ```
 

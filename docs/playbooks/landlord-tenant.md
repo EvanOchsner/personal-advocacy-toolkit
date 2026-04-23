@@ -88,4 +88,4 @@ right first call — tenant matters are a common legal-aid specialty.
 - [`docs/concepts/evidence-integrity.md`](../concepts/evidence-integrity.md)
   — photo/video xattr capture is especially important for habitability.
 - Run the lookup:
-  `python -m scripts.intake.authorities_lookup --situation landlord_tenant --jurisdiction <state>`
+  `uv run python -m scripts.intake.authorities_lookup --situation landlord_tenant --jurisdiction <state>`

@@ -65,4 +65,4 @@ RIP Medical Debt.
 
 - [`docs/concepts/authorities-and-regulators.md`](../concepts/authorities-and-regulators.md)
 - Run the lookup:
-  `python -m scripts.intake.authorities_lookup --situation medical_billing --jurisdiction <state>`
+  `uv run python -m scripts.intake.authorities_lookup --situation medical_billing --jurisdiction <state>`

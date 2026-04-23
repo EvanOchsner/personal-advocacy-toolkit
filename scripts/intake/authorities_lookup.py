@@ -6,11 +6,11 @@ This is reference information, not legal advice. Output always includes
 a disclaimer banner.
 
 Usage:
-    python -m scripts.intake.authorities_lookup \\
+    uv run python -m scripts.intake.authorities_lookup \\
         --situation insurance_dispute --jurisdiction MD
 
     # JSON output for pipelines
-    python -m scripts.intake.authorities_lookup \\
+    uv run python -m scripts.intake.authorities_lookup \\
         --situation insurance_dispute --jurisdiction MD --format json
 
 Behavior notes:

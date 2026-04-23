@@ -2,7 +2,7 @@
 """Batch EXIF scrub over a directory of images.
 
 Usage:
-    python -m scripts.publish.exif_scrub --root images/ [--apply]
+    uv run python -m scripts.publish.exif_scrub --root images/ [--apply]
 
 Strategy:
     Re-save each image through Pillow without the EXIF block. This also drops

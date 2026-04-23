@@ -15,14 +15,15 @@ Expected time: 20-30 minutes.
 
 ## 0. Prerequisites
 
-- Python 3.11 or 3.12.
+- Python 3.11 or 3.12 (uv will provision it if missing).
 - `git` on your PATH.
-- `pip install -e .` from the repo root.
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) installed,
+  and `uv sync` run from the repo root.
 
 ```sh
 git clone https://github.com/EvanOchsner/personal-advocacy-toolkit.git
 cd personal-advocacy-toolkit
-pip install -e .
+uv sync
 ```
 
 ## 1. Pick a working directory for your case
@@ -76,7 +77,7 @@ party can tell nothing has changed since you collected it. Build the
 SHA-256 manifest:
 
 ```sh
-python -m scripts.evidence_hash \
+uv run python -m scripts.evidence_hash \
   --root evidence \
   --manifest .evidence-manifest.sha256
 ```
@@ -95,13 +96,13 @@ manifest to prove nothing has been edited.
 Verify the manifest against the tree (no rewriting):
 
 ```sh
-python -m scripts.evidence_hash --root evidence --manifest .evidence-manifest.sha256 --verify
+uv run python -m scripts.evidence_hash --root evidence --manifest .evidence-manifest.sha256 --verify
 ```
 
 Verify *and* flag untracked files:
 
 ```sh
-python -m scripts.evidence_hash --root evidence --manifest .evidence-manifest.sha256 --check
+uv run python -m scripts.evidence_hash --root evidence --manifest .evidence-manifest.sha256 --check
 ```
 
 Full explanation in
@@ -116,7 +117,7 @@ snapshot tool captures them into a timestamped JSON file under
 `provenance/snapshots/` that *can* be committed:
 
 ```sh
-python -m scripts.provenance_snapshot --root evidence
+uv run python -m scripts.provenance_snapshot --root evidence
 ```
 
 Output: "wrote N entries to provenance/snapshots/<UTC-timestamp>.json".
@@ -156,7 +157,7 @@ situation: "Classic-car agreed-value policy, insurer deducted from payout and mo
 loss_date: "2025-03-15"
 YAML
 
-python -m scripts.intake.situation_classify \
+uv run python -m scripts.intake.situation_classify \
   --answers /tmp/answers.yaml \
   --out /tmp/case-intake.yaml
 ```
@@ -170,10 +171,10 @@ example for what a fully-populated intake looks like).
 ## 7. Look up authorities and deadlines
 
 ```sh
-python -m scripts.intake.authorities_lookup \
+uv run python -m scripts.intake.authorities_lookup \
   --situation insurance_dispute --jurisdiction MD
 
-python -m scripts.intake.deadline_calc \
+uv run python -m scripts.intake.deadline_calc \
   --situation insurance_dispute --jurisdiction MD \
   --loss-date 2025-03-15
 ```

@@ -144,7 +144,7 @@ For the synthetic case, the narrative lives at
 ## Build the packet
 
 ```sh
-python -m scripts.packet.build complaint_packet/packet-manifest.yaml -v
+uv run python -m scripts.packet.build complaint_packet/packet-manifest.yaml -v
 ```
 
 Or via the shell wrapper (same thing; doesn't require you to be in
@@ -172,7 +172,7 @@ and (if set) date.
 Re-hash evidence after any changes:
 
 ```sh
-python -m scripts.evidence_hash --root evidence --manifest .evidence-manifest.sha256 --verify
+uv run python -m scripts.evidence_hash --root evidence --manifest .evidence-manifest.sha256 --verify
 ```
 
 Spot-check the packet:
@@ -189,7 +189,7 @@ Spot-check the packet:
 Show where every file in Exhibit B came from:
 
 ```sh
-python -m scripts.provenance \
+uv run python -m scripts.provenance \
   --manifest .evidence-manifest.sha256 \
   --out provenance/report.json
 ```
@@ -210,7 +210,7 @@ consent, cease-and-desist — all template-driven from the same
 `case-facts.yaml`:
 
 ```sh
-python -m scripts.letters.draft \
+uv run python -m scripts.letters.draft \
   --kind demand \
   --intake case-facts.yaml \
   --out drafts/demand-letter.docx

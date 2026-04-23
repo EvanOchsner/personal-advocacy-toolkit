@@ -45,12 +45,12 @@ unless ``--strict`` is set.
 
 CLI
 ---
-    python -m scripts.letters.draft \\
+    uv run python -m scripts.letters.draft \\
         --kind demand \\
         --intake case-intake.yaml \\
         --out letter.docx
 
-    python -m scripts.letters.draft --kind foia --intake case-intake.yaml \\
+    uv run python -m scripts.letters.draft --kind foia --intake case-intake.yaml \\
         --out request.docx --recipient-name "Maryland Insurance Administration"
 
 Kinds: demand | foia | preservation | withdrawal | cease-desist

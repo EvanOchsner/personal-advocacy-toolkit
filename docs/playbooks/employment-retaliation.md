@@ -70,7 +70,7 @@ Most situations in this toolkit have forgiving deadlines. Employment
 does not. The tool will:
 
 ```
-python -m scripts.intake.deadline_calc \
+uv run python -m scripts.intake.deadline_calc \
   --situation employment_retaliation --jurisdiction <state> \
   --loss-date <adverse-action-date>
 ```
@@ -107,4 +107,4 @@ find-a-lawyer tool; state-level bar referral services.
   — especially critical when the employer controls primary sources.
 - [`docs/concepts/authorities-and-regulators.md`](../concepts/authorities-and-regulators.md)
 - Run the lookup:
-  `python -m scripts.intake.authorities_lookup --situation employment_retaliation --jurisdiction <state>`
+  `uv run python -m scripts.intake.authorities_lookup --situation employment_retaliation --jurisdiction <state>`

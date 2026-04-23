@@ -102,4 +102,4 @@ contingency.
 
 - [`docs/concepts/evidence-integrity.md`](../concepts/evidence-integrity.md)
 - Run the lookup:
-  `python -m scripts.intake.authorities_lookup --situation debt_collector --jurisdiction <state>`
+  `uv run python -m scripts.intake.authorities_lookup --situation debt_collector --jurisdiction <state>`

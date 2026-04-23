@@ -186,13 +186,13 @@ Per-phase scratch artifacts go under `<PROJECT_ROOT>/.tmp/<docx-stem>_*`.
    read it for context).
 5. Unpack the docx:
    ```bash
-   python -m scripts.publish.docx_unpack <input.docx> .tmp/<stem>_unpacked/
+   uv run python -m scripts.publish.docx_unpack <input.docx> .tmp/<stem>_unpacked/
    ```
 
 ### Phase 1 — Catalog
 
 ```bash
-python -m scripts.publish.docx_catalog .tmp/<stem>_unpacked/ \
+uv run python -m scripts.publish.docx_catalog .tmp/<stem>_unpacked/ \
   --claude "<author>" \
   --commenters <PROJECT_ROOT>/.claude-commenters.yaml \
   --out .tmp/<stem>_catalog.json
@@ -289,7 +289,7 @@ Build merged replies at `.tmp/<stem>_replies_merged.json`:
 If `--dry-run`, stop here.
 
 ```bash
-python -m scripts.publish.docx_apply_replies \
+uv run python -m scripts.publish.docx_apply_replies \
   .tmp/<stem>_unpacked/ \
   .tmp/<stem>_replies_merged.json \
   --author "<author>" --initials "<initials>" \
@@ -313,7 +313,7 @@ before handoff.
 Repack:
 
 ```bash
-python -m scripts.publish.docx_pack .tmp/<stem>_unpacked/ <output.docx> \
+uv run python -m scripts.publish.docx_pack .tmp/<stem>_unpacked/ <output.docx> \
   --original <input.docx>
 ```
 
@@ -322,8 +322,8 @@ python -m scripts.publish.docx_pack .tmp/<stem>_unpacked/ <output.docx> \
 Re-unpack the output:
 
 ```bash
-python -m scripts.publish.docx_unpack <output.docx> .tmp/<stem>_verify/
-python -m scripts.publish.docx_catalog .tmp/<stem>_verify/ --claude "<author>" \
+uv run python -m scripts.publish.docx_unpack <output.docx> .tmp/<stem>_verify/
+uv run python -m scripts.publish.docx_catalog .tmp/<stem>_verify/ --claude "<author>" \
   --out .tmp/<stem>_verify_catalog.json
 ```
 
@@ -412,14 +412,14 @@ entry). Use this when preparing a `.docx` for a counterparty.
 
 ```bash
 # Strip all comments; keep sidecar to restore later.
-python -m scripts.publish.docx_comment_roundtrip \
+uv run python -m scripts.publish.docx_comment_roundtrip \
     --extract \
     --in drafts/demand-letter.docx \
     --out out/demand-letter-clean.docx \
     --sidecar out/demand-letter-comments.yaml
 
 # Restore onto the stripped copy.
-python -m scripts.publish.docx_comment_roundtrip \
+uv run python -m scripts.publish.docx_comment_roundtrip \
     --inject \
     --in out/demand-letter-clean.docx \
     --sidecar out/demand-letter-comments.yaml \

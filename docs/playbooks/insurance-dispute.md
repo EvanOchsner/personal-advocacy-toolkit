@@ -65,8 +65,8 @@ Everything the insurer said in writing is exhibit material. Run each
 `.eml` through:
 
 ```
-python -m scripts.ingest.email_eml_to_json <input>  --out-dir evidence/emails/structured
-python -m scripts.ingest.email_json_to_txt evidence/emails/structured --out-dir evidence/emails/readable
+uv run python -m scripts.ingest.email_eml_to_json <input>  --out-dir evidence/emails/structured
+uv run python -m scripts.ingest.email_json_to_txt evidence/emails/structured --out-dir evidence/emails/readable
 ```
 
 `raw/` keeps the RFC-5322 original; `structured/` is canonical JSON
@@ -78,7 +78,7 @@ exhibit.
 Narrow your entire inbox to just this dispute:
 
 ```
-python -m scripts.manifest.correspondence_manifest \
+uv run python -m scripts.manifest.correspondence_manifest \
   --config search.yaml --out correspondence-manifest.yaml \
   path/to/inbox.mbox
 ```
@@ -113,7 +113,7 @@ exhibits as a single PDF (or per-exhibit uploads).
 Run the packet build:
 
 ```
-python -m scripts.packet.build complaint_packet/packet-manifest.yaml
+uv run python -m scripts.packet.build complaint_packet/packet-manifest.yaml
 ```
 
 Outputs a merged PDF plus per-exhibit standalone PDFs.
@@ -128,7 +128,7 @@ Outputs a merged PDF plus per-exhibit standalone PDFs.
 Run:
 
 ```
-python -m scripts.intake.authorities_lookup --situation insurance_dispute --jurisdiction MD
+uv run python -m scripts.intake.authorities_lookup --situation insurance_dispute --jurisdiction MD
 ```
 
 to see the current shortlist for your state.
@@ -136,7 +136,7 @@ to see the current shortlist for your state.
 ### 7. Compute deadlines
 
 ```
-python -m scripts.intake.deadline_calc \
+uv run python -m scripts.intake.deadline_calc \
   --situation insurance_dispute --jurisdiction MD \
   --loss-date 2025-03-15
 ```
@@ -211,7 +211,7 @@ decision windows, and unfair-practice definitions.
 Run the lookup tool to see the current shortlist:
 
 ```
-python -m scripts.intake.authorities_lookup --situation insurance_dispute --jurisdiction CA
+uv run python -m scripts.intake.authorities_lookup --situation insurance_dispute --jurisdiction CA
 ```
 
 **Relevant California statutory framework** (confirm with counsel):
@@ -238,7 +238,7 @@ window.
 Compute the concrete windows for a given loss date:
 
 ```
-python -m scripts.intake.deadline_calc \
+uv run python -m scripts.intake.deadline_calc \
   --situation insurance_dispute --jurisdiction CA \
   --loss-date 2025-03-15
 ```

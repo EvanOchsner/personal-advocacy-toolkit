@@ -16,12 +16,12 @@ optionally merge in per-ingester manifests produced by the Phase 3B
 non-email ingesters (SMS / screenshot / voicemail / EOB) via `--merge`.
 
 Usage:
-    python -m scripts.manifest.evidence_manifest \\
+    uv run python -m scripts.manifest.evidence_manifest \\
         --root examples/mustang-in-maryland/evidence \\
         --out  examples/mustang-in-maryland/evidence-manifest.yaml
 
     # Optionally merge Phase 3B manifests:
-    python -m scripts.manifest.evidence_manifest \\
+    uv run python -m scripts.manifest.evidence_manifest \\
         --root examples/mustang-in-maryland/evidence \\
         --merge examples/mustang-in-maryland/ingest/sms-manifest.yaml \\
         --merge examples/mustang-in-maryland/ingest/eob-manifest.yaml \\

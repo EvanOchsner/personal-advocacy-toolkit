@@ -17,7 +17,7 @@ The cover page makes three things explicit, every time:
 Usable either as a library (import `build_appendix_cover`) or as a
 CLI:
 
-    python -m scripts.packet.appendix_cover \\
+    uv run python -m scripts.packet.appendix_cover \\
         --title "Counterparty Policy Reference" \\
         --counterparty "Acme Widgets, Inc." \\
         --output out/cover.pdf \\

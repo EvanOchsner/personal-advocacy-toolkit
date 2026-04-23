@@ -8,7 +8,7 @@ version = "0.0.0"
 description = "Evidence-integrity and packet-assembly tooling for non-technical people organizing fact-heavy disputes."
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "Apache-2.0" }
+license = "Apache-2.0"
 license-files = ["LICENSE"]
 authors = [{ name = "advocacy-toolkit contributors" }]
 keywords = [
@@ -75,6 +75,13 @@ where = ["scripts"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+
+[tool.ruff.lint.per-file-ignores]
+# Tests use `pytest.importorskip(...)` before real imports (E402), bind
+# call results to `result` for readability even when only side-effects
+# are asserted (F841), and use short loop variables like `l` in
+# comprehensions over label lists (E741).
+"tests/**" = ["E402", "F841", "E741"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

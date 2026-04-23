@@ -2,7 +2,7 @@
 """Compute a SHA-256 manifest for an evidence tree.
 
 Usage:
-    python -m scripts.evidence_hash [--root DIR] [--manifest FILE]
+    uv run python -m scripts.evidence_hash [--root DIR] [--manifest FILE]
                                     [--config advocacy.toml]
                                     [--verify] [--check]
 

@@ -21,9 +21,9 @@ records about it:
   6. Verdict      — one-line human summary combining the above.
 
 Usage:
-    python -m scripts.provenance PATH             # human-readable report
-    python -m scripts.provenance PATH --forensic  # YAML for lawyer/regulator
-    python -m scripts.provenance PATH --verify    # silent unless warnings; exit 1 on any ⚠
+    uv run python -m scripts.provenance PATH             # human-readable report
+    uv run python -m scripts.provenance PATH --forensic  # YAML for lawyer/regulator
+    uv run python -m scripts.provenance PATH --verify    # silent unless warnings; exit 1 on any ⚠
 
 For the whole-packet attestation case ("produce one document of
 provenance for a regulator"), see `scripts/provenance_bundle.py`.

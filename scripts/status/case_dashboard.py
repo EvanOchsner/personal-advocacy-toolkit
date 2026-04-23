@@ -24,7 +24,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from scripts.intake._common import DISCLAIMER, data_dir, find_repo_root, load_yaml
+from scripts.intake._common import DISCLAIMER, data_dir, load_yaml
 
 
 DASHBOARD_DISCLAIMER = (

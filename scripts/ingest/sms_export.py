@@ -43,7 +43,7 @@ Canonical JSON schema per message:
     }
 
 Usage:
-    python -m scripts.ingest.sms_export EXPORT.xml \
+    uv run python -m scripts.ingest.sms_export EXPORT.xml \
         --out-dir data/sms/ \
         [--manifest data/sms/manifest.yaml] \
         [--force]

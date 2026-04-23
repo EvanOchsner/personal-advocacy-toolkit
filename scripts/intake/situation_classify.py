@@ -12,12 +12,12 @@ router_answers.keywords (substring-match against the free-text
 fall through to the "unknown" slug.
 
 Usage:
-    python -m scripts.intake.situation_classify \\
+    uv run python -m scripts.intake.situation_classify \\
         --answers intake-answers.yaml \\
         --out case-intake.yaml
 
     # interactive (only if stdin is a tty)
-    python -m scripts.intake.situation_classify --out case-intake.yaml
+    uv run python -m scripts.intake.situation_classify --out case-intake.yaml
 
 Answers-file schema (all fields optional except `situation`):
     claimant_name: str

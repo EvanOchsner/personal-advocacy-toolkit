@@ -20,10 +20,10 @@ python-docx outputs are not byte-identical across runs because both
 embed a timestamp in the file, but content and structure are stable.
 
 CLI:
-    python -m scripts.synthetic_case.regenerate --all
-    python -m scripts.synthetic_case.regenerate --only valuation
-    python -m scripts.synthetic_case.regenerate --only photos --only complaint
-    python -m scripts.synthetic_case.regenerate --root <alt-case-root>
+    uv run python -m scripts.synthetic_case.regenerate --all
+    uv run python -m scripts.synthetic_case.regenerate --only valuation
+    uv run python -m scripts.synthetic_case.regenerate --only photos --only complaint
+    uv run python -m scripts.synthetic_case.regenerate --root <alt-case-root>
 """
 
 from __future__ import annotations
@@ -341,7 +341,7 @@ def regenerate_photos(case_root: Path) -> list[Path]:
 
 
 def _render_photo(out: Path, spec: PhotoSpec) -> None:
-    from PIL import Image, ImageDraw, ImageFont
+    from PIL import Image, ImageDraw
 
     W, H = 1600, 1200
     img = Image.new("RGB", (W, H), color=spec.bg)
@@ -483,7 +483,6 @@ def _draw_wrapped(draw, text, font, xy, max_w, *, fill) -> None:
 def regenerate_complaint(case_root: Path) -> Path:
     """Render the MIA complaint markdown to a real .docx."""
     from docx import Document
-    from docx.shared import Pt
     from docx.enum.text import WD_ALIGN_PARAGRAPH
 
     src = case_root / "drafts" / "mia-complaint.md"

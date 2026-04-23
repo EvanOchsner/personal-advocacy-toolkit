@@ -29,7 +29,7 @@ in one or two sentences. Examples of good framings:
 
 What should the tool do? Try to be specific about:
 
-- CLI signature (`python -m scripts.foo --bar BAZ`).
+- CLI signature (`uv run python -m scripts.foo --bar BAZ`).
 - Inputs (file formats, directory layout).
 - Outputs (where things land, what shape the output takes).
 - Whether this is a new tool or an extension to an existing one.

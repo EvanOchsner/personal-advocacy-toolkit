@@ -32,7 +32,7 @@ echo "=========================================================="
 # exif_scrub exits 1 if any image has surviving EXIF/GPS/XMP/etc.
 # Dry-run (no --apply): only scans. Synthetic examples should be clean;
 # if not, the offending file is printed and we fail.
-if python -m scripts.publish.exif_scrub --root examples/; then
+if uv run python -m scripts.publish.exif_scrub --root examples/; then
   echo "  EXIF post-check: OK"
 else
   echo "  EXIF post-check: FAIL" >&2
@@ -56,7 +56,7 @@ mkdir -p "$DOCX_OUT_DIR"
 while IFS= read -r -d '' DOCX; do
   DOCX_COUNT=$((DOCX_COUNT + 1))
   OUT="$DOCX_OUT_DIR/$(echo "$DOCX" | tr '/' '_').docx"
-  if python -m scripts.publish.docx_metadata_scrub --in "$DOCX" --out "$OUT"; then
+  if uv run python -m scripts.publish.docx_metadata_scrub --in "$DOCX" --out "$OUT"; then
     echo "  OK: $DOCX"
   else
     echo "  FAIL: $DOCX" >&2
@@ -83,7 +83,7 @@ echo "=========================================================="
 # exist on this CLI (the script is strict-by-default: exit 1 on any
 # survivor). We pass --report so the sidecar JSON is reviewable.
 PII_REPORT="$TMPDIR/pii_scrub_report.json"
-if python -m scripts.publish.pii_scrub \
+if uv run python -m scripts.publish.pii_scrub \
     --root examples/ \
     --substitutions ci/example-subs.yaml \
     --report "$PII_REPORT"; then

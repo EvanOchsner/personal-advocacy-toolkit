@@ -38,7 +38,7 @@ situation: "Classic-car agreed-value policy, insurer deducted from payout and mo
 loss_date: "2025-03-15"
 YAML
 
-python -m scripts.intake.situation_classify \
+uv run python -m scripts.intake.situation_classify \
   --answers /tmp/answers.yaml \
   --out /tmp/case-intake.yaml
 ```
@@ -66,7 +66,7 @@ the full list of recognized situations and their router rules.
 ## 2. Look up authorities
 
 ```sh
-python -m scripts.intake.authorities_lookup \
+uv run python -m scripts.intake.authorities_lookup \
   --situation insurance_dispute --jurisdiction MD
 ```
 
@@ -85,7 +85,7 @@ don't rely on them.
 For JSON output (pipe into other tools):
 
 ```sh
-python -m scripts.intake.authorities_lookup \
+uv run python -m scripts.intake.authorities_lookup \
   --situation insurance_dispute --jurisdiction MD --format json
 ```
 
@@ -96,7 +96,7 @@ for the full landscape.
 ## 3. Compute deadlines
 
 ```sh
-python -m scripts.intake.deadline_calc \
+uv run python -m scripts.intake.deadline_calc \
   --situation insurance_dispute --jurisdiction MD \
   --loss-date 2025-03-15
 ```
@@ -110,7 +110,7 @@ You can add more reference dates for deadlines that aren't measured
 from loss-date:
 
 ```sh
-python -m scripts.intake.deadline_calc \
+uv run python -m scripts.intake.deadline_calc \
   --situation insurance_dispute --jurisdiction MD \
   --loss-date 2025-03-15 \
   --notice-of-loss 2025-03-16 \
@@ -144,7 +144,7 @@ for your jurisdiction.
 ## 5. Render the dashboard
 
 ```sh
-python -m scripts.status.case_dashboard \
+uv run python -m scripts.status.case_dashboard \
   --intake case-facts.yaml \
   --manifest correspondence-manifest.yaml \
   --packet-dir complaint_packet/

@@ -54,25 +54,29 @@ situation's reference material.
 Uses the fully synthetic Mustang-in-Maryland example. Nothing real is
 at stake.
 
+Prerequisite: [uv](https://docs.astral.sh/uv/getting-started/installation/)
+(e.g. `curl -LsSf https://astral.sh/uv/install.sh | sh` or
+`brew install uv`).
+
 ```sh
 git clone https://github.com/EvanOchsner/personal-advocacy-toolkit.git
 cd personal-advocacy-toolkit
-pip install -e .
+uv sync
 
 # See the case context
 cat examples/mustang-in-maryland/case-facts.yaml
 
 # 1. Hash every file under the evidence tree
-python -m scripts.evidence_hash \
+uv run python -m scripts.evidence_hash \
   --root examples/mustang-in-maryland/evidence \
   --manifest examples/mustang-in-maryland/.evidence-manifest.sha256
 
 # 2. Look up which authorities have jurisdiction over a MD insurance dispute
-python -m scripts.intake.authorities_lookup \
+uv run python -m scripts.intake.authorities_lookup \
   --situation insurance_dispute --jurisdiction MD
 
 # 3. Compute statute-of-limitations / notice deadlines from the loss date
-python -m scripts.intake.deadline_calc \
+uv run python -m scripts.intake.deadline_calc \
   --situation insurance_dispute --jurisdiction MD \
   --loss-date 2025-03-15
 ```
@@ -135,13 +139,22 @@ tests/         pytest suite; fixtures derived from the synthetic case
 
 ## Install
 
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/) first,
+then:
+
 ```sh
-pip install -e .
+uv sync                                 # core runtime
 # Optional extras:
-pip install -e ".[dev]"              # pytest + ruff
-pip install -e ".[publish]"          # Pillow, pypdf, reportlab for scrubbers
-pip install -e ".[synthetic-case]"   # Pillow, python-docx for regenerating the example
+uv sync --extra dev                     # pytest + ruff
+uv sync --extra publish                 # Pillow, pypdf, reportlab for scrubbers
+uv sync --extra synthetic-case          # Pillow, python-docx for regenerating the example
+# Combine extras with multiple --extra flags, e.g.:
+uv sync --extra dev --extra synthetic-case
 ```
+
+Every CLI invocation in the docs is shown as `uv run python -m scripts...`;
+`uv run` resolves the project-managed virtualenv automatically, so there is
+nothing to activate.
 
 `git filter-repo` (for history sanitizing) is a separate binary;
 install via your package manager (`brew install git-filter-repo` on

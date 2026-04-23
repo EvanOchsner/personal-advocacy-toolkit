@@ -49,7 +49,7 @@ Canonical per-line-item record:
     }
 
 Usage:
-    python -m scripts.ingest.medical_eob eob.csv \
+    uv run python -m scripts.ingest.medical_eob eob.csv \
         --out-dir data/medical/ \
         [--manifest data/medical/manifest.yaml] \
         [--force]

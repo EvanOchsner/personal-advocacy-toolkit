@@ -36,7 +36,7 @@ absent. Users who need evidence-grade web capture should:
     playwright install chromium
 
 Usage:
-    python -m scripts.ingest.screenshot_capture URL \
+    uv run python -m scripts.ingest.screenshot_capture URL \
         --out-dir data/screenshots/ \
         [--manifest data/screenshots/manifest.yaml] \
         [--backend auto|playwright|chrome|stub] \

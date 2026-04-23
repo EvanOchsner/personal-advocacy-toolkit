@@ -28,7 +28,7 @@ Library API:
 
 Usage:
 
-    python -m scripts.publish.docx_unpack <input.docx> <output-dir>/
+    uv run python -m scripts.publish.docx_unpack <input.docx> <output-dir>/
 """
 from __future__ import annotations
 

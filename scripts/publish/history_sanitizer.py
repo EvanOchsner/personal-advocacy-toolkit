@@ -2,7 +2,7 @@
 """Wrap `git filter-repo` with a substitutions file and a post-check.
 
 Usage:
-    python -m scripts.publish.history_sanitizer \\
+    uv run python -m scripts.publish.history_sanitizer \\
         --scratch-dir /abs/path/to/fresh-clone \\
         --substitutions substitutions.yaml
 
@@ -28,7 +28,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import shutil
 import subprocess
 import sys
 import tempfile

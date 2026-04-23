@@ -69,6 +69,13 @@ jobs:
           uv run python -m scripts.letters.draft --help
           uv run python -m scripts.status.case_dashboard --help
           uv run python -m scripts.publish.pii_scrub --help
+          uv run python -m scripts.app.validate --help
+
+      - name: Case-map schema validator (examples/mustang-in-maryland)
+        # Validates entities.yaml + events.yaml against the synthetic case.
+        # Catches schema drift between the validator and the seed fixture
+        # the test suite relies on.
+        run: uv run python -m scripts.app.validate --case-dir examples/mustang-in-maryland
 
   # Publication-safety post-checks: exercise the Phase 3C scrubbers against
   # examples/ and templates/ and assert that nothing survives. A failure

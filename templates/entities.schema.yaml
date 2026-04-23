@@ -1,0 +1,24 @@
+# entities.schema.yaml — documentation schema for case-map entities.yaml
+#
+# This file is reference material for humans. Actual validation happens
+# in scripts/app/_schema.py; the authoritative answer to "is this valid?"
+# is `uv run python -m scripts.app.validate --case-dir .`.
+
+entities:
+  - id: "<string, required, lowercase alnum + [-_]>"
+    role: "self | ally | neutral | adversary"      # required
+    display_name: "<string>"                        # required unless ref: resolves a name
+    labels: ["<string>", "..."]                     # optional
+    color: "#rrggbb or #rgb"                        # optional; else palette-derived
+    icon: "person | org | court | regulator | witness | counsel | journalist | venue"
+    ref: "<dotted path into case-facts.yaml>"       # optional, e.g. parties.insurer
+    match:                                          # optional; used to tag correspondence
+      emails: ["<address>", "..."]
+      names: ["<substring>", "..."]
+    notes_file: "<relative path under case dir>"    # optional, .md
+
+relationships:
+  - from: "<entity id>"
+    to: "<entity id>"
+    kind: "adverse_to | represented_by | retained_by | witness_to | venue_for | regulates | allied_with | other"
+    summary: "<string>"                             # optional

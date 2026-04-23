@@ -1,0 +1,20 @@
+# events.schema.yaml — documentation schema for case-map events.yaml
+#
+# Reference material for humans. Authoritative validator is
+# scripts/app/_schema.py, invoked via
+# `uv run python -m scripts.app.validate --case-dir .`.
+#
+# Evidence-manifest entries are NOT used on the timeline. Evidence
+# appears only in the drilldown panel via events[*].refs.evidence.
+
+events:
+  - id: "<string, unique per case>"
+    date: "<YYYY-MM-DD>"                             # required, ISO-8601
+    kind: "incident | filing | hearing | call | meeting | other"
+    title: "<string>"                                # required
+    entities: ["<entity id>", "..."]                 # required; each id must exist
+    summary: "<string>"                              # optional one-liner
+    refs:                                            # optional
+      correspondence: ["<relative path>", "..."]
+      letters: ["<relative path>", "..."]
+      evidence: ["<relative path>", "..."]

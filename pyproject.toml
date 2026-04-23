@@ -37,6 +37,7 @@ dependencies = [
     "pikepdf>=8",         # deterministic PDF metadata + /ID control (compile_reference)
     "Jinja2>=3",          # scripts/letters/draft.py — template rendering
     "python-docx>=1",     # scripts/letters/draft.py — .docx output
+    "defusedxml>=0.7",    # safe XML parsing for docx_catalog / docx_apply_replies
 ]
 
 [project.optional-dependencies]

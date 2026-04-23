@@ -1,6 +1,6 @@
 # personal-advocacy-toolkit
 
-Evidence-integrity and packet-assembly tooling for non-technical people
+An AI toolkit for Evidence-integrity and packet-assembly tooling for non-technical people
 organizing a fact-heavy dispute so that a regulator, advocate, journalist,
 or attorney can act on it effectively.
 

@@ -49,12 +49,14 @@ from __future__ import annotations
 import argparse
 import sys
 import zipfile
-from copy import deepcopy
 from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree as ET
 
 import yaml
+
+from scripts.publish.docx_pack import save_members as _write_all
+from scripts.publish.docx_unpack import load_members as _read_all
 
 
 W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
@@ -89,30 +91,6 @@ def _tag(ns: str, name: str) -> str:
 
 class RoundTripError(Exception):
     pass
-
-
-# ---------------------------------------------------------------------------
-# Zip helpers
-
-
-def _read_all(path: Path) -> list[tuple[zipfile.ZipInfo, bytes]]:
-    """Read every member (info, data) in original order."""
-    out: list[tuple[zipfile.ZipInfo, bytes]] = []
-    with zipfile.ZipFile(path, "r") as z:
-        for info in z.infolist():
-            out.append((info, z.read(info.filename)))
-    return out
-
-
-def _write_all(path: Path, members: list[tuple[zipfile.ZipInfo, bytes]]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as z:
-        for info, data in members:
-            # Preserve the original ZipInfo (name, date, compress_type).
-            new_info = zipfile.ZipInfo(filename=info.filename, date_time=info.date_time)
-            new_info.compress_type = info.compress_type
-            new_info.external_attr = info.external_attr
-            z.writestr(new_info, data)
 
 
 # ---------------------------------------------------------------------------

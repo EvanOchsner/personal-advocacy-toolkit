@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>{{ caption }} — case map</title>
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>{{ caption }}</h1>
+    <p class="disclaimer">{{ disclaimer }}</p>
+    <p class="counts">
+      <span>{{ entity_count }} entities</span>
+      <span>·</span>
+      <span>{{ relationship_count }} relationships</span>
+      <span>·</span>
+      <span>{{ event_count }} events</span>
+    </p>
+  </header>
+
+  <main class="app-main">
+    <section class="graph-panel" aria-label="Case graph">
+      <div class="column-labels">
+        <span class="col-label col-ally">Self &amp; allies</span>
+        <span class="col-label col-neutral">Neutrals</span>
+        <span class="col-label col-adversary">Adversaries</span>
+      </div>
+      <svg id="graph" aria-label="case entity graph"></svg>
+    </section>
+
+    <aside id="panel" class="drilldown" aria-live="polite">
+      <div class="panel-empty">
+        <p>Select an entity in the graph to see details.</p>
+        <p class="panel-empty-note">
+          All details shown are loaded from files on disk under the case
+          directory. Nothing here is inferred from outside sources.
+        </p>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="app-footer">
+    <p>{{ disclaimer }}</p>
+    <p class="airgap-note">
+      Local render only · binds 127.0.0.1 · no external requests
+    </p>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/graph.js"></script>
+  <script src="/static/js/panel.js"></script>
+</body>
+</html>

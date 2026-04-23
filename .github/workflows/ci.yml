@@ -77,6 +77,35 @@ jobs:
         # the test suite relies on.
         run: uv run python -m scripts.app.validate --case-dir examples/mustang-in-maryland
 
+      - name: Case-map airgap check (no external URLs in static/ or templates/)
+        # Fail the build if any file under scripts/app/static/ or
+        # scripts/app/templates/ references an external URL. XML namespace
+        # URIs (e.g. http://www.w3.org/2000/svg) are identifiers, not fetch
+        # targets, and are allowlisted. Mirrors the policy documented in
+        # docs/concepts/case-map-app.md and the unit test
+        # test_no_external_urls_in_static_tree.
+        run: |
+          set -e
+          ROOTS="scripts/app/static scripts/app/templates"
+          PATTERN='(http://|https://|//cdn\.|//fonts\.)'
+          ALLOWLIST='http://www.w3.org/'
+          FAIL=0
+          for root in $ROOTS; do
+            while IFS= read -r -d '' f; do
+              # Strip allowlisted identifiers before scanning.
+              if grep -E "$PATTERN" <(sed "s#${ALLOWLIST}##g" "$f") >/dev/null; then
+                echo "external URL found in $f:"
+                grep -nE "$PATTERN" <(sed "s#${ALLOWLIST}##g" "$f")
+                FAIL=1
+              fi
+            done < <(find "$root" -type f \( -name '*.html' -o -name '*.css' -o -name '*.js' \) -print0)
+          done
+          if [ "$FAIL" -ne 0 ]; then
+            echo "FAIL: case-map airgap rule violated — see docs/concepts/case-map-app.md"
+            exit 1
+          fi
+          echo "OK: no external URLs under scripts/app/ static or templates."
+
   # Publication-safety post-checks: exercise the Phase 3C scrubbers against
   # examples/ and templates/ and assert that nothing survives. A failure
   # here means either (a) a real-case artifact has leaked into the repo, or

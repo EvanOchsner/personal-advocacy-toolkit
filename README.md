@@ -110,6 +110,13 @@ verify without trusting the author:
 - **Publication-safety scrubbers** with mandatory post-checks
   (`scripts/publish/`) — the failure mode these exist to prevent is a
   "redacted" PDF whose text layer still contains the redacted content.
+- **Case-map app** (`scripts/app/`) — local-only browser UI that
+  renders a three-column entity graph (self/allies, neutrals,
+  adversaries) and drilldown panel from `entities.yaml` +
+  `case-facts.yaml`. Binds 127.0.0.1, strict CSP, no external
+  resources. See
+  [`docs/concepts/case-map-app.md`](docs/concepts/case-map-app.md)
+  for the airgap caveats and the "paranoid mode" recipe.
 
 Full write-up and interop notes:
 [`docs/concepts/evidence-integrity.md`](docs/concepts/evidence-integrity.md).

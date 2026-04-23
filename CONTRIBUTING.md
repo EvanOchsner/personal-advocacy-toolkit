@@ -41,6 +41,29 @@ Before pushing, the publication-safety and banned-terms post-checks can be
 rehearsed locally with `bash scripts/ci/local_postchecks.sh`, which mirrors
 the CI job.
 
+## Airgap rules for the case-map app
+
+Anything under `scripts/app/` must remain airgapped. Concretely:
+
+- `scripts/app/server.py`'s `BIND_HOST` stays at `"127.0.0.1"` — do not
+  add a CLI flag to change it. (True network isolation is covered by
+  the "paranoid mode" recipe in
+  [`docs/concepts/case-map-app.md`](docs/concepts/case-map-app.md).)
+- The HTTP Content-Security-Policy stays `'self'`-only for every
+  fetch-bearing directive. No `https:` sources, no `*`.
+- Files under `scripts/app/static/` and `scripts/app/templates/` must
+  not contain `http://`, `https://`, `//cdn.`, or `//fonts.` — CI
+  greps for these and fails the build on any match. XML namespace
+  URIs (e.g. `http://www.w3.org/2000/svg`) are allowlisted because
+  browsers treat them as identifiers, not fetch targets.
+- The markdown renderer in `scripts/app/_markdown.py` must not grow
+  support for raw HTML passthrough, external anchor tags, or image
+  embedding. These are intentional omissions, not missing features.
+- No new runtime dependencies for this app. The package-wide rule
+  ("kept small on purpose") applies here most strictly — the airgap
+  surface is easier to audit with stdlib + Jinja2 than with a larger
+  framework.
+
 ## Authorship model
 
 The initial build is split across phase-scoped subagent tracks. See

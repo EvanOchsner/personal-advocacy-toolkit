@@ -1,8 +1,12 @@
-# personal-advocacy-toolkit
+# PAT: Personal Advocacy Toolkit
 
-An AI toolkit for Evidence-integrity and packet-assembly tooling for non-technical people
-organizing a fact-heavy dispute so that a regulator, advocate, journalist,
-or attorney can act on it effectively.
+<p align="center">
+  <img src="PAT-logo-3.png" alt="PAT Logo" width="400">
+</p>
+
+This is an AI toolkit to help individuals in a dispute understand the facts, legal and regulatory frameworks in play, find advocates who can assist you, and what information they need to help you.
+The goal is that a non-technical person can organize their evidence and arguments in the dispute so that an attorney, regulator, journalist, or other advocate can act on it effectively.
+
 
 ## Thesis
 
@@ -11,12 +15,25 @@ bill, a harassment campaign, a landlord trying to retaliate, a debt
 collector who won't follow the rules, a scam that took your money.
 There are people and offices whose job it is to help: state regulators,
 consumer-protection advocates, attorneys, journalists. They can only
-help you if you hand them something they can act on. This toolkit does
-the legwork: it organizes your digital evidence with forensic
-integrity, helps you understand what's happening, and packages the
-result in the form each helper needs.
+help you if you hand them something they can act on.
+
+This toolkit does the legwork:
+- Organize your digital evidence, tracking forensic signatures (hashes, timestamps, xattrs) to prove integrity. Just drop files into the project root and ask the agent or process and file them, or use included skills and scripts to automate bulk loading and processing of emails, photos, phone and SMS records and other data in a consistent, auditable way.
+- Evidence integrity: git pre-commit hooks ensure everything filed under `evidence/` cannot be overwritten without an explicit override.
+- Automatically extract full machine searchable text from pdfs, html documents and emails that obscure the plaintext. Uses version-controlled tools that can be audited and fine-tuned to ensure fidelity and reproducibility.
+- Helps you locate the exact text of policies, regulations, laws from trusted public sources and store within the project as original copies plus machine-searchable plaintext markdown versions.
+- Skills and tools to draft correspondence, filings, complaints, briefs and other written documents.
+- Interactive comment system with Anti-hallucination guard rails: Specialized subagents are included to fact check, answer questions and provide analysis **using only the project materials**. Subagents are denied web search or network access and instructed to use only project materials to fact-check, analyze, answer questions or propose any text.
+- Interactive case map and timeline: an interactive dashboard view showing allied, neutral and adversarial parties in the dispute, relationships among parties, and a timeline of events in the case. You can interact with the parties and events on the timeline to get citations and links to all tracked project documents associated with that entity/event.
 
 **Do the legwork so whoever helps you can actually help you.**
+
+## Core principles
+
+- Understand and document the facts of the case. If you are acting in good faith and the other party is not, the facts are on your side and you need to document them in a thorough, airtight manner.
+- Every dispute has a case folder that holds information we believe to be the ground truth in the dispute. YOU are the steward of information pulled inside the project. The agent and other resources help you find the right authorities, laws, policies, etc. but ultimately you need to use your own judgement to ensure you are adding the correct source materials to the case folder.
+- Every assertion, claim and analysis must be grounded in materials in the case folder. If additional information is required that's not in the project, you must track down that information, vet it, and have the agent pull it into the project as a tracked, searchable document.
+
 
 ## What this isn't
 
@@ -26,19 +43,16 @@ result in the form each helper needs.
   disclaimer.
 - **Not a substitute for counsel.** When you need a lawyer, hire one.
   The toolkit makes you a better client, not your own attorney.
-- **Not a litigation-automation platform.** There are good projects for
-  that (Suffolk LIT Lab's Document Assembly Line, Docassemble). This
-  one handles the *pre-filing* evidence-organization step those
-  projects generally assume has already happened.
 - **Not for criminal-matter evidence collection.** The chain-of-custody
   model here is designed for civil and regulatory contexts. Criminal
   evidentiary standards are stricter and should involve law enforcement.
+- **Not a tool for mass-producing slop.** These tools are intended to help people acting in good faith protect themselves from bad actors by understanding and demonstrating the facts of the case and rules in play. Using them correctly
 
 ## Situations it fits
 
 The initial playbooks cover:
 
-- Insurance bad-faith / claim handling (**worked** for Maryland)
+- Insurance bad-faith / claim handling
 - Medical balance-billing and surprise bills
 - Consumer scams (romance, crypto, impersonation, fake invoices)
 - Harassment and cyberbullying

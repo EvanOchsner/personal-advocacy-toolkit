@@ -123,6 +123,35 @@ Expected: 20 JSON files in `/tmp/mustang-json-demo/`, each with
 diffs are possible; the `source_sha256` and body_text fields should
 match exactly.)
 
+### PDF and standalone HTML (demonstration)
+
+The Mustang case ships its policy reference as Markdown, not as
+scanned PDFs, but the same ingest tools work for any PDF or HTML you
+drop into your own case folder:
+
+```sh
+# PDF — pypdf for native text, ocrmypdf fallback if no text layer.
+uv run python -m scripts.ingest.pdf_to_text \
+  path/to/some-policy.pdf \
+  --out-dir /tmp/mustang-pdf-demo \
+  --manifest /tmp/mustang-pdf-demo/manifest.yaml
+
+# Standalone HTML — stdlib HTML→text, preserves links and list structure.
+uv run python -m scripts.ingest.html_to_text \
+  path/to/some-portal-page.html \
+  --out-dir /tmp/mustang-html-demo \
+  --manifest /tmp/mustang-html-demo/manifest.yaml
+```
+
+Both produce the same three-layer shape (`raw/`, `structured/`,
+`human/`) and append a manifest entry keyed by `source_id` (first 16
+chars of the source SHA-256). For PDFs, the structured JSON records
+`ocr_applied`, `ocr_engine`, and `text_chars` so a reviewer can see
+where extraction yielded nothing and re-run after installing
+`ocrmypdf` (`brew install ocrmypdf` on macOS). See
+[`docs/tutorials/02-ingesting-evidence.md`](../../docs/tutorials/02-ingesting-evidence.md)
+for the full reference.
+
 ---
 
 ## 4. Classify the situation and look up authorities

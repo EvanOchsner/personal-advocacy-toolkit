@@ -165,6 +165,67 @@ shape.
 
 <!-- TODO: verify after dogfood pass -->
 
+## PDF ingest (with optional OCR)
+
+Adversaries sometimes deliver evidence as scanned, image-only PDFs
+that defeat plain-text search. `scripts/ingest/pdf_to_text.py` runs
+each PDF through pypdf for native text extraction first, and falls
+back to `ocrmypdf` (an optional system binary, **not** a Python
+dependency) if no text layer is present:
+
+```sh
+uv run python -m scripts.ingest.pdf_to_text \
+  evidence/policy/auto-policy.pdf \
+  --out-dir evidence/pdfs \
+  --manifest evidence/pdfs/manifest.yaml
+```
+
+Output:
+
+```
+evidence/pdfs/
+  raw/<source_id>.pdf            # byte-identical copy of the input
+  structured/<source_id>.json    # provenance + extraction metadata
+  human/<source_id>.txt          # plaintext transcript (grep-able)
+  manifest.yaml                  # one entry per ingested PDF
+```
+
+The structured JSON records `ocr_applied` (true/false), `ocr_engine`
+(e.g. `"ocrmypdf 16.10.0"`), `page_count`, and `text_chars` so a
+reviewer can spot pages where extraction yielded nothing. Install
+`ocrmypdf` via your package manager (`brew install ocrmypdf` on
+macOS) when you need to OCR scanned exhibits; the tool emits a clear
+warning and skips OCR otherwise.
+
+`--force` overwrites an existing manifest entry with the same
+`source_id`. Without it, re-runs on already-ingested files fail loud
+to protect against accidental clobber.
+
+## Standalone HTML ingest
+
+Insurer portals and consumer-facing emails sometimes deliver content
+as HTML where the visible text is nontrivial to recover (nested
+tables, inline styles, no plaintext alternative). The email pipeline
+above already handles HTML bodies inside MIME messages, but for
+**standalone** `.html` / `.htm` files saved from a browser, use:
+
+```sh
+uv run python -m scripts.ingest.html_to_text \
+  evidence/portal-pages/claim-status.html \
+  --out-dir evidence/html \
+  --manifest evidence/html/manifest.yaml
+```
+
+The renderer is stdlib-only (`html.parser.HTMLParser` plus
+`html.unescape`); no third-party HTML library is added to the
+project. It strips `<script>` / `<style>` content, preserves block
+structure, renders links as `text (https://...)` so URLs stay
+grep-able, and decodes character entities. The `<title>` element is
+captured into the structured JSON.
+
+You can also pass a directory; every `.html` and `.htm` file inside
+(non-recursive) is processed.
+
 ## Hash and snapshot after every ingest
 
 After any ingest run:

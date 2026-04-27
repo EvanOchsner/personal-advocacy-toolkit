@@ -32,11 +32,15 @@ CLI:
 from __future__ import annotations
 
 import argparse
-import shutil
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
+
+from scripts.ingest._pdf import (
+    extract_text as _pdf_extract_text,
+    ocr_pdf as _ingest_ocr_pdf,
+    pdf_has_text_layer as _ingest_pdf_has_text_layer,
+)
 
 from ._convert import to_pdf
 from ._hash import sha256_file
@@ -65,56 +69,17 @@ FIDELITY_CHARS_PER_PAGE_FLOOR = 200
 
 
 def _pdf_has_text_layer(pdf: Path) -> bool:
-    """Return True if `pdf` has any extractable text on any page."""
-    try:
-        from pypdf import PdfReader
-    except ModuleNotFoundError:
-        return True  # Can't inspect; assume yes and skip OCR.
-    try:
-        reader = PdfReader(str(pdf))
-    except Exception:
-        return True
-    for page in reader.pages:
-        try:
-            text = page.extract_text() or ""
-        except Exception:
-            continue
-        if text.strip():
-            return True
-    return False
+    """Backwards-compatible alias for `scripts.ingest._pdf.pdf_has_text_layer`."""
+    return _ingest_pdf_has_text_layer(pdf)
 
 
 def _ocr_pdf(src: Path, workdir: Path) -> Path:
-    """Run `ocrmypdf` on `src`; return the OCR'd path, or `src` on skip.
+    """Backwards-compatible alias for `scripts.ingest._pdf.ocr_pdf`.
 
-    If `ocrmypdf` is not on PATH, emits a stderr warning and returns the
-    original PDF unchanged. Never raises for a missing binary — OCR is a
-    nice-to-have, not a build prerequisite.
+    Returns just the path (drops the ocr_applied flag) to preserve the
+    original signature used elsewhere in this module.
     """
-    if _pdf_has_text_layer(src):
-        return src
-    ocrmypdf = shutil.which("ocrmypdf")
-    if not ocrmypdf:
-        print(
-            f"warning: {src.name} appears to be an image-only PDF and "
-            "ocrmypdf is not on PATH; skipping OCR.",
-            file=sys.stderr,
-        )
-        return src
-    out = workdir / f"ocr-{src.stem}.pdf"
-    result = subprocess.run(
-        [ocrmypdf, "--skip-text", str(src), str(out)],
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0 or not out.is_file():
-        print(
-            f"warning: ocrmypdf failed on {src.name}; using original. "
-            f"stderr: {result.stderr.strip()[:200]}",
-            file=sys.stderr,
-        )
-        return src
+    out, _ = _ingest_ocr_pdf(src, workdir)
     return out
 
 
@@ -509,23 +474,8 @@ def _extract_text(src: Path, workdir: Path) -> str | None:
     except Exception:
         return None
     pdf = _ocr_pdf(pdf, workdir) if suffix == ".pdf" else pdf
-    try:
-        from pypdf import PdfReader
-    except ModuleNotFoundError:
-        return None
-    try:
-        reader = PdfReader(str(pdf))
-    except Exception:
-        return None
-    chunks: list[str] = []
-    for page in reader.pages:
-        try:
-            t = page.extract_text() or ""
-        except Exception:
-            t = ""
-        if t.strip():
-            chunks.append(t.strip())
-    return "\n\n".join(chunks) if chunks else None
+    text = _pdf_extract_text(pdf)
+    return text if text else None
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -31,7 +31,7 @@ This toolkit does the legwork:
 ## Core principles
 
 - Understand and document the facts of the case. If you are acting in good faith and the other party is not, the facts are on your side and you need to document them in a thorough, airtight manner.
-- Every dispute has a case folder that holds information we believe to be the ground truth in the dispute. YOU are the steward of information pulled inside the project. The agent and other resources help you find the right authorities, laws, policies, etc. but ultimately you need to use your own judgement to ensure you are adding the correct source materials to the case folder.
+- Every dispute has a case folder that holds information you believe to be the ground truth in the dispute. YOU are the steward of information pulled inside the project. The agent and other resources help you find the right authorities, laws, policies, etc. but ultimately you need to use your own judgement to ensure you are adding the correct source materials to the case folder.
 - Every assertion, claim and analysis must be grounded in materials in the case folder. If additional information is required that's not in the project, you must track down that information, vet it, and have the agent pull it into the project as a tracked, searchable document.
 
 
@@ -46,7 +46,7 @@ This toolkit does the legwork:
 - **Not for criminal-matter evidence collection.** The chain-of-custody
   model here is designed for civil and regulatory contexts. Criminal
   evidentiary standards are stricter and should involve law enforcement.
-- **Not a tool for mass-producing slop.** These tools are intended to help people acting in good faith protect themselves from bad actors by understanding and demonstrating the facts of the case and rules in play. Using them correctly
+- **Not a tool for mass-producing slop.** These tools are intended to help people acting in good faith protect themselves from bad actors by understanding and demonstrating the facts of the case and rules in play. Using them as intended means meticulously constructing the facts and arguments for your specific dispute. The goal is to produce the antithesis of careless, vibe-lawyered AI slop.
 
 ## Situations it fits
 

@@ -9,6 +9,14 @@ A conversational wrapper around `scripts/intake/authorities_lookup.py`.
 The script is the source of truth; this skill makes it usable without
 the user memorizing flags.
 
+This is the **local-only** half of a dual-process lookup. It reads
+`data/authorities.yaml` and nothing else. For the full picture —
+local lookup + independent web research + reconciliation — invoke
+[authorities-reconcile](../authorities-reconcile/SKILL.md) instead.
+Use this skill directly when the session is offline, the user
+explicitly wants the offline-only answer, or a scripted pipeline
+needs a deterministic result.
+
 ## When this skill fires
 
 - User asks "who regulates X" or "who do I file this with."

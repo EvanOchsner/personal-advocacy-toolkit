@@ -1,0 +1,14 @@
+{
+  "synthetic": true,
+  "message_id": "<20250403T0814.009@synthetic-case.example>",
+  "date": "2025-04-03T08:14:00-04:00",
+  "from": {"name": "Sally Ridesdale", "email": "sally.ridesdale@example.com"},
+  "to": [{"name": "Harlan Whitlock", "email": "harlan.whitlock@chesapeake-indemnity-mutual.example"}],
+  "cc": [{"name": "Joyce Pemberton", "email": "jpemberton@midatlantic-vehicle-appraisers.example"}],
+  "subject": "Scope of MAVA inspection — will ACV use agreed-value endorsement?",
+  "thread_slug": "mava-inspection",
+  "beat": "appraiser_inspection",
+  "body_text_path": "../readable/009_2025-04-03_sally-scope-question.txt",
+  "raw_path": "../raw/009_2025-04-03_sally-scope-question.eml",
+  "notes": "Claimant raises the agreed-value-vs-vendor-ACV question in writing before inspection. No response from insurer on record — that silence is itself load-bearing."
+}

@@ -75,7 +75,7 @@ needs a deterministic result.
 
 ## Synthetic example
 
-For Mustang-in-Maryland the lookup returns:
+For Maryland-Mustang the lookup returns:
 
 - **regulator:** Maryland Insurance Administration — the primary
   forum. This becomes the `authority` block in the packet manifest.

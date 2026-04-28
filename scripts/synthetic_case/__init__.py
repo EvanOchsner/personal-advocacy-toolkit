@@ -1,4 +1,4 @@
-"""Regenerators for the Mustang-in-Maryland synthetic example artifacts.
+"""Regenerators for the Maryland-Mustang synthetic example artifacts.
 
 Phase 2 shipped several example artifacts as markdown fallbacks because
 Pillow / reportlab / python-docx were not available in that authoring

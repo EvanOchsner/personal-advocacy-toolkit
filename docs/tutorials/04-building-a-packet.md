@@ -11,12 +11,12 @@ rebuild it — once the manifest is written, `build.py` handles the
 rest.
 
 Running example: the
-[`Mustang-in-Maryland`](../../examples/mustang-in-maryland/) synthetic
+[`Maryland-Mustang`](../../examples/maryland-mustang/) synthetic
 case, which ships a complete `packet-manifest.yaml` driving a
 7-exhibit complaint to the Maryland Insurance Administration.
 
 ```sh
-cd examples/mustang-in-maryland
+cd examples/maryland-mustang
 ```
 
 ## What a packet is
@@ -59,7 +59,7 @@ Example (abbreviated from Mustang's):
 schema_version: "1.0"
 
 packet:
-  name: "mustang-in-maryland-mia"
+  name: "maryland-mustang-mia"
 
   authority:
     name: "Maryland Insurance Administration"
@@ -72,11 +72,11 @@ packet:
     intake_url: "https://insurance.maryland.gov/Consumer/Pages/FileAComplaint.aspx"
 
   complainant:
-    name: "Delia Vance"
+    name: "Sally Ridesdale"
     mailing_address: |
-      Delia Vance
+      Sally Ridesdale
       Towson, MD 21204
-    email: "delia.vance@example.invalid"
+    email: "sally.ridesdale@example.invalid"
 
   respondent:
     name: "Chesapeake Indemnity Mutual"
@@ -85,7 +85,7 @@ packet:
 
   complaint:
     source: "../drafts/mia-complaint.md"
-    title: "Consumer Complaint Narrative — Delia Vance v. Chesapeake Indemnity Mutual"
+    title: "Consumer Complaint Narrative — Sally Ridesdale v. Chesapeake Indemnity Mutual"
 
   output_dir: "."
 
@@ -156,7 +156,7 @@ bash scripts/packet/build_pdf.sh complaint_packet/packet-manifest.yaml -v
 
 Expected outputs under `complaint_packet/`:
 
-- `mustang-in-maryland-mia-mia-packet.pdf` — the merged packet.
+- `maryland-mustang-mia-mia-packet.pdf` — the merged packet.
 - `exhibit-A-full-policy-form-set.pdf`, `exhibit-B-...`, ... — per-
   exhibit standalones.
 - `appendix-cim-policy-reference.pdf` — the compiled governing-
@@ -226,5 +226,5 @@ interactive), or fails (with `--strict`).
 
 - [`05-going-public-safely.md`](05-going-public-safely.md) — if (and
   only if) you decide to publish a sanitized derivative.
-- [`examples/mustang-in-maryland/WALKTHROUGH.md`](../../examples/mustang-in-maryland/WALKTHROUGH.md)
+- [`examples/maryland-mustang/WALKTHROUGH.md`](../../examples/maryland-mustang/WALKTHROUGH.md)
   — the full synthetic end-to-end run.

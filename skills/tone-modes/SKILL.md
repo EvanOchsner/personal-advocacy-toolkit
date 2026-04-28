@@ -79,7 +79,7 @@ and read it.
 
 ## Synthetic example
 
-Casual-mode note in the Mustang-in-Maryland file:
+Casual-mode note in the Maryland-Mustang file:
 
 > They're pretending the specialist-shop rate is a customary-rate
 > problem. It's not. It's them trying to re-underwrite an

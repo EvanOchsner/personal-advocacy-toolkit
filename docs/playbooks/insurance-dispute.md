@@ -7,7 +7,7 @@
 
 This is the *worked* playbook: Maryland is populated with real
 authorities and real deadline hooks. The synthetic
-[`Mustang-in-Maryland`](../../examples/mustang-in-maryland/) case
+[`Maryland-Mustang`](../../examples/maryland-mustang/) case
 exercises every mechanic described below.
 
 For other states: the mechanics transfer, but the authority names,
@@ -274,7 +274,7 @@ Contributions welcome via PR against `data/authorities.yaml`,
 ## See also
 
 - Worked example:
-  [`examples/mustang-in-maryland/WALKTHROUGH.md`](../../examples/mustang-in-maryland/WALKTHROUGH.md)
+  [`examples/maryland-mustang/WALKTHROUGH.md`](../../examples/maryland-mustang/WALKTHROUGH.md)
 - Tutorial:
   [`docs/tutorials/03-understanding-the-situation.md`](../tutorials/03-understanding-the-situation.md)
 - Authorities concept:

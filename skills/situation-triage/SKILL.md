@@ -54,7 +54,7 @@ can see the whole picture, and does the user's framing hold up?
 
 ## Synthetic example
 
-For Mustang-in-Maryland the initial draft listed the $5,280.50
+For Maryland-Mustang the initial draft listed the $5,280.50
 deduction as the lead grievance. Triage should flag: the
 salvage-transfer-during-negotiations (2025-06-24) is the cleaner
 procedural violation and makes a stronger lead. The deduction is a

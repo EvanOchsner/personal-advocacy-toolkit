@@ -72,7 +72,7 @@ Full write-up and interop notes: [`docs/concepts/evidence-integrity.md`](docs/co
 
 ## Why this might interest academic and scholarly readers
 
-- **Reproducible audit trails on synthetic data.** The fully synthetic [Mustang-in-Maryland](examples/mustang-in-maryland/) example exercises every pipeline end-to-end with no real PII at stake — a citable artifact for legal-tech, HCI, or AI-safety coursework and clinics.
+- **Reproducible audit trails on synthetic data.** The fully synthetic [Maryland-Mustang](examples/maryland-mustang/) example exercises every pipeline end-to-end with no real PII at stake — a citable artifact for legal-tech, HCI, or AI-safety coursework and clinics.
 - **Networkless-subagent design as a concrete anti-hallucination pattern.** The "deny network, restrict to project files, reject replies with external URLs" architecture in [`skills/docx-comment-roundtrip/`](skills/docx-comment-roundtrip/) is implementable in any agent harness and is, to our knowledge, an underexplored pattern in the published literature on LLM grounding.
 - **Apache-2.0 with explicit patent grant.** Permissive enough for derivative academic work and downstream legal-aid integration without license friction.
 - **CI on every push** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)): pytest suite, ruff lint, and CLI smoke tests. Fixtures derive from the synthetic case so the test suite doubles as executable documentation.
@@ -80,7 +80,7 @@ Full write-up and interop notes: [`docs/concepts/evidence-integrity.md`](docs/co
 
 ## 60-second demo
 
-Uses the fully synthetic Mustang-in-Maryland example. Nothing real is at stake.
+Uses the fully synthetic Maryland-Mustang example. Nothing real is at stake.
 
 Prerequisite: [uv](https://docs.astral.sh/uv/getting-started/installation/) (e.g. `curl -LsSf https://astral.sh/uv/install.sh | sh` or `brew install uv`).
 
@@ -91,13 +91,13 @@ uv sync
 
 # 1. Launch the local case-map app — three-column entity graph + timeline,
 #    bound to 127.0.0.1 only.
-uv run python -m scripts.app --case examples/mustang-in-maryland
+uv run python -m scripts.app --case examples/maryland-mustang
 
 # 2. In another shell: hash every file under the evidence tree and pin
 #    the manifest.
 uv run python -m scripts.evidence_hash \
-  --root examples/mustang-in-maryland/evidence \
-  --manifest examples/mustang-in-maryland/.evidence-manifest.sha256
+  --root examples/maryland-mustang/evidence \
+  --manifest examples/maryland-mustang/.evidence-manifest.sha256
 
 # 3. Look up which authorities have jurisdiction over a MD insurance dispute.
 uv run python -m scripts.intake.authorities_lookup \
@@ -109,7 +109,7 @@ uv run python -m scripts.intake.deadline_calc \
   --loss-date 2025-03-15
 ```
 
-For the full end-to-end run (ingest → triage → packet → dashboard → publication-safety scrub), see [`examples/mustang-in-maryland/WALKTHROUGH.md`](examples/mustang-in-maryland/WALKTHROUGH.md).
+For the full end-to-end run (ingest → triage → packet → dashboard → publication-safety scrub), see [`examples/maryland-mustang/WALKTHROUGH.md`](examples/maryland-mustang/WALKTHROUGH.md).
 
 For a guided first-time setup against your own situation, see [`docs/tutorials/01-setting-up-your-case.md`](docs/tutorials/01-setting-up-your-case.md).
 
@@ -139,7 +139,7 @@ data/          Community-maintainable reference data (authorities by
                jurisdiction, deadline tables, situation types)
 templates/     Case-intake, letter, and packet-manifest templates
 docs/          Concepts, playbooks, tutorials
-examples/      Fully synthetic worked examples (mustang-in-maryland)
+examples/      Fully synthetic worked examples (maryland-mustang)
 tests/         pytest suite; fixtures derived from the synthetic case
 ```
 

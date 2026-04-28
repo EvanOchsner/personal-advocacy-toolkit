@@ -16,11 +16,11 @@ By the end of this tutorial, you'll know:
   counsel now.
 
 Running example: the
-[`Mustang-in-Maryland`](../../examples/mustang-in-maryland/) synthetic
+[`Maryland-Mustang`](../../examples/maryland-mustang/) synthetic
 case.
 
 ```sh
-cd examples/mustang-in-maryland
+cd examples/maryland-mustang
 ```
 
 ## 1. Classify the situation
@@ -31,7 +31,7 @@ classifier:
 
 ```sh
 cat > /tmp/answers.yaml <<'YAML'
-claimant_name: "Delia Vance"
+claimant_name: "Sally Ridesdale"
 jurisdiction_state: "MD"
 counterparty_kind: "insurer"
 situation: "Classic-car agreed-value policy, insurer deducted from payout and moved vehicle to salvage during active negotiation."
@@ -52,7 +52,7 @@ situation by:
   field.
 
 It writes a minimal `case-intake.yaml` tagged with which rules fired.
-For Mustang-in-Maryland you should see:
+For Maryland-Mustang you should see:
 
 ```
 situation_type: insurance_dispute

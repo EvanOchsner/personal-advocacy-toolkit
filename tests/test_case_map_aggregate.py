@@ -15,8 +15,8 @@ from scripts.app._loaders import load_case_map
 CASE_FACTS = dedent(
     """\
     claimant:
-      name: Delia Vance
-      email: delia@example.com
+      name: Sally Ridesdale
+      email: sally@example.com
     parties:
       insurer:
         name: Chesapeake Indemnity Mutual
@@ -31,8 +31,8 @@ ENTITIES = dedent(
         role: self
         ref: claimant
         match:
-          emails: [delia@example.com]
-          names: [Delia Vance]
+          emails: [sally@example.com]
+          names: [Sally Ridesdale]
       - id: cim
         role: adversary
         ref: parties.insurer
@@ -84,7 +84,7 @@ def test_correspondence_matching_by_email(tmp_path: Path) -> None:
                 "date": "2025-04-01",
                 "subject": "Your claim CIM-2025-03-5517",
                 "from": "Harlan Whitlock <claims@cim.example>",
-                "to": "Delia Vance <delia@example.com>",
+                "to": "Sally Ridesdale <sally@example.com>",
                 "message_id": "<a1@cim.example>",
                 "source": "corresp/2025-04-01.eml",
             }
@@ -108,7 +108,7 @@ def test_correspondence_matching_by_name_when_no_email_hit(tmp_path: Path) -> No
                 "date": "2025-04-02",
                 "subject": "Re: Chesapeake Indemnity Mutual position",
                 "from": "someone@unrelated.example",
-                "to": "Delia Vance <delia@example.com>",
+                "to": "Sally Ridesdale <sally@example.com>",
                 "source": "corresp/2025-04-02.eml",
             }
         ]
@@ -185,7 +185,7 @@ def test_chronological_sort(tmp_path: Path) -> None:
                 "date": "2025-04-15",
                 "subject": "middle",
                 "from": "claims@cim.example",
-                "to": "delia@example.com",
+                "to": "sally@example.com",
             }
         ]
     }
@@ -195,7 +195,7 @@ def test_chronological_sort(tmp_path: Path) -> None:
 
 
 def test_mustang_seed_timeline(tmp_path: Path) -> None:
-    case_dir = Path(__file__).parent.parent / "examples" / "mustang-in-maryland"
+    case_dir = Path(__file__).parent.parent / "examples" / "maryland-mustang"
     loaded = load_case_map(case_dir)
     markers = build_timeline(loaded)
     assert len(markers) == 15  # one per event in events.yaml

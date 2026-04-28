@@ -11,7 +11,7 @@ so phase agents don't regress them.)*
    The *patterns* generalize; the *specifics* do not cross the boundary.
 2. **Everything demo-worthy uses the synthetic case.** Tests, fixtures,
    tutorials, and screenshots all run against
-   `examples/mustang-in-maryland/`. If you need a new fixture, extend the
+   `examples/maryland-mustang/`. If you need a new fixture, extend the
    synthetic case — don't pull from anywhere else.
 3. **Evidence integrity is non-negotiable.** Scripts that touch evidence
    must preserve hashes, xattrs, and the three-layer email pipeline. If

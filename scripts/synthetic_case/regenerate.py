@@ -1,7 +1,7 @@
-"""Regenerate the Mustang-in-Maryland synthetic artifacts.
+"""Regenerate the Maryland-Mustang synthetic artifacts.
 
 Three artifact groups are (re)generated from their canonical markdown
-sources under ``examples/mustang-in-maryland/``:
+sources under ``examples/maryland-mustang/``:
 
   valuation  -> evidence/valuation/MidAtlantic-Vehicle-Appraisers-valuation.pdf
   photos     -> evidence/photos/photo-{01,02,03}-*.jpg
@@ -49,7 +49,7 @@ from ._reportlab_theme import SYNTHETIC_STAMP, make_doc, paragraph_styles
 SEED = 42
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_CASE_ROOT = REPO_ROOT / "examples" / "mustang-in-maryland"
+DEFAULT_CASE_ROOT = REPO_ROOT / "examples" / "maryland-mustang"
 
 
 # ---------------------------------------------------------------------------
@@ -501,7 +501,7 @@ def regenerate_complaint(case_root: Path) -> Path:
         # description not directly exposed; set via .comments (comments
         # maps to cp:comments which is fine for our "stamp in metadata"
         # requirement). Title is pedagogically useful.
-        cp.title = "MIA Complaint -- Delia Vance v. Chesapeake Indemnity Mutual (SYNTHETIC)"
+        cp.title = "MIA Complaint -- Sally Ridesdale v. Chesapeake Indemnity Mutual (SYNTHETIC)"
         cp.keywords = SYNTHETIC_STAMP
     except Exception:
         pass
@@ -515,7 +515,7 @@ def regenerate_complaint(case_root: Path) -> Path:
 
     footer = section.footer
     footer_p = footer.paragraphs[0]
-    footer_p.text = f"{SYNTHETIC_STAMP} -- Mustang in Maryland teaching example."
+    footer_p.text = f"{SYNTHETIC_STAMP} -- The Maryland Mustang teaching example."
     footer_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     for block in _parse_complaint_blocks(md):
@@ -640,7 +640,7 @@ def main(argv: list[str] | None = None) -> int:
         "--root",
         type=Path,
         default=DEFAULT_CASE_ROOT,
-        help="Case root directory (defaults to examples/mustang-in-maryland).",
+        help="Case root directory (defaults to examples/maryland-mustang).",
     )
     p.add_argument(
         "--all",

@@ -75,7 +75,7 @@ integration with their platforms:
   Maryland insurance playbook is the demonstration case; the template
   shape is usable for other states.
 - **Legal-aid tech staff** who need a stable fixture corpus (the
-  fully-synthetic Mustang-in-Maryland example) to build UX on top of.
+  fully-synthetic Maryland-Mustang example) to build UX on top of.
 
 See [`docs/concepts/evidence-integrity.md`](concepts/evidence-integrity.md)
 for the full interop story and the four independently-verifiable
@@ -87,5 +87,5 @@ regulator and attorney handoff.
 The author's own portfolio. This repo is the generalized, publicly
 shareable derivative of a private project built to fight a single
 Maryland auto-insurance bad-faith dispute. Nothing real from that
-project ships here; the `Mustang-in-Maryland` example is
+project ships here; the `Maryland-Mustang` example is
 fully-synthetic.

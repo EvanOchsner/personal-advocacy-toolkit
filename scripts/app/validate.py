@@ -5,7 +5,7 @@ Usage:
 
 Exits 0 on success with a one-line summary; exits 2 with a human-
 readable CaseMapError on failure. Used in CI against
-examples/mustang-in-maryland/ to catch schema drift early.
+examples/maryland-mustang/ to catch schema drift early.
 """
 from __future__ import annotations
 

@@ -19,7 +19,7 @@ Exit codes:
 
 Usage:
     uv run python -m scripts.packet.packet_manifest_validate \\
-        examples/mustang-in-maryland/complaint_packet/packet-manifest.yaml
+        examples/maryland-mustang/complaint_packet/packet-manifest.yaml
 
     uv run python -m scripts.packet.packet_manifest_validate \\
         path/to/packet-manifest.yaml \\

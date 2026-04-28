@@ -1,0 +1,16 @@
+{
+  "synthetic": true,
+  "message_id": "<20250815T1009.020@midlife-crisis-restorations.example>",
+  "date": "2025-08-15T10:09:33-04:00",
+  "from": {"name": "Arden Moody", "email": "arden@midlife-crisis-restorations.example"},
+  "to": [{"name": "Sally Ridesdale", "email": "sally.ridesdale@example.com"}],
+  "subject": "Opinion letter and parts-market comparables — 1969 Mustang Mach 1",
+  "thread_slug": "midlife-crisis-fact-finding",
+  "beat": "complainant_to_shop_fact_finding",
+  "body_text_path": "../readable/020_2025-08-15_midlife-crisis-opinion-letter.txt",
+  "raw_path": "../raw/020_2025-08-15_midlife-crisis-opinion-letter.eml",
+  "attachments": [
+    {"filename": "midlife-crisis-opinion-letter.pdf", "path_in_case": "drafts/midlife-crisis-opinion-letter.md"},
+    {"filename": "parts-market-comparables.pdf", "path_in_case": "drafts/parts-market-comparables.md"}
+  ]
+}

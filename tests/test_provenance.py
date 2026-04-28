@@ -388,7 +388,7 @@ def test_mustang_emails_eml_via_cli(capsys) -> None:
     eml = (
         repo
         / "examples"
-        / "mustang-in-maryland"
+        / "maryland-mustang"
         / "evidence"
         / "emails"
         / "raw"
@@ -396,9 +396,9 @@ def test_mustang_emails_eml_via_cli(capsys) -> None:
     )
     if not eml.exists():
         pytest.skip("Mustang fixture not present")
-    ev_root = repo / "examples" / "mustang-in-maryland" / "evidence"
-    hash_mf = repo / "examples" / "mustang-in-maryland" / ".evidence-manifest.sha256"
-    snap_dir = repo / "examples" / "mustang-in-maryland" / "provenance" / "snapshots"
+    ev_root = repo / "examples" / "maryland-mustang" / "evidence"
+    hash_mf = repo / "examples" / "maryland-mustang" / ".evidence-manifest.sha256"
+    snap_dir = repo / "examples" / "maryland-mustang" / "provenance" / "snapshots"
 
     rc = provenance.main(
         [

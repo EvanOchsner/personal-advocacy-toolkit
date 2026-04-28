@@ -96,7 +96,7 @@ final push. A clean scrub report is necessary, not sufficient.
 
 ## Synthetic example
 
-For a Mustang-in-Maryland public write-up the sequence is:
+For a Maryland-Mustang public write-up the sequence is:
 
 1. PII scrub of `drafts/` → write to `publish/`.
 2. DOCX scrub of `publish/mia-complaint.docx`.
@@ -104,7 +104,7 @@ For a Mustang-in-Maryland public write-up the sequence is:
    synthetic photos are `.md` placeholders, real ones would be
    JPEG/HEIC with location metadata).
 4. History sanitizer over the clone. Confirm "Chesapeake
-   Indemnity Mutual" and "Delia Vance" survive (synthetic) while
+   Indemnity Mutual" and "Sally Ridesdale" survive (synthetic) while
    any real name that ever touched a commit message is gone.
 5. Read the resulting bundle out loud. Publish.
 

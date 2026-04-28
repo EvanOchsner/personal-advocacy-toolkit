@@ -1,0 +1,14 @@
+{
+  "synthetic": true,
+  "message_id": "<20250418T1109.011@synthetic-case.example>",
+  "date": "2025-04-18T11:09:41-04:00",
+  "from": {"name": "Sally Ridesdale", "email": "sally.ridesdale@example.com"},
+  "to": [{"name": "Harlan Whitlock", "email": "harlan.whitlock@chesapeake-indemnity-mutual.example"}],
+  "cc": [{"name": "Joyce Pemberton", "email": "jpemberton@midatlantic-vehicle-appraisers.example"}],
+  "subject": "Objection — MAVA report methodology",
+  "thread_slug": "mava-inspection",
+  "beat": "appraiser_dispute",
+  "body_text_path": "../readable/011_2025-04-18_sally-objects-valuation.txt",
+  "raw_path": "../raw/011_2025-04-18_sally-objects-valuation.eml",
+  "notes": "First written objection on record. Cites endorsement by form number — good practice for later regulator packet."
+}

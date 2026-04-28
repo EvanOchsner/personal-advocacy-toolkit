@@ -129,7 +129,7 @@ commenters:
       author: "MIA Intake"
     role: regulator
   - match:
-      author: "Delia Vance"
+      author: "Sally Ridesdale"
     role: complainant
   - match:
       author: "Claude"

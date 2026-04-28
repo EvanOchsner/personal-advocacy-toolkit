@@ -15,7 +15,7 @@ assignees: ''
       as-designed.
 
 **Please do not include real case material.** Reproduce the bug
-against `examples/mustang-in-maryland/` or a minimal synthetic
+against `examples/maryland-mustang/` or a minimal synthetic
 fixture. If the bug only reproduces with your private data, describe
 the shape of the data, not its content.
 
@@ -33,7 +33,7 @@ line if the docs implied different behavior).
 ## Reproduction
 
 ```sh
-# Exact commands, run against examples/mustang-in-maryland/ or a
+# Exact commands, run against examples/maryland-mustang/ or a
 # minimal reproducer. Include `pwd` at the top so we know where you
 # were.
 pwd

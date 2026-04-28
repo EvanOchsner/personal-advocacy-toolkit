@@ -12,19 +12,19 @@ Expected time: 10-15 minutes.
 
 ## 0. Prerequisites
 
-- You completed the [Mustang-in-Maryland walkthrough](../../examples/mustang-in-maryland/WALKTHROUGH.md) at least once (so the synthetic artifacts are on disk). Not strictly required — the app will still run — but the drilldown panel is richer with real files behind the refs.
+- You completed the [Maryland-Mustang walkthrough](../../examples/maryland-mustang/WALKTHROUGH.md) at least once (so the synthetic artifacts are on disk). Not strictly required — the app will still run — but the drilldown panel is richer with real files behind the refs.
 - `uv sync` has been run from the repo root.
 
 ## 1. Launch the app against the synthetic case
 
 ```sh
-uv run python -m scripts.app --case-dir examples/mustang-in-maryland
+uv run python -m scripts.app --case-dir examples/maryland-mustang
 ```
 
 Expected output:
 
 ```
-case-map app serving at http://127.0.0.1:8765/ (case: examples/mustang-in-maryland)
+case-map app serving at http://127.0.0.1:8765/ (case: examples/maryland-mustang)
 This is reference information, not legal advice.
 ```
 
@@ -35,7 +35,7 @@ that's undesirable, pass `--no-browser`.
 
 - **Three columns** in the graph: self + allies on the left,
   neutrals in the centre, adversaries on the right. For the Mustang
-  case that's Delia Vance + her specialist shop + her agent on the
+  case that's Sally Ridesdale + her specialist shop + her agent on the
   left; the Maryland Insurance Administration + the first shop + the
   at-fault driver in the middle; Chesapeake Indemnity Mutual + their
   adjuster + their appraiser on the right.
@@ -49,7 +49,7 @@ that's undesirable, pass `--no-browser`.
 
 ## 2. Inspect an entity
 
-Click on **Delia Vance** (the self node). The drilldown panel now
+Click on **Sally Ridesdale** (the self node). The drilldown panel now
 shows:
 
 - the role chip (`self`),
@@ -62,11 +62,11 @@ shows:
 - every **Event** she's tagged in, which for the self entity is
   currently all 15.
 
-At the same time, the timeline recolours: markers that touch Delia
+At the same time, the timeline recolours: markers that touch Sally
 are drawn in the palette colour assigned to her id; markers that
 don't are dimmed to a faint grey.
 
-Click Delia again to deselect, or click a different node.
+Click Sally again to deselect, or click a different node.
 
 ## 3. Inspect a relationship
 
@@ -79,7 +79,7 @@ Click **CIM** (the insurer node on the right). You should see
 outbound, `→ adjuster_whitlock (retained_by)` and
 `→ appraiser_mava (retained_by)`. Those three lines translate
 directly from the `relationships:` block of
-[`entities.yaml`](../../examples/mustang-in-maryland/entities.yaml).
+[`entities.yaml`](../../examples/maryland-mustang/entities.yaml).
 
 ## 4. Explore the timeline
 
@@ -111,8 +111,8 @@ server with:
 
 ```sh
 uv run python -m scripts.app \
-  --case-dir examples/mustang-in-maryland \
-  --correspondence-manifest examples/mustang-in-maryland/correspondence-manifest.yaml
+  --case-dir examples/maryland-mustang \
+  --correspondence-manifest examples/maryland-mustang/correspondence-manifest.yaml
 ```
 
 The timeline now adds a square marker per email, tagged to the
@@ -150,13 +150,13 @@ When you edit `entities.yaml` or `events.yaml` by hand, validate
 before restarting:
 
 ```sh
-uv run python -m scripts.app.validate --case-dir examples/mustang-in-maryland
+uv run python -m scripts.app.validate --case-dir examples/maryland-mustang
 ```
 
 A clean pass prints:
 
 ```
-OK  examples/mustang-in-maryland: 9 entities, 6 relationships, 15 events, 15 timeline markers.
+OK  examples/maryland-mustang: 9 entities, 6 relationships, 15 events, 15 timeline markers.
 This is reference information, not legal advice.
 ```
 

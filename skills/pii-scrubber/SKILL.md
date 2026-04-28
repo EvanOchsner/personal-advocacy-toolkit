@@ -76,12 +76,12 @@ into `drafts/` first, scrub the copy, and keep the raw untouched.
 
 ## Synthetic example
 
-For a public write-up of Mustang-in-Maryland,
+For a public write-up of Maryland-Mustang,
 `substitutions.yaml` would include:
 
 ```yaml
 # Real → synthetic. Case-sensitive.
-Delia Vance: "Delia Vance"            # already synthetic; no-op anchor
+Sally Ridesdale: "Sally Ridesdale"            # already synthetic; no-op anchor
 CIM-CLS-0000-0000: "CIM-CLS-0000-0000"
 # If the original had been a real case:
 #   Real Name: "Synthetic Name"

@@ -18,7 +18,7 @@ from scripts.app._markdown import render as render_markdown
 from scripts.app.server import BIND_HOST, CSP, make_app
 
 
-CASE_DIR = Path(__file__).parent.parent / "examples" / "mustang-in-maryland"
+CASE_DIR = Path(__file__).parent.parent / "examples" / "maryland-mustang"
 
 
 @pytest.fixture(scope="module")
@@ -60,7 +60,7 @@ def test_index_returns_html_with_csp(app) -> None:
     assert headers["x-frame-options"] == "DENY"
     text = body.decode("utf-8")
     assert "case map" in text.lower()
-    assert "Delia Vance" in text or "Mustang in Maryland" in text
+    assert "Sally Ridesdale" in text or "The Maryland Mustang" in text
 
 
 def test_graph_api(app) -> None:
@@ -83,9 +83,9 @@ def test_entity_api_resolves_case_facts(app) -> None:
     assert status.startswith("200")
     payload = json.loads(body)
     assert payload["id"] == "self"
-    assert payload["display_name"] == "Delia Vance"
+    assert payload["display_name"] == "Sally Ridesdale"
     # resolved should carry through case-facts.yaml claimant fields.
-    assert payload["resolved"].get("email") == "delia.vance@example.com"
+    assert payload["resolved"].get("email") == "sally.ridesdale@example.com"
     # self is the `from` of the adverse_to cim relationship.
     kinds = {(r["to"], r["kind"]) for r in payload["relationships_out"]}
     assert ("cim", "adverse_to") in kinds
@@ -129,7 +129,7 @@ def test_case_file_serves_text(app) -> None:
     assert status.startswith("200")
     assert headers["content-type"].startswith("text/") or "yaml" in headers["content-type"]
     assert headers["content-disposition"].startswith("inline")
-    assert b"Delia Vance" in body
+    assert b"Sally Ridesdale" in body
 
 
 def test_case_file_path_traversal_blocked(app) -> None:

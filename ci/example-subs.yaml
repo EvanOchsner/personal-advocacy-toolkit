@@ -3,7 +3,7 @@
 # Used by the `publication-safety-postchecks` CI job to exercise
 # scripts/publish/pii_scrub.py against examples/ without real-case
 # material. Every LHS below is a synthetic identifier shipped in the
-# Mustang-in-Maryland example; every RHS is a further-synthetic
+# Maryland-Mustang example; every RHS is a further-synthetic
 # placeholder that could appear in a sanitized public write-up.
 #
 # Schema (see scripts/publish/_substitutions.py):
@@ -26,11 +26,11 @@
 # banned terms survive POST-scrub, and in dry-run mode nothing is
 # written so `new_text` is the scrubbed string regardless).
 #
-# All LHS values below are drawn from examples/mustang-in-maryland/.
+# All LHS values below are drawn from examples/maryland-mustang/.
 
 substitutions:
-  "Delia Vance":                  "Jane Doe"
-  "delia.vance@example.com":      "jane.doe@example.invalid"
+  "Sally Ridesdale":                  "Jane Doe"
+  "sally.ridesdale@example.com":      "jane.doe@example.invalid"
   "Harlan Whitlock":              "Adjuster Name"
   "harlan.whitlock@chesapeake-indemnity-mutual.example": "adjuster@insurer.example.invalid"
   "Joyce Pemberton":              "Appraiser Name"

@@ -1,6 +1,6 @@
 """Tests for scripts/letters/draft.py.
 
-Each of the 5 letter kinds is rendered against a Mustang-in-Maryland
+Each of the 5 letter kinds is rendered against a Maryland-Mustang
 synthetic fixture. We assert recipient name, sender name, disclaimer,
 and the per-kind signature phrase are present in the rendered body.
 """
@@ -18,22 +18,22 @@ import yaml  # noqa: E402
 from scripts.letters import draft  # noqa: E402
 
 
-# Synthetic Mustang-in-Maryland intake (fields the drafter reads).
+# Synthetic Maryland-Mustang intake (fields the drafter reads).
 MUSTANG_INTAKE = {
     "schema_version": "0.1",
     "synthetic": True,
-    "case_name": "Mustang in Maryland",
-    "case_slug": "mustang-in-maryland",
+    "case_name": "The Maryland Mustang",
+    "case_slug": "maryland-mustang",
     "situation_type": "insurance_dispute",
     "claimant": {
-        "name": "Delia Vance",
+        "name": "Sally Ridesdale",
         "address": {
             "street": "414 Aigburth Vale",
             "city": "Towson",
             "state": "MD",
             "zip": "21204",
         },
-        "email": "delia.vance@example.com",
+        "email": "sally.ridesdale@example.com",
         "phone": "+1-410-555-0142",
     },
     "jurisdiction": {"state": "MD"},
@@ -84,7 +84,7 @@ def test_draft_each_kind_txt(tmp_path: Path, intake_path: Path, kind: str) -> No
     )
     body = out.read_text(encoding="utf-8")
     # Sender name present.
-    assert "Delia Vance" in body, f"sender name missing in {kind}"
+    assert "Sally Ridesdale" in body, f"sender name missing in {kind}"
     # Disclaimer present.
     assert draft.LETTER_DISCLAIMER in body, f"disclaimer missing in {kind}"
     assert "not legal advice" in body.lower()
@@ -115,7 +115,7 @@ def test_draft_each_kind_docx(tmp_path: Path, intake_path: Path, kind: str) -> N
     rendered = result["rendered_text"]
     assert draft.LETTER_DISCLAIMER in rendered
     assert draft.SIGNATURE_PHRASES[kind].lower() in rendered.lower()
-    assert "Delia Vance" in rendered
+    assert "Sally Ridesdale" in rendered
 
 
 def test_strict_fails_on_missing_required(tmp_path: Path) -> None:

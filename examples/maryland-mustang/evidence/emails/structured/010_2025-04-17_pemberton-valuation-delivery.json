@@ -1,0 +1,17 @@
+{
+  "synthetic": true,
+  "message_id": "<20250417T1633.010@midatlantic-vehicle-appraisers.example>",
+  "date": "2025-04-17T16:33:09-04:00",
+  "from": {"name": "Joyce Pemberton", "email": "jpemberton@midatlantic-vehicle-appraisers.example"},
+  "to": [{"name": "Harlan Whitlock", "email": "harlan.whitlock@chesapeake-indemnity-mutual.example"}],
+  "cc": [{"name": "Sally Ridesdale", "email": "sally.ridesdale@example.com"}],
+  "subject": "MAVA report MAVA-2025-04-0117 — 1969 Mustang Mach 1",
+  "thread_slug": "mava-inspection",
+  "beat": "appraiser_dispute",
+  "body_text_path": "../readable/010_2025-04-17_pemberton-valuation-delivery.txt",
+  "raw_path": "../raw/010_2025-04-17_pemberton-valuation-delivery.eml",
+  "attachments": [
+    {"filename": "MidAtlantic-Vehicle-Appraisers-valuation.pdf", "path_in_case": "evidence/valuation/MidAtlantic-Vehicle-Appraisers-valuation.pdf"}
+  ],
+  "notes": "Report produces a $52,719.50 ACV — below the agreed value — and assumes customary regional rates for the repair estimate. Both are disputed."
+}

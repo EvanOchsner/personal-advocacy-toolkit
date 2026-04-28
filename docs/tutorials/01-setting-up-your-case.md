@@ -7,7 +7,7 @@
 This tutorial takes you from "I cloned the repo" to "my evidence tree
 is hashed, my case facts are captured, and I know which authorities
 to look at next." It uses the
-[`Mustang-in-Maryland`](../../examples/mustang-in-maryland/) synthetic
+[`Maryland-Mustang`](../../examples/maryland-mustang/) synthetic
 case as the running example so you can see every command produce real
 output before you point it at your own situation.
 
@@ -31,7 +31,7 @@ uv sync
 Everything case-specific goes in a separate directory. Two options:
 
 **Option A — use the synthetic example to learn.** Skip step 2 and
-just `cd examples/mustang-in-maryland/`. All commands below assume
+just `cd examples/maryland-mustang/`. All commands below assume
 this for the demo.
 
 **Option B — start a real case.** Create a fresh directory *outside*
@@ -54,7 +54,7 @@ populated `evidence/` and `case-facts.yaml`.
 From inside the example directory:
 
 ```sh
-cd examples/mustang-in-maryland
+cd examples/maryland-mustang
 cat CLAUDE.md
 cat case-facts.yaml
 ```
@@ -150,7 +150,7 @@ the problem yet. For the synthetic case we already know it's
 ```sh
 # Create a minimal answers file
 cat > /tmp/answers.yaml <<'YAML'
-claimant_name: "Delia Vance"
+claimant_name: "Sally Ridesdale"
 jurisdiction_state: "MD"
 counterparty_kind: "insurer"
 situation: "Classic-car agreed-value policy, insurer deducted from payout and moved vehicle to salvage during negotiation."
@@ -194,4 +194,4 @@ output to plan — never to file on.
   you decide to publish a sanitized derivative.
 
 Or jump to the full synthetic walkthrough:
-[`examples/mustang-in-maryland/WALKTHROUGH.md`](../../examples/mustang-in-maryland/WALKTHROUGH.md).
+[`examples/maryland-mustang/WALKTHROUGH.md`](../../examples/maryland-mustang/WALKTHROUGH.md).

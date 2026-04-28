@@ -17,15 +17,15 @@ non-email ingesters (SMS / screenshot / voicemail / EOB) via `--merge`.
 
 Usage:
     uv run python -m scripts.manifest.evidence_manifest \\
-        --root examples/mustang-in-maryland/evidence \\
-        --out  examples/mustang-in-maryland/evidence-manifest.yaml
+        --root examples/maryland-mustang/evidence \\
+        --out  examples/maryland-mustang/evidence-manifest.yaml
 
     # Optionally merge Phase 3B manifests:
     uv run python -m scripts.manifest.evidence_manifest \\
-        --root examples/mustang-in-maryland/evidence \\
-        --merge examples/mustang-in-maryland/ingest/sms-manifest.yaml \\
-        --merge examples/mustang-in-maryland/ingest/eob-manifest.yaml \\
-        --out  examples/mustang-in-maryland/evidence-manifest.yaml
+        --root examples/maryland-mustang/evidence \\
+        --merge examples/maryland-mustang/ingest/sms-manifest.yaml \\
+        --merge examples/maryland-mustang/ingest/eob-manifest.yaml \\
+        --out  examples/maryland-mustang/evidence-manifest.yaml
 
 Idempotent: running twice on the same tree produces byte-identical
 output modulo the `generated_at` timestamp field.

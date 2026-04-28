@@ -72,16 +72,16 @@ def _build_five_thread_docx(tmp_path: Path) -> Path:
     document_xml = "".join(doc_body)
 
     comments = [
-        {"id": 0, "para_id": "T0", "author": "Delia Vance", "initials": "DV",
+        {"id": 0, "para_id": "T0", "author": "Sally Ridesdale", "initials": "SR",
          "date": "2026-04-22T10:00:00Z",
          "text": "F: verify the $58,000 figure against the valuation report"},
-        {"id": 1, "para_id": "T1", "author": "Delia Vance", "initials": "DV",
+        {"id": 1, "para_id": "T1", "author": "Sally Ridesdale", "initials": "SR",
          "date": "2026-04-22T10:05:00Z",
          "text": "Q: does MD's prompt-pay statute actually apply here?"},
-        {"id": 2, "para_id": "T2", "author": "Delia Vance", "initials": "DV",
+        {"id": 2, "para_id": "T2", "author": "Sally Ridesdale", "initials": "SR",
          "date": "2026-04-22T10:10:00Z",
          "text": "A: is the salvage-transfer grievance framed strongly?"},
-        {"id": 3, "para_id": "T3", "author": "Delia Vance", "initials": "DV",
+        {"id": 3, "para_id": "T3", "author": "Sally Ridesdale", "initials": "SR",
          "date": "2026-04-22T10:15:00Z",
          "text": "F+A: verify policy expiration and assess implication"},
         {"id": 4, "para_id": "T4", "author": "Elena Rojas", "initials": "ER",
@@ -159,7 +159,7 @@ def mia_commenters(tmp_path: Path) -> Path:
             """\
             commenters:
               - match:
-                  author: "Delia Vance"
+                  author: "Sally Ridesdale"
                 role: complainant
               - match:
                   author: "Elena Rojas"
@@ -282,7 +282,7 @@ def test_opposing_counsel_risk_flag_round_trips(
                   author: "Elena Rojas"
                 role: opposing-counsel
               - match:
-                  author: "Delia Vance"
+                  author: "Sally Ridesdale"
                 role: complainant
             default_role: unknown
             """

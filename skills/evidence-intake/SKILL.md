@@ -78,21 +78,21 @@ provenance report sees the new item.
 
 ## Synthetic example
 
-For Mustang-in-Maryland, email `018_2025-06-25_delia-escalation.eml`
+For Maryland-Mustang, email `018_2025-06-25_sally-escalation.eml`
 enters the pipeline as:
 
 ```
 # layer 1: the raw EML drops into place
-cp incoming.eml evidence/emails/raw/018_2025-06-25_delia-escalation.eml
+cp incoming.eml evidence/emails/raw/018_2025-06-25_sally-escalation.eml
 
 # layer 2: canonical JSON
 uv run python -m scripts.ingest.email_eml_to_json \
-    --input evidence/emails/raw/018_2025-06-25_delia-escalation.eml \
+    --input evidence/emails/raw/018_2025-06-25_sally-escalation.eml \
     --output evidence/emails/structured/
 
 # layer 3: readable transcript
 uv run python -m scripts.ingest.email_json_to_txt \
-    --input evidence/emails/structured/018_2025-06-25_delia-escalation.json \
+    --input evidence/emails/structured/018_2025-06-25_sally-escalation.json \
     --output evidence/emails/readable/
 ```
 

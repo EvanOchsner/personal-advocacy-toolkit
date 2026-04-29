@@ -50,48 +50,61 @@ Creates a forensic audit trail a regulator or attorney can verify without trusti
 
 ### 2. Analysis with anti-hallucination guard rails
 
-The drafting and review tools are designed to ground the analysis in the facts of the case and the exact text of the governing.
+The drafting and review tools are designed to ground the analysis in the facts of the case and the exact text of the relevant laws, terms and regulations.
 
 - **Networkless subagents.** The interactive comment workflow ([`.claude/skills/docx-comment-roundtrip/`](.claude/skills/docx-comment-roundtrip/)) spawns specialized subagents with file-read tools only — **no network access** — and instructs them to fact-check, analyze, and propose text **using only project materials**. Replies that contain unauthorized URLs are rejected automatically.
 - **Project-materials-only grounding.** Every assertion the toolkit emits is expected to cite a file under your case folder. If the agent needs information that isn't there, the workflow stops and helps you to track it down, vet it, and ingest it as a tracked document.
 - **Mandatory verify-with-counsel disclaimers** on every tool that emits a date, an authority, or a statute cite.
 
-### 3. Output
+### 3. Document and Packet Creation
 
-- **Packet assembler** ([`scripts/packet/`](scripts/packet/)) — driven by a declarative `packet-manifest.yaml` (schema at [`templates/packet-manifests/schema.yaml`](templates/packet-manifests/schema.yaml)).
+- **Packet assembler** ([`scripts/packet/`](scripts/packet/)) — Create an organized packets of evidence, filings attachments, etc. to hand off to an attorney or agency. Driven by a declarative `packet-manifest.yaml` (schema at [`templates/packet-manifests/schema.yaml`](templates/packet-manifests/schema.yaml)).
 - **Correspondence drafting** ([`scripts/letters/`](scripts/letters/), [`templates/`](templates/)) — letters, complaints, filings, briefs.
 - **Publication-safety scrubbers with mandatory post-checks** ([`scripts/publish/`](scripts/publish/)) — Redact sensitive information from case materials before sharing publicly. Designed to prevent creation of a "redacted" PDF whose text layer still contains the redacted content. Every scrubber ships with a verification pass.
 - **Case-map and timeline dashboard** ([`scripts/app/`](scripts/app/)) — local-only browser UI rendering a three-column entity graph (self/allies, neutrals, adversaries) and a chronological event timeline, with drilldown to every cited document. **Binds 127.0.0.1, strict CSP, no external resources** — the local-first claim is enforced by the server, not just the policy.
 
-## Why this might interest legal-aid and civic-tech orgs
+## Get started
 
-If you are from Suffolk LIT Lab, United Policyholders, an LSC TIG grantee, or any civic-legal-tech group: the differentiator is **not** the letter templates or the packet PDF — those are table stakes. The differentiator is the forensic audit trail described above, which a regulator or attorney can verify without trusting the author.
+Run with the AI assistant of your choice, or run scripts yourself. Both leverage the same underlying tools.
 
-The packet assembler is a plausible upstream feed into Document Assembly Line / Docassemble: DAL handles **interview → document**; PAT handles the **pre-filing evidence-organization step that DAL assumes has already happened**. The two compose cleanly; we'd love to talk about integration points.
+- **A — Bring your own assistant (BYOA).** An AI walks you through the workflow conversationally and runs the commands on your behalf. Pick this if you'd rather describe your situation than learn a CLI.
+- **B — Run the CLI yourself.** Follow the README and tutorials; invoke the scripts directly. Pick this if you'd rather see exactly what each tool does, or if you want deterministic / scriptable / reproducible runs.
 
-Full write-up and interop notes: [`docs/concepts/evidence-integrity.md`](docs/concepts/evidence-integrity.md), [`docs/concepts/case-map-app.md`](docs/concepts/case-map-app.md), [`docs/concepts/chain-of-custody.md`](docs/concepts/chain-of-custody.md).
+Both paths use the same artifacts (skills, data tables, templates, CLI scripts) and produce the same outputs — they're just different drivers. You can mix freely (e.g., let the assistant drive intake and authorities, then run the packet build and publication-safety scrubbers yourself).
 
-## Why this might interest academic and scholarly readers
-
-- **Reproducible audit trails on synthetic data.** The fully synthetic [Maryland-Mustang](examples/maryland-mustang/) example exercises every pipeline end-to-end with no real PII at stake — a citable artifact for legal-tech, HCI, or AI-safety coursework and clinics.
-- **Networkless-subagent design as a concrete anti-hallucination pattern.** The "deny network, restrict to project files, reject replies with external URLs" architecture in [`.claude/skills/docx-comment-roundtrip/`](.claude/skills/docx-comment-roundtrip/) is implementable in any agent harness and is, to our knowledge, an underexplored pattern in the published literature on LLM grounding.
-- **Apache-2.0 with explicit patent grant.** Permissive enough for derivative academic work and downstream legal-aid integration without license friction.
-- **CI on every push** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)): pytest suite, ruff lint, and CLI smoke tests. Fixtures derive from the synthetic case so the test suite doubles as executable documentation.
-- **Collaborations welcome** — case studies, evaluation work, integration with existing legal-aid platforms, formal review of the chain-of-custody model. See [Citation and contact](#citation-and-contact) below.
-
-## 60-second demo
-
-Uses the fully synthetic Maryland-Mustang example. Nothing real is at stake.
-
-Prerequisite: [uv](https://docs.astral.sh/uv/getting-started/installation/) (e.g. `curl -LsSf https://astral.sh/uv/install.sh | sh` or `brew install uv`).
+Prerequisite for both paths: [uv](https://docs.astral.sh/uv/getting-started/installation/) (e.g. `curl -LsSf https://astral.sh/uv/install.sh | sh` or `brew install uv`).
 
 ```sh
 git clone https://github.com/EvanOchsner/personal-advocacy-toolkit.git
 cd personal-advocacy-toolkit
 uv sync
+```
 
-# One-command demo: copies the synthetic example and runs the full
-# pipeline (hash, ingest, classify, authorities, deadlines, packet,
+### A — Bring your own assistant (BYOA)
+
+The toolkit ships with a skill bundle under [`.claude/skills/`](.claude/skills/) that turns any compatible AI assistant into a workflow guide. The orchestrator skill (`pat-workflow`) interviews you, runs the CLI commands on your behalf, validates the outputs, and walks you through each phase end-to-end.
+
+**[Claude Code](https://docs.claude.com/claude-code/quickstart).** Auto-discovers `.claude/skills/`. From the repo:
+
+```sh
+claude
+```
+
+Then describe your situation in natural language and ask it to use the project skills to setup your case. The orchestrator routes through the eight phases (intake → authorities → deadlines → evidence → drafting → packet → publication safety).
+
+**AI harnesses with shell access** — Cursor, Windsurf, Aider, Continue, Cline, OpenCode — work too. The skill content is plain markdown plus YAML frontmatter; point your harness at `.claude/skills/` (typically a one-line config change).
+
+**No-shell assistants** — claude.ai web chat, NotebookLM, ChatGPT, Gemini — can read the skills as guidance and walk you through the workflow conversationally, but they can't run the CLI for you. Roughly equivalent to following the tutorials with a chatbot beside you.
+
+Setup recipes for your weapon of choice can be found here: [`docs/byoa/README.md`](docs/byoa/README.md).
+
+### B — Run the CLI manually
+
+The one-command demo against the fully synthetic Maryland Mustang example (nothing real is at stake):
+
+```sh
+# Copies the synthetic example and runs the full pipeline
+# (hash, ingest, classify, authorities, deadlines, packet,
 # letters, PII scrub).
 uv run python -m scripts.demo
 ```
@@ -114,25 +127,13 @@ uv run python -m scripts.intake.authorities_lookup \
 
 For the step-by-step walkthrough, see [`examples/maryland-mustang/WALKTHROUGH.md`](examples/maryland-mustang/WALKTHROUGH.md).
 
-To start your own case:
+### Start your own case (either path)
 
 ```sh
 uv run python -m scripts.init_case --output ~/cases/my-case
 ```
 
-This creates the full directory structure, copies starter templates, and runs an interactive intake questionnaire. See [`docs/tutorials/01-setting-up-your-case.md`](docs/tutorials/01-setting-up-your-case.md) for details.
-
-## BYOA — Bring your own assistant
-
-If you'd rather have an AI walk you through this workflow than run the commands yourself, the toolkit ships with a skill bundle under [`.claude/skills/`](.claude/skills/) that does exactly that. The assistant interviews you, runs the CLI commands on your behalf, validates the outputs, and walks you through each phase end-to-end.
-
-**Recommended: [Claude Code](https://docs.claude.com/claude-code/quickstart).** Auto-discovers `.claude/skills/`. Just `cd` into the repo and run `claude` — no configuration. The orchestrator skill (`pat-workflow`) fires when you describe a dispute, and routes through the eight phases (intake → authorities → deadlines → evidence → drafting → packet → publication safety).
-
-**Other shell-having harnesses** — Cursor, Windsurf, Aider, Continue, Cline, OpenCode, plus homebrew local-model rigs — work too. The skill content is plain markdown plus YAML frontmatter; point your harness at `.claude/skills/` (one-line config in most of them).
-
-**No-shell surfaces** — claude.ai web chat, NotebookLM, ChatGPT, Gemini — can read the skills as guidance and walk you through the workflow conversationally, but they can't run the CLI for you. Roughly equivalent to following the tutorials with a chatbot beside you. For a case heading to a regulator filing or litigation, the forensic chain-of-custody steps need a real CLI run; consider running those locally even if the rest is chat-only.
-
-Per-harness setup recipes: [`docs/byoa/README.md`](docs/byoa/README.md).
+This creates the full directory structure, copies starter templates, and runs an interactive intake questionnaire. From there, either point your assistant at the new workspace (BYOA) or follow the tutorials yourself (CLI). See [`docs/tutorials/01-setting-up-your-case.md`](docs/tutorials/01-setting-up-your-case.md) for details.
 
 ## Situations it fits
 
@@ -192,8 +193,32 @@ Combine extras with multiple `--extra` flags. Every CLI invocation in the docs r
 ## Core principles
 
 - Understand and document the facts of the case. If you are acting in good faith and the other party is not, the facts are on your side and you need to document them in a thorough, airtight manner.
-- Every dispute has a case folder that holds information you believe to be the ground truth in the dispute. **You** are the steward of information pulled inside the project. The agent and other resources help you find the right authorities, laws, and policies, but ultimately you must use your own judgement to ensure the right source materials are landing in the case folder.
+- Store everything you believe to be "ground truth" inside the case folder. **You** are the steward of information pulled inside the project. The assistant and workflow can help you locate, process and understand these documents, but ultimately you must use your own judgement to ensure the right source materials land in the case folder.
+- Gather and track all information within the project. Everything is machine-searchable (and human grep-able). Understand the full picture and how everything fits together.
 - Every assertion, claim, and analysis must be grounded in materials in the case folder. If additional information is required, you track it down, vet it, and ingest it as a tracked, searchable document before relying on it.
+
+## Why this might interest legal, academic or civil groups
+
+If you work on legal aid, civic tech, AI safety / alignment, legal informatics, or HCI:
+
+- **Reproducible audit trails on synthetic data.** The fully synthetic [Maryland-Mustang](examples/maryland-mustang/) example exercises every pipeline end-to-end with no real PII at stake — a citable artifact for legal-tech, HCI, or AI-safety coursework and clinics.
+- **Networkless-subagent design as a concrete anti-hallucination pattern.** The "deny network, restrict to project files, reject replies with external URLs" architecture in [`.claude/skills/docx-comment-roundtrip/`](.claude/skills/docx-comment-roundtrip/) is implementable in any agent harness and is, to our knowledge, an underexplored pattern in the published literature on LLM grounding.
+- **Plausible upstream feed into Document Assembly Line / Docassemble.** DAL handles **interview → document**; PAT handles the **pre-filing evidence-organization step that DAL assumes has already happened**. The two compose cleanly.
+- **Apache-2.0 with explicit patent grant.** Permissive enough for derivative academic work and downstream legal-aid integration without license friction.
+- **CI across Ubuntu / macOS / Windows on every push** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)): pytest suite, ruff lint, CLI smoke tests, publication-safety post-checks. Fixtures derive from the synthetic case so the test suite doubles as executable documentation.
+- **Collaborations welcome** — case studies, evaluation work, integration with existing legal-aid platforms, formal review of the chain-of-custody model. See [Citation and contact](#citation-and-contact) below.
+
+### Concept docs
+
+`docs/concepts/` is where the toolkit's design philosophy lives:
+
+- [`evidence-integrity.md`](docs/concepts/evidence-integrity.md) — why hashes, xattrs, and the immutability hook matter; how a regulator or attorney verifies an evidence tree without trusting the author.
+- [`chain-of-custody.md`](docs/concepts/chain-of-custody.md) — the four sources a reviewer joins (hash manifest, filesystem download metadata, git history, pipeline sidecars) into a per-file forensic story; cross-platform metadata coverage notes for macOS, Linux, and Windows.
+- [`case-map-app.md`](docs/concepts/case-map-app.md) — local-only entity-graph + timeline UI; the airgap posture (127.0.0.1 binding, strict CSP, no external resources) and "paranoid mode" recipe for true network isolation.
+- [`pii-and-publication.md`](docs/concepts/pii-and-publication.md) — the four-leakage model (text, DOCX metadata, image EXIF, git history) and the verification pass each scrubber ships.
+- [`tone-modes.md`](docs/concepts/tone-modes.md) — lawyer mode vs casual mode; the read-aloud test; the "scripts as scaffolds, not oracles" rule.
+- [`authorities-and-regulators.md`](docs/concepts/authorities-and-regulators.md) — the "who cares about this?" map: regulators, ombuds, state AGs, federal backstops, by jurisdiction and situation type.
+- [`correspondence-manifest-schema.md`](docs/concepts/correspondence-manifest-schema.md) — the per-message metadata shape used to track exhibits, threads, and matched-rule provenance.
 
 ## Contributing
 

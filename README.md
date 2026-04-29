@@ -35,11 +35,12 @@ PAT does the legwork — evidence intake with forensic integrity, situation-spec
 
 ## What's in the box
 
-Three pillars, each with code in the repo today:
+### 1. Auditable evidence curation
 
-### 1. Evidence integrity
-
-A forensic audit trail a regulator or attorney can verify without trusting the author:
+Collect, process and organize all digital evidence (emails, texts, call records, photos, documents) related to your case.
+Enter your evidence files in the project to prove they have not been tampered with post check-in.
+Maintain original, human-friendly and machine-friendly versions of your documents with reproducible, auditable, customizable scripts.
+Creates a forensic audit trail a regulator or attorney can verify without trusting the author:
 
 - **Hash manifest** ([`scripts/evidence_hash.py`](scripts/evidence_hash.py)) — SHA-256 of every file, human-readable.
 - **Pre-commit immutability hook** ([`scripts/hooks/pre_commit.py`](scripts/hooks/pre_commit.py)) — refuses git commits that modify or delete files under the protected `evidence/` path.
@@ -49,10 +50,10 @@ A forensic audit trail a regulator or attorney can verify without trusting the a
 
 ### 2. Analysis with anti-hallucination guard rails
 
-The drafting and review tools are designed to fail safely against AI confabulation:
+The drafting and review tools are designed to ground the analysis in the facts of the case and the exact text of the governing.
 
 - **Networkless subagents.** The interactive comment workflow ([`.claude/skills/docx-comment-roundtrip/`](.claude/skills/docx-comment-roundtrip/)) spawns specialized subagents with file-read tools only — **no network access** — and instructs them to fact-check, analyze, and propose text **using only project materials**. Replies that contain unauthorized URLs are rejected automatically.
-- **Project-materials-only grounding.** Every assertion the toolkit emits is expected to cite a file under your case folder. If the agent needs information that isn't there, the workflow stops and asks you to track it down, vet it, and ingest it as a tracked document.
+- **Project-materials-only grounding.** Every assertion the toolkit emits is expected to cite a file under your case folder. If the agent needs information that isn't there, the workflow stops and helps you to track it down, vet it, and ingest it as a tracked document.
 - **Mandatory verify-with-counsel disclaimers** on every tool that emits a date, an authority, or a statute cite.
 
 ### 3. Output

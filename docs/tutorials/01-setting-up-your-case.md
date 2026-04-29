@@ -34,8 +34,23 @@ Everything case-specific goes in a separate directory. Two options:
 just `cd examples/maryland-mustang/`. All commands below assume
 this for the demo.
 
-**Option B — start a real case.** Create a fresh directory *outside*
-this repo (so the repo stays upgrade-able):
+**Option B — start a real case.** Run the init command from the repo
+root:
+
+```sh
+uv run python -m scripts.init_case --output ~/cases/my-case --git
+```
+
+This creates the full directory structure (`evidence/`, `drafts/`,
+`complaint_packet/`, etc.), copies starter templates (`advocacy.toml`,
+`CLAUDE.md`, `.gitignore`), initializes a git repo with the
+evidence-immutability hook, and walks you through an interactive
+intake questionnaire. Add `--non-interactive` to skip the
+questionnaire, or `--answers path/to/answers.yaml` to use a
+pre-filled file.
+
+<details>
+<summary>Manual alternative (if you prefer full control)</summary>
 
 ```sh
 mkdir -p ~/cases/my-case && cd ~/cases/my-case
@@ -44,6 +59,8 @@ cp /path/to/personal-advocacy-toolkit/advocacy.toml.example advocacy.toml
 cp /path/to/personal-advocacy-toolkit/templates/CLAUDE.md.template CLAUDE.md
 mkdir -p evidence drafts complaint_packet
 ```
+
+</details>
 
 The rest of this tutorial uses the synthetic case as an example. The
 commands are identical against your own workspace once you've

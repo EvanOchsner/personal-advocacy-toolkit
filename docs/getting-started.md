@@ -19,11 +19,23 @@ New here? Do these four things, in order:
    uv sync --extra dev              # pytest + ruff
    ```
    Every CLI in the docs is run via `uv run` — no virtualenv to activate.
-3. **Run the synthetic walkthrough end-to-end** to confirm your
-   environment works:
+3. **Run the one-command demo** to confirm your environment works:
+   ```sh
+   uv run python -m scripts.demo
+   ```
+   This copies the synthetic Maryland-Mustang example to
+   `~/advocacy-demo/maryland-mustang/` and runs the full pipeline
+   (hash, ingest, classify, authorities, deadlines, packet, letters,
+   PII scrub). Or follow the manual walkthrough step-by-step:
    [`examples/maryland-mustang/WALKTHROUGH.md`](../examples/maryland-mustang/WALKTHROUGH.md).
-   Every command is real and should complete in under a minute.
-4. **Start Tutorial 01** to set up your own case:
+4. **Start your own case:**
+   ```sh
+   uv run python -m scripts.init_case --output ~/cases/my-case
+   ```
+   This creates the full directory structure, copies starter templates,
+   and walks you through an interactive intake questionnaire. Add
+   `--git` to initialize a git repo with the evidence-immutability
+   hook. For the detailed manual setup, see
    [`tutorials/01-setting-up-your-case.md`](tutorials/01-setting-up-your-case.md).
    Tutorials 02–05 cover ingest, triage, packet assembly, and going
    public safely. Tutorial 06 covers the case-map app:

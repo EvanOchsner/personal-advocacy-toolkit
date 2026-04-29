@@ -27,6 +27,12 @@ All commands below assume:
 cd /path/to/personal-advocacy-toolkit
 ```
 
+> **One-command alternative:** `uv run python -m scripts.demo` copies
+> this example to `~/advocacy-demo/maryland-mustang/` and runs the
+> entire pipeline automatically. Use `--output <path>` to pick a
+> different location. The step-by-step walkthrough below is useful for
+> understanding what each tool does.
+
 ---
 
 ## 0. Orient

@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <em>An auditable, local-first toolkit that helps non-technical people in a dispute hand attorneys, regulators, and journalists something they can actually act on.</em>
+  <em>An AI toolkit that helps non-technical people in a dispute hand attorneys, regulators, and journalists something they can actually act on.</em>
 </p>
 
 <p align="center">
@@ -59,7 +59,7 @@ The drafting and review tools are designed to fail safely against AI confabulati
 
 - **Packet assembler** ([`scripts/packet/`](scripts/packet/)) — driven by a declarative `packet-manifest.yaml` (schema at [`templates/packet-manifests/schema.yaml`](templates/packet-manifests/schema.yaml)).
 - **Correspondence drafting** ([`scripts/letters/`](scripts/letters/), [`templates/`](templates/)) — letters, complaints, filings, briefs.
-- **Publication-safety scrubbers with mandatory post-checks** ([`scripts/publish/`](scripts/publish/)) — the failure mode these exist to prevent is a "redacted" PDF whose text layer still contains the redacted content. Every scrubber ships with a verification pass.
+- **Publication-safety scrubbers with mandatory post-checks** ([`scripts/publish/`](scripts/publish/)) — Redact sensitive information from case materials before sharing publicly. Designed to prevent creation of a "redacted" PDF whose text layer still contains the redacted content. Every scrubber ships with a verification pass.
 - **Case-map and timeline dashboard** ([`scripts/app/`](scripts/app/)) — local-only browser UI rendering a three-column entity graph (self/allies, neutrals, adversaries) and a chronological event timeline, with drilldown to every cited document. **Binds 127.0.0.1, strict CSP, no external resources** — the local-first claim is enforced by the server, not just the policy.
 
 ## Why this might interest legal-aid and civic-tech orgs
@@ -89,29 +89,37 @@ git clone https://github.com/EvanOchsner/personal-advocacy-toolkit.git
 cd personal-advocacy-toolkit
 uv sync
 
-# 1. Launch the local case-map app — three-column entity graph + timeline,
-#    bound to 127.0.0.1 only.
+# One-command demo: copies the synthetic example and runs the full
+# pipeline (hash, ingest, classify, authorities, deadlines, packet,
+# letters, PII scrub).
+uv run python -m scripts.demo
+```
+
+Or run individual tools against the in-repo example:
+
+```sh
+# Launch the local case-map app (127.0.0.1 only).
 uv run python -m scripts.app --case examples/maryland-mustang
 
-# 2. In another shell: hash every file under the evidence tree and pin
-#    the manifest.
+# Hash the evidence tree.
 uv run python -m scripts.evidence_hash \
   --root examples/maryland-mustang/evidence \
   --manifest examples/maryland-mustang/.evidence-manifest.sha256
 
-# 3. Look up which authorities have jurisdiction over a MD insurance dispute.
+# Look up authorities for a MD insurance dispute.
 uv run python -m scripts.intake.authorities_lookup \
   --situation insurance_dispute --jurisdiction MD
-
-# 4. Compute statute-of-limitations / notice deadlines from the loss date.
-uv run python -m scripts.intake.deadline_calc \
-  --situation insurance_dispute --jurisdiction MD \
-  --loss-date 2025-03-15
 ```
 
-For the full end-to-end run (ingest → triage → packet → dashboard → publication-safety scrub), see [`examples/maryland-mustang/WALKTHROUGH.md`](examples/maryland-mustang/WALKTHROUGH.md).
+For the step-by-step walkthrough, see [`examples/maryland-mustang/WALKTHROUGH.md`](examples/maryland-mustang/WALKTHROUGH.md).
 
-For a guided first-time setup against your own situation, see [`docs/tutorials/01-setting-up-your-case.md`](docs/tutorials/01-setting-up-your-case.md).
+To start your own case:
+
+```sh
+uv run python -m scripts.init_case --output ~/cases/my-case
+```
+
+This creates the full directory structure, copies starter templates, and runs an interactive intake questionnaire. See [`docs/tutorials/01-setting-up-your-case.md`](docs/tutorials/01-setting-up-your-case.md) for details.
 
 ## Situations it fits
 
@@ -130,8 +138,9 @@ The framework generalizes further. See [`docs/playbooks/`](docs/playbooks/) for 
 ## Repository layout
 
 ```
-scripts/       CLI tools (evidence_hash, provenance, ingest, intake,
-               packet, publish, letters, status, hooks, app)
+scripts/       CLI tools (demo, init_case, evidence_hash, provenance,
+               ingest, intake, packet, publish, letters, status,
+               hooks, app)
 skills/        Portable Claude Code skills (case intake, situation
                triage, provenance review, packet building, PII scrub,
                tone-modes, going-public checks, docx-comment-roundtrip)

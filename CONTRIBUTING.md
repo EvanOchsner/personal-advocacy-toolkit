@@ -54,6 +54,31 @@ should produce a green CI run. Use `git push --no-verify` in an
 emergency, but treat that as a sign the hook needs fixing rather than
 bypassing.
 
+## Authoring skills
+
+Skills live under [`.claude/skills/<name>/SKILL.md`](.claude/skills/) so
+Claude Code (and any harness pointed at the same path) auto-discovers
+them. Each SKILL.md has YAML frontmatter with `name` (the skill
+identifier) and `description` (the trigger condition the AI matches
+user intent against).
+
+When adding or modifying a skill, follow the existing scaffold:
+
+1. **When this skill fires** — 1–3 bullets, behavior-triggered.
+2. **Procedure** — numbered steps; each step has a CLI invocation the AI
+   runs and a verification check.
+3. **Common edge cases / Do not** — what to do (or refuse) when X is
+   missing, ambiguous, or already done.
+4. **Definition of done** — so the AI knows when to hand back to the
+   `pat-workflow` orchestrator.
+
+Cross-cutting skills (`tone-modes`, `docx-comment-roundtrip`) follow a
+different shape — see those files for the pattern.
+
+The `description` frontmatter is what triggers a skill on user phrasing
+— write it specifically (multiple example phrasings, situation
+keywords) so it competes well against sibling skills' descriptions.
+
 ## Airgap rules for the case-map app
 
 Anything under `scripts/app/` must remain airgapped. Concretely:

@@ -41,6 +41,14 @@ New here? Do these four things, in order:
    public safely. Tutorial 06 covers the case-map app:
    [`tutorials/06-case-map-app.md`](tutorials/06-case-map-app.md).
 
+   Prefer to have an AI walk you through it instead? See
+   [`byoa/README.md`](byoa/README.md) — the toolkit ships with a
+   skill bundle under `.claude/skills/` that turns any compatible
+   assistant (Claude Code recommended; Cursor / Aider / others
+   supported; no-shell surfaces work as guidance) into a workflow
+   guide. The CLI commands above stay the same — the assistant just
+   runs them for you.
+
 ## Concept docs (read before making decisions)
 
 - [`concepts/evidence-integrity.md`](concepts/evidence-integrity.md)

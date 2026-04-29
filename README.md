@@ -121,6 +121,18 @@ uv run python -m scripts.init_case --output ~/cases/my-case
 
 This creates the full directory structure, copies starter templates, and runs an interactive intake questionnaire. See [`docs/tutorials/01-setting-up-your-case.md`](docs/tutorials/01-setting-up-your-case.md) for details.
 
+## BYOA — Bring your own assistant
+
+If you'd rather have an AI walk you through this workflow than run the commands yourself, the toolkit ships with a skill bundle under [`.claude/skills/`](.claude/skills/) that does exactly that. The assistant interviews you, runs the CLI commands on your behalf, validates the outputs, and walks you through each phase end-to-end.
+
+**Recommended: [Claude Code](https://docs.claude.com/claude-code/quickstart).** Auto-discovers `.claude/skills/`. Just `cd` into the repo and run `claude` — no configuration. The orchestrator skill (`pat-workflow`) fires when you describe a dispute, and routes through the eight phases (intake → authorities → deadlines → evidence → drafting → packet → publication safety).
+
+**Other shell-having harnesses** — Cursor, Windsurf, Aider, Continue, Cline, OpenCode, plus homebrew local-model rigs — work too. The skill content is plain markdown plus YAML frontmatter; point your harness at `.claude/skills/` (one-line config in most of them).
+
+**No-shell surfaces** — claude.ai web chat, NotebookLM, ChatGPT, Gemini — can read the skills as guidance and walk you through the workflow conversationally, but they can't run the CLI for you. Roughly equivalent to following the tutorials with a chatbot beside you. For a case heading to a regulator filing or litigation, the forensic chain-of-custody steps need a real CLI run; consider running those locally even if the rest is chat-only.
+
+Per-harness setup recipes: [`docs/byoa/README.md`](docs/byoa/README.md).
+
 ## Situations it fits
 
 The initial playbooks cover:

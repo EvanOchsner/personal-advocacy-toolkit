@@ -211,9 +211,9 @@ and field are visible without re-reading CI logs.
 
 - [`evidence-integrity.md`](evidence-integrity.md) — the append-only
   contract `pii_scrub.py` enforces.
-- [`skills/pii-scrubber/SKILL.md`](../../skills/pii-scrubber/SKILL.md) —
+- [`.claude/skills/pii-scrubber/SKILL.md`](../../.claude/skills/pii-scrubber/SKILL.md) —
   invokable from a Claude Code session for review-and-confirm loops.
-- [`skills/going-public/SKILL.md`](../../skills/going-public/SKILL.md) —
+- [`.claude/skills/going-public/SKILL.md`](../../.claude/skills/going-public/SKILL.md) —
   the full pre-publication checklist wrapped around these tools.
 - [`docs/tutorials/05-going-public-safely.md`](../tutorials/05-going-public-safely.md)
   — the tutorial that walks the synthetic case through this pipeline.

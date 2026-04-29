@@ -97,7 +97,7 @@ than one with no letter at all.
 
 ## See also
 
-- [`skills/tone-modes/SKILL.md`](../../skills/tone-modes/SKILL.md) —
+- [`.claude/skills/tone-modes/SKILL.md`](../../.claude/skills/tone-modes/SKILL.md) —
   invokable from a Claude Code session for live tone coaching.
 - [`templates/letter-templates/`](../../templates/letter-templates/) —
   the Jinja templates, readable in plain text.

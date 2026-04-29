@@ -51,7 +51,7 @@ A forensic audit trail a regulator or attorney can verify without trusting the a
 
 The drafting and review tools are designed to fail safely against AI confabulation:
 
-- **Networkless subagents.** The interactive comment workflow ([`skills/docx-comment-roundtrip/`](skills/docx-comment-roundtrip/)) spawns specialized subagents with file-read tools only — **no network access** — and instructs them to fact-check, analyze, and propose text **using only project materials**. Replies that contain unauthorized URLs are rejected automatically.
+- **Networkless subagents.** The interactive comment workflow ([`.claude/skills/docx-comment-roundtrip/`](.claude/skills/docx-comment-roundtrip/)) spawns specialized subagents with file-read tools only — **no network access** — and instructs them to fact-check, analyze, and propose text **using only project materials**. Replies that contain unauthorized URLs are rejected automatically.
 - **Project-materials-only grounding.** Every assertion the toolkit emits is expected to cite a file under your case folder. If the agent needs information that isn't there, the workflow stops and asks you to track it down, vet it, and ingest it as a tracked document.
 - **Mandatory verify-with-counsel disclaimers** on every tool that emits a date, an authority, or a statute cite.
 
@@ -73,7 +73,7 @@ Full write-up and interop notes: [`docs/concepts/evidence-integrity.md`](docs/co
 ## Why this might interest academic and scholarly readers
 
 - **Reproducible audit trails on synthetic data.** The fully synthetic [Maryland-Mustang](examples/maryland-mustang/) example exercises every pipeline end-to-end with no real PII at stake — a citable artifact for legal-tech, HCI, or AI-safety coursework and clinics.
-- **Networkless-subagent design as a concrete anti-hallucination pattern.** The "deny network, restrict to project files, reject replies with external URLs" architecture in [`skills/docx-comment-roundtrip/`](skills/docx-comment-roundtrip/) is implementable in any agent harness and is, to our knowledge, an underexplored pattern in the published literature on LLM grounding.
+- **Networkless-subagent design as a concrete anti-hallucination pattern.** The "deny network, restrict to project files, reject replies with external URLs" architecture in [`.claude/skills/docx-comment-roundtrip/`](.claude/skills/docx-comment-roundtrip/) is implementable in any agent harness and is, to our knowledge, an underexplored pattern in the published literature on LLM grounding.
 - **Apache-2.0 with explicit patent grant.** Permissive enough for derivative academic work and downstream legal-aid integration without license friction.
 - **CI on every push** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)): pytest suite, ruff lint, and CLI smoke tests. Fixtures derive from the synthetic case so the test suite doubles as executable documentation.
 - **Collaborations welcome** — case studies, evaluation work, integration with existing legal-aid platforms, formal review of the chain-of-custody model. See [Citation and contact](#citation-and-contact) below.
@@ -141,9 +141,11 @@ The framework generalizes further. See [`docs/playbooks/`](docs/playbooks/) for 
 scripts/       CLI tools (demo, init_case, evidence_hash, provenance,
                ingest, intake, packet, publish, letters, status,
                hooks, app)
-skills/        Portable Claude Code skills (case intake, situation
-               triage, provenance review, packet building, PII scrub,
-               tone-modes, going-public checks, docx-comment-roundtrip)
+.claude/skills/  Portable assistant skills (case intake, situation
+                 triage, provenance review, packet building, PII scrub,
+                 tone-modes, going-public checks, docx-comment-roundtrip,
+                 plus the pat-workflow orchestrator); auto-discovered
+                 by Claude Code, readable by any shell-having agent
 data/          Community-maintainable reference data (authorities by
                jurisdiction, deadline tables, situation types)
 templates/     Case-intake, letter, and packet-manifest templates

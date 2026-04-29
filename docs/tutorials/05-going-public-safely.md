@@ -249,7 +249,7 @@ names throughout.
 
 - [`docs/concepts/pii-and-publication.md`](../concepts/pii-and-publication.md)
   — full conceptual story on the four layers of leakage.
-- [`skills/going-public/SKILL.md`](../../skills/going-public/SKILL.md)
+- [`.claude/skills/going-public/SKILL.md`](../../.claude/skills/going-public/SKILL.md)
   — interactive pre-publication checklist.
-- [`skills/pii-scrubber/SKILL.md`](../../skills/pii-scrubber/SKILL.md)
+- [`.claude/skills/pii-scrubber/SKILL.md`](../../.claude/skills/pii-scrubber/SKILL.md)
   — review-and-confirm loop for the scrub output.

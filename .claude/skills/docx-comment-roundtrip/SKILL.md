@@ -222,7 +222,7 @@ If there are any router-eligible entries:
 
 1. Write the slice to `.tmp/<stem>_router_input.json`.
 2. Spawn a `project-materials-specialist` subagent with the prompt at
-   `skills/docx-comment-roundtrip/prompts/router.md`, substituting
+   `.claude/skills/docx-comment-roundtrip/prompts/router.md`, substituting
    `{{PROJECT_ROOT}}`, `{{INPUT_PATH}}`, `{{OUTPUT_PATH}}`.
 
 Merge the router's output with the deterministic tagged routes into
@@ -435,7 +435,7 @@ surgery.
 - `scripts/publish/exif_scrub.py` — image EXIF scrub.
 - `scripts/publish/pdf_redact.py` — PDF redaction.
 - `scripts/publish/pii_scrub.py` — PII scrub across packet sources.
-- `skills/going-public/` — orchestrates the full publication-safety
+- `.claude/skills/going-public/` — orchestrates the full publication-safety
   sequence for an external hand-off.
 
 ## Prompt substitution

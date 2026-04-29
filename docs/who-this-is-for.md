@@ -20,7 +20,7 @@ You may have:
 
 You are not expected to understand git, SHA-256, YAML, Jinja, or the
 Python ecosystem going in. The tutorials walk you through what each
-tool does and why, and the skills under `skills/` are designed to be
+tool does and why, and the skills under `.claude/skills/` are designed to be
 invoked from a Claude Code session where you answer questions in plain
 English.
 

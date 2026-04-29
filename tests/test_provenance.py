@@ -187,6 +187,36 @@ def test_decode_wherefroms_handles_garbage() -> None:
     assert decode_wherefroms_from_hex("deadbeef") == []
 
 
+def test_format_human_renders_platform_unsupported_message() -> None:
+    """Section 4 distinguishes 'platform doesn't support xattr' from 'file is empty'."""
+    report = Report(
+        abs_path="/x/y", rel_path="y", repo_root=Path("/x"), evidence_root=Path("/x/ev"),
+    )
+    report.sections["identity"] = {
+        "rel_path": "y", "size_bytes": 1, "sha256": "abc",
+        "git_blob_sha1": None, "git_tracked": False,
+    }
+    report.sections["git_trail"] = {
+        "commits": [], "commit_count": 0, "content_change_count": 0,
+    }
+    report.sections["hash_manifest"] = {"applies": False}
+    report.sections["download"] = {
+        "live": {
+            "present": False,
+            "attribute_names": [],
+            "download_urls": [],
+            "quarantine": None,
+            "platform": "freebsd14",
+            "capability": "unsupported",
+        },
+        "snapshots": [],
+    }
+    report.sections["pipeline"] = {"kind": "none"}
+    report.sections["verdict"] = "git: ⚠ untracked; xattr: none"
+    out = format_human(report)
+    assert "not supported on this platform (freebsd14)" in out
+
+
 # -----------------------------------------------------------------------------
 # Pipeline dispatcher
 # -----------------------------------------------------------------------------

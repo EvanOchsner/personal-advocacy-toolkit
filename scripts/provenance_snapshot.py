@@ -6,9 +6,12 @@ For every file under `--root`, record:
 - size
 - mtime (POSIX)
 - SHA-256 digest
-- extended attributes (xattrs), when the platform supports them
-  (macOS `com.apple.metadata:kMDItemWhereFroms`, `com.apple.quarantine`,
-  and any other xattrs present).
+- file metadata, cross-platform: macOS xattrs
+  (`com.apple.metadata:kMDItemWhereFroms`, `com.apple.quarantine`),
+  Linux XDG xattrs (`user.xdg.origin.url`, `user.xdg.referrer.url`),
+  and Windows NTFS Zone.Identifier ADS (under a synthetic
+  `win.zone_identifier` key). Empty if the platform offers no
+  mechanism or the file has nothing.
 
 The result is written as a single JSON file under
 `provenance.snapshot_dir` (default `provenance/snapshots/`) named
@@ -16,9 +19,14 @@ The result is written as a single JSON file under
 committed — it gives a regulator a cryptographic "where this file came
 from and when we first saw it" fingerprint.
 
-xattrs are a macOS forensic goldmine because Safari, Mail, and Finder
-write the original source URL and download date into them. On Linux the
-xattr block will simply be empty; that's fine.
+Cross-platform notes:
+- macOS auto-populates xattrs for downloaded files (Safari, Mail,
+  Finder). Forensic gold.
+- Windows auto-populates Zone.Identifier on NTFS for any file
+  downloaded via IE/Edge/Chrome/Firefox/Outlook. Equally rich.
+- Linux populates XDG attrs only for Firefox downloads, and only on
+  filesystems that support xattrs. Often empty in practice; that's
+  fine.
 """
 
 from __future__ import annotations
@@ -26,12 +34,12 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 from scripts._config import load_config
+from scripts._file_metadata import read_raw
 
 
 CHUNK = 1024 * 1024
@@ -49,28 +57,15 @@ def sha256_file(path: Path) -> str:
 
 
 def read_xattrs(path: Path) -> dict[str, str]:
-    """Return xattr name -> value (bytes decoded best-effort to str).
+    """Return platform-appropriate file metadata as a name->str dict.
 
-    Values that are not UTF-8 decodable are returned as hex with a
-    "hex:" prefix, which is stable and auditable.
+    Thin wrapper around `_file_metadata.read_raw` preserved under the
+    historical name. POSIX xattrs land under their native names;
+    Windows NTFS Zone.Identifier ADS lands under the synthetic key
+    `win.zone_identifier` so the snapshot JSON schema stays uniform.
+    Values that are not UTF-8 decodable are hex-prefixed (`hex:...`).
     """
-    if not hasattr(os, "listxattr"):
-        return {}
-    try:
-        names = os.listxattr(str(path), follow_symlinks=False)
-    except (OSError, NotImplementedError):
-        return {}
-    out: dict[str, str] = {}
-    for name in names:
-        try:
-            raw = os.getxattr(str(path), name, follow_symlinks=False)
-        except OSError:
-            continue
-        try:
-            out[name] = raw.decode("utf-8")
-        except UnicodeDecodeError:
-            out[name] = "hex:" + raw.hex()
-    return out
+    return read_raw(path)
 
 
 def snapshot_tree(root: Path) -> list[dict]:

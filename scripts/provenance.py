@@ -10,10 +10,13 @@ records about it:
                     commit as `initial` / `content` / `rename-or-metadata`
                     by comparing blob SHAs against the previous commit.
   3. Hash manifest — recorded SHA vs on-disk; mismatch / missing / OK.
-  4. Download     — live xattrs (`xattr -l`) plus every historical entry
+  4. Download     — live xattrs (cross-platform: macOS xattrs via
+                    os.getxattr, Linux user.xdg.* attrs, Windows NTFS
+                    Zone.Identifier ADS) plus every historical entry
                     from `provenance_snapshots/` matching the basename.
                     Decodes `com.apple.metadata:kMDItemWhereFroms` (binary
-                    plist → URL list) and `com.apple.quarantine`.
+                    plist → URL list), `com.apple.quarantine`, and
+                    Windows `[ZoneTransfer]` blocks.
   5. Pipeline     — config-driven dispatcher
                     (`data/pipeline_dispatch.yaml`) that surfaces
                     content-type-specific sidecar data (email headers,
@@ -34,15 +37,14 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import plistlib
 import re
 import subprocess
 import sys
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from scripts import _file_metadata
 from scripts._config import Config, load_config
 
 
@@ -62,19 +64,6 @@ def sha256_file(path: Path) -> str:
 def _run(cmd: list[str], cwd: Path) -> tuple[int, str, str]:
     r = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, check=False)
     return r.returncode, r.stdout, r.stderr
-
-
-def _run_bytes(cmd: list[str], cwd: Path) -> tuple[int, bytes]:
-    # Used for `xattr`, which is macOS-only. On Linux/CI runners the binary
-    # is absent and subprocess.run raises FileNotFoundError before producing
-    # a returncode. Map that to the shell convention (127) so callers can
-    # treat "binary missing" the same as "binary returned non-zero" and
-    # gracefully fall through to the empty-xattr path.
-    try:
-        r = subprocess.run(cmd, cwd=cwd, capture_output=True, check=False)
-    except FileNotFoundError:
-        return 127, b""
-    return r.returncode, r.stdout
 
 
 # -----------------------------------------------------------------------------
@@ -304,87 +293,49 @@ def section_manifest(
 # -----------------------------------------------------------------------------
 
 
-QUARANTINE_RE = re.compile(r"^([0-9a-f]+);([0-9a-f]+);([^;]+);([^;]*)$", re.IGNORECASE)
-
-
-def decode_quarantine(value: str) -> dict[str, Any] | None:
-    """Decode `com.apple.quarantine` semicolon-separated fields."""
-    m = QUARANTINE_RE.match(value.strip())
-    if not m:
-        return None
-    flag, hex_ts, app, uuid = m.groups()
-    try:
-        ts = int(hex_ts, 16)
-        iso = datetime.fromtimestamp(ts, tz=timezone.utc).isoformat()
-    except ValueError:
-        iso = None
-    return {
-        "flag": flag,
-        "timestamp_hex": hex_ts,
-        "timestamp_iso": iso,
-        "app": app,
-        "uuid": uuid,
-    }
+# Public decoder re-exports — back-compat for callers that imported them
+# from this module before the cross-platform refactor split decoders into
+# scripts/_file_metadata.py.
+decode_quarantine = _file_metadata.decode_quarantine
 
 
 def decode_wherefroms_from_hex(raw_hex: str) -> list[str]:
-    """Decode hex-encoded binary plist to URL list. Empty on failure."""
-    try:
-        data = bytes.fromhex(raw_hex.replace(" ", "").replace("\n", ""))
-        plist = plistlib.loads(data)
-    except (ValueError, plistlib.InvalidFileException):
-        return []
-    if isinstance(plist, list):
-        return [str(x) for x in plist if x]
-    return []
+    """Decode hex-encoded binary plist to URL list. Empty on failure.
+
+    Back-compat wrapper around `_file_metadata.decode_wherefroms`. The
+    new function accepts both the legacy hex-string form and the
+    `hex:`-prefixed form produced by `os.getxattr`.
+    """
+    return _file_metadata.decode_wherefroms(raw_hex)
 
 
 def live_xattr(path: Path, repo_root: Path) -> dict[str, Any]:
-    """Read live xattrs via `xattr -l`; decode WhereFroms + quarantine."""
-    rc, out = _run_bytes(["xattr", "-l", str(path)], cwd=repo_root)
-    if rc != 0 or not out:
-        return {
-            "present": False,
-            "attributes": {},
-            "download_urls": [],
-            "quarantine": None,
-        }
-    text = out.decode("utf-8", errors="replace")
-    attrs: dict[str, str] = {}
-    current_key = None
-    current_val: list[str] = []
-    for line in text.splitlines():
-        m = re.match(r"^([a-zA-Z0-9._#:]+):\s?(.*)$", line)
-        if m:
-            if current_key is not None:
-                attrs[current_key] = "\n".join(current_val).rstrip()
-            current_key = m.group(1)
-            current_val = [m.group(2)]
-        else:
-            current_val.append(line)
-    if current_key is not None:
-        attrs[current_key] = "\n".join(current_val).rstrip()
+    """Read live file metadata cross-platform; decode known formats.
 
-    download_urls: list[str] = []
-    if "com.apple.metadata:kMDItemWhereFroms" in attrs:
-        rc2, raw_bytes = _run_bytes(
-            ["xattr", "-px", "com.apple.metadata:kMDItemWhereFroms", str(path)],
-            cwd=repo_root,
-        )
-        if rc2 == 0 and raw_bytes:
-            download_urls = decode_wherefroms_from_hex(
-                raw_bytes.decode("ascii", errors="replace")
-            )
-
-    quarantine = None
-    if "com.apple.quarantine" in attrs:
-        quarantine = decode_quarantine(attrs["com.apple.quarantine"])
-
+    `repo_root` is unused (kept in the signature for back-compat with
+    callers that pass it). Returns a superset of the legacy shape:
+    `present`, `attribute_names`, `download_urls`, `quarantine` are the
+    legacy fields; `platform`, `capability`, `referrer_url`,
+    `download_timestamp_iso`, `zone`, `raw`, `decoded` are added by the
+    cross-platform refactor.
+    """
+    del repo_root  # legacy parameter, kept for signature stability
+    norm = _file_metadata.read_and_normalize(path)
+    quarantine = norm["decoded"].get("quarantine")
     return {
-        "present": True,
-        "attribute_names": sorted(attrs.keys()),
-        "download_urls": download_urls,
+        # Legacy fields (preserved for back-compat).
+        "present": norm["present"],
+        "attribute_names": norm["attribute_names"],
+        "download_urls": list(norm["origin_urls"]),
         "quarantine": quarantine,
+        # New cross-platform fields.
+        "platform": norm["platform"],
+        "capability": norm["capability"],
+        "referrer_url": norm["referrer_url"],
+        "download_timestamp_iso": norm["download_timestamp_iso"],
+        "zone": norm["zone"],
+        "raw": norm["raw"],
+        "decoded": norm["decoded"],
     }
 
 
@@ -641,11 +592,18 @@ def format_human(report: Report) -> str:
     lines.append("## Download provenance")
     d = report.sections["download"]
     live = d["live"]
+    capability = live.get("capability", "posix-xattr")
     if live["present"]:
         lines.append("- live xattr on disk:")
         lines.append(f"  - attributes: {', '.join(live['attribute_names'])}")
         for url in live["download_urls"]:
-            lines.append(f"  - download URL: {url}")
+            lines.append(f"  - origin URL: {url}")
+        if live.get("referrer_url"):
+            lines.append(f"  - referrer: {live['referrer_url']}")
+        if live.get("download_timestamp_iso"):
+            lines.append(f"  - downloaded: {live['download_timestamp_iso']}")
+        if live.get("zone"):
+            lines.append(f"  - zone: {live['zone']}")
         if live["quarantine"]:
             q = live["quarantine"]
             lines.append(
@@ -653,7 +611,13 @@ def format_human(report: Report) -> str:
                 f"uuid={q['uuid']}"
             )
     else:
-        lines.append("- live xattr: none on disk")
+        if capability == "unsupported":
+            plat = live.get("platform", "?")
+            lines.append(
+                f"- live xattr: not supported on this platform ({plat})"
+            )
+        else:
+            lines.append("- live xattr: none on disk")
     if d["snapshots"]:
         lines.append(f"- historical snapshots ({len(d['snapshots'])}):")
         for entry in d["snapshots"]:

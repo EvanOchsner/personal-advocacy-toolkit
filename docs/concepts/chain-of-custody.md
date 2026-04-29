@@ -17,14 +17,29 @@ single JSON report that a non-technical reader can skim.
 Proves the contents of each file have not changed. See
 [evidence-integrity.md](./evidence-integrity.md).
 
-### 2. Provenance snapshots (xattrs + mtimes)
+### 2. Provenance snapshots (download metadata + mtimes)
 
-Proves where a file came from, when applicable. On macOS these snapshots
-preserve the `kMDItemWhereFroms` URL that Safari or Mail wrote when you
-downloaded the file, along with quarantine timestamps. On any platform
-they preserve file size and modification time. See the
-`provenance_snapshot.py` entry in
-[evidence-integrity.md](./evidence-integrity.md).
+Proves where a file came from, when applicable. The toolkit reads
+download-provenance metadata from the OS-native mechanism on each
+platform:
+
+- **macOS** — `com.apple.metadata:kMDItemWhereFroms` (origin URL set by
+  Safari, Mail, and Finder) and `com.apple.quarantine` (download
+  timestamp, signing app, quarantine UUID). Auto-populated for every
+  downloaded file.
+- **Windows** — NTFS Zone.Identifier Alternate Data Stream
+  (`HostUrl`, `ReferrerUrl`, `ZoneId`). Auto-populated by IE/Edge/
+  Chrome/Firefox/Outlook on NTFS volumes.
+- **Linux** — XDG extended attributes (`user.xdg.origin.url`,
+  `user.xdg.referrer.url`). Populated by Firefox; rarely set by other
+  tools. Often empty in practice.
+
+All three platforms collapse into a normalized shape exposed to the
+report: `origin_urls`, `referrer_url`, `download_timestamp_iso`, `zone`.
+Snapshots also preserve file size and modification time on every
+platform. See the `provenance_snapshot.py` entry in
+[evidence-integrity.md](./evidence-integrity.md) and the implementation
+in `scripts/_file_metadata.py`.
 
 ### 3. Git history
 

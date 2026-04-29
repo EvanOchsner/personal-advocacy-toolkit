@@ -22,3 +22,9 @@ build/
 # Local settings (never published)
 .env
 .env.local
+
+# Claude Code local state. Skills (.claude/skills/) and the repo-level
+# CLAUDE.md ARE committed — that's how the BYOA workflow ships. But
+# session-local planning notes and per-machine settings are not.
+.claude/plans/
+.claude/settings.local.json

@@ -69,6 +69,14 @@ pattern across claims, "bad faith" may oversell what the record
 shows — consider `auto_total_loss_valuation_dispute` as the working
 subtype until a pattern emerges.
 
+## Definition of done
+
+The user has either confirmed the existing classification still
+holds, or the classification has been corrected (with rerun against
+updated answers) and the user has confirmed the new slug. Hand back
+to `pat-workflow` so it can continue to Phase 3 authorities lookup
+with a slug everyone agrees on.
+
 ## Do not
 
 - Do not silently re-classify. If you think the slug is wrong, say so

@@ -89,6 +89,19 @@ For Maryland-Mustang the lookup returns:
 The skill then hands off to `packet-builder`, which wires the MIA
 address and intake URL into `packet-manifest.yaml`.
 
+## Definition of done
+
+The user has seen the bucket structure for their `(situation_type,
+jurisdiction)` pair, knows which entry is the **primary forum**
+(usually the regulator bucket), and has the disclaimer attached. If
+this is being driven by `pat-workflow`, hand control back so the
+orchestrator can move to deadline computation (Phase 4).
+
+If the lookup returned only `todo` stubs or only federal backstops
+because the state isn't populated, **say so explicitly** and offer
+to run `authorities-reconcile` (web reconciliation) before treating
+the result as the answer.
+
 ## Do not
 
 - Do not invent authorities the script doesn't list.

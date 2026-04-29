@@ -74,6 +74,21 @@ for a filled-in synthetic reference.
    correct packet — check cover page names, exhibit order, and the
    first page of each exhibit.
 
+## Definition of done
+
+`packet-manifest.yaml` validates against the schema, the builder
+ran without errors, the merged packet PDF and per-exhibit standalone
+PDFs are in `packet.output_dir`, and the user has read the cover
+page + first page of each exhibit and confirmed nothing is wrong.
+
+If the user's next move is to publish or hand off the packet
+externally (anything beyond the regulator's intake portal), do
+**not** declare done — invoke `going-public` first.
+
+If they're filing only with the regulator, hand back to
+`pat-workflow`; the workflow ends here unless publication safety
+applies.
+
 ## Synthetic example
 
 Maryland-Mustang assembles into an 8-part packet against the

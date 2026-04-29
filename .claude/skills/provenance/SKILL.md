@@ -152,6 +152,18 @@ from `advocacy.toml` or a sensible fallback (e.g. manifest's sibling
 `evidence/` dir). Override explicitly when working against a non-
 default location (the Mustang example in particular).
 
+## Definition of done
+
+For a per-file query: the user has seen the verbatim script output
+(or the verdict + flags + the section they asked about, for long
+reports), each ⚠ flag has a one-sentence narration, and any
+follow-up action (re-hash, re-snapshot, commit) has been named.
+
+For a bundle attestation: the YAML output is written, the
+`verdict_counts` summary (pass / warn / fail) is read aloud to the
+user, and any non-zero `fail` count has been investigated before the
+bundle is treated as final.
+
 ## Standard provenance-capture sequence
 
 Run from the repo root, before doing anything that might strip

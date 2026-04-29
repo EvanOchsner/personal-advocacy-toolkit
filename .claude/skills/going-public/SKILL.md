@@ -94,6 +94,19 @@ Scripts catch mechanical leaks. They do not catch:
 Read the publication set end-to-end with the user before the
 final push. A clean scrub report is necessary, not sufficient.
 
+## Definition of done
+
+All four scrubbers ran with passing post-checks, the second-pair-of-
+eyes read happened end-to-end, and the user has explicitly approved
+publication. If any post-check failed, the publication set stays in
+the private workspace; the user must address the leak (extend
+`substitutions.yaml`, redo the scrub, etc.) and rerun before
+publishing.
+
+This skill is the **last** workflow phase. When it completes, hand
+back to `pat-workflow` only if more cases follow; otherwise the
+session is done.
+
 ## Synthetic example
 
 For a Maryland-Mustang public write-up the sequence is:

@@ -71,6 +71,16 @@ The local half is fast, offline, auditable, and curated; but it drifts. The web 
 - If local and web disagree: surface the disagreement; do not silently pick one. Tell the user which fields differ (`url`, `mailing_address`, `kind`).
 - If the staleness flag fires: include it in the user-facing summary by name. The whole point of the dual process is to catch drift.
 
+## Definition of done
+
+The user has seen both findings side-by-side, the reconciliation
+section names what agreed / disagreed / stayed local-only / stayed
+web-only, the staleness flag(s) (if any) are visible, and the
+reconciliation JSON is written under
+`notes/authorities-research/`. Hand back to `pat-workflow` (or
+straight to `packet-builder` if the user already knows that's the
+next step).
+
 ## Synthetic example (Maryland-Mustang)
 
 For `(insurance_dispute, MD)`:

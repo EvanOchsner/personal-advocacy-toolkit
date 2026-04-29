@@ -99,6 +99,22 @@ uv run python -m scripts.ingest.email_json_to_txt \
 The readable layer is what `packet-manifest.yaml` references in
 exhibit B.
 
+## Definition of done
+
+For each item the user is ingesting now: layer 1 is in place, layers
+2 and 3 exist for any type that has an ingester, the SHA-256
+manifest is refreshed, and the user has confirmed there's nothing
+more to ingest right now. Hand back to `pat-workflow` (typically
+proceeds to drafting in Phase 6, or back to evidence-intake when
+more evidence arrives later).
+
+If a piece of evidence has no matching ingester (an arbitrary PDF,
+an audio recording, a paper document), place the raw file under
+`evidence/<type>/raw/` anyway and note in `notes/` that the
+structured/readable layers are not generated. The hash manifest
+still covers it; downstream packet exhibits can reference the raw
+file directly.
+
 ## Do not
 
 - Do not edit anything under `evidence/*/raw/`. Ever. That tree is

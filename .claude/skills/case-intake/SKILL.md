@@ -69,6 +69,15 @@ Running the classifier against that yields `situation_type:
 insurance_dispute`. That becomes the key for every downstream skill
 (`authorities-finder`, `packet-builder`, letter templates).
 
+## Definition of done
+
+`case-intake.yaml` exists with at least the six core fields the user
+answered, the classifier has produced a `situation_type` (or
+`unknown` if nothing matched), and the user has confirmed the
+classification reads right. If `unknown`, hand off to
+`situation-triage`. Otherwise hand back to `pat-workflow` (which
+proceeds to Phase 3 authorities lookup).
+
 ## Do not
 
 - Do not fill in fields the user hasn't answered. Leave them blank; the

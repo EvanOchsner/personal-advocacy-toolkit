@@ -74,6 +74,14 @@ into `drafts/` first, scrub the copy, and keep the raw untouched.
    number you know should not be present. If anything leaks,
    investigate before publishing.
 
+## Definition of done
+
+`scrub_report.json` is clean (no surprises remaining), the user has
+explicitly approved running with `--apply`, the apply succeeded, and
+the post-apply grep confirms nothing leaked. If this is being driven
+by `going-public`, hand control back; otherwise hand back to
+`pat-workflow`.
+
 ## Synthetic example
 
 For a public write-up of Maryland-Mustang,

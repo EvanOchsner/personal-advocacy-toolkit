@@ -43,7 +43,6 @@ import argparse
 import difflib
 import json
 import re
-import sys
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse

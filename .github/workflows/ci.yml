@@ -193,11 +193,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Confirm ripgrep is available
-        # ripgrep is preinstalled on ubuntu-latest GitHub-hosted runners.
-        # This step makes the dependency explicit and fails loudly if the
-        # runner image ever drops it.
-        run: rg --version
+      - name: Install ripgrep
+        # ripgrep was preinstalled on ubuntu-22.04 but was removed from the
+        # ubuntu-24.04 runner image (which ubuntu-latest now points to).
+        # Install explicitly so we don't depend on whatever the current
+        # runner-image happens to ship.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ripgrep
+          rg --version
 
       - name: Grep repo for banned terms
         # Strip comments and blank lines from banned-terms.txt to produce

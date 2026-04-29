@@ -49,13 +49,23 @@ def _init_repo(tmp_path: Path) -> Path:
     _git(repo, "init", "-q", "-b", "main")
     _git(repo, "config", "user.email", "test@example.com")
     _git(repo, "config", "user.name", "Test User")
+    # Disable autocrlf in the test repo so test fixtures behave
+    # identically on Windows runners (where the global default is
+    # `core.autocrlf=true`, which would translate line endings on
+    # checkout). Tests compute hashes against literal byte content.
+    _git(repo, "config", "core.autocrlf", "false")
     return repo
 
 
 def _commit_file(repo: Path, rel: str, body: str, msg: str) -> str:
     p = repo / rel
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(body)
+    # write_bytes (not write_text) so platform-specific newline
+    # translation does not change what hits disk on Windows. The test
+    # expectations compute SHA-256 against the literal `body` string;
+    # writing in text mode on Windows would translate `\n` to `\r\n` and
+    # the on-disk hash would no longer match.
+    p.write_bytes(body.encode())
     _git(repo, "add", rel)
     _git(repo, "commit", "-q", "-m", msg)
     return _git(repo, "rev-parse", "HEAD").stdout.strip()

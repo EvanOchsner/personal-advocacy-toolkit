@@ -41,6 +41,19 @@ Before pushing, the publication-safety and banned-terms post-checks can be
 rehearsed locally with `bash scripts/ci/local_postchecks.sh`, which mirrors
 the CI job.
 
+To enforce the lint + test step automatically on every `git push`, install
+the dev pre-push hook once:
+
+```sh
+bash scripts/hooks/install_dev_hooks.sh
+```
+
+This wires `uv run ruff check .` and `uv run pytest -q` into
+`.git/hooks/pre-push` — the same commands CI runs, so a green local push
+should produce a green CI run. Use `git push --no-verify` in an
+emergency, but treat that as a sign the hook needs fixing rather than
+bypassing.
+
 ## Airgap rules for the case-map app
 
 Anything under `scripts/app/` must remain airgapped. Concretely:

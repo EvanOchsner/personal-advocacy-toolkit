@@ -65,7 +65,15 @@ def _run(cmd: list[str], cwd: Path) -> tuple[int, str, str]:
 
 
 def _run_bytes(cmd: list[str], cwd: Path) -> tuple[int, bytes]:
-    r = subprocess.run(cmd, cwd=cwd, capture_output=True, check=False)
+    # Used for `xattr`, which is macOS-only. On Linux/CI runners the binary
+    # is absent and subprocess.run raises FileNotFoundError before producing
+    # a returncode. Map that to the shell convention (127) so callers can
+    # treat "binary missing" the same as "binary returned non-zero" and
+    # gracefully fall through to the empty-xattr path.
+    try:
+        r = subprocess.run(cmd, cwd=cwd, capture_output=True, check=False)
+    except FileNotFoundError:
+        return 127, b""
     return r.returncode, r.stdout
 
 

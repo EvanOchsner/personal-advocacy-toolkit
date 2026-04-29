@@ -1,6 +1,6 @@
 """Tests for scripts/status/case_dashboard.py.
 
-Renders against a Mustang-in-Maryland synthetic intake + evidence
+Renders against a Maryland-Mustang synthetic intake + evidence
 manifest fixture and asserts on structure: all expected sections
 present, deadline lines carry the verify tag, disclaimer appears at
 top.
@@ -21,9 +21,9 @@ from scripts.status import case_dashboard as cd  # noqa: E402
 MUSTANG_INTAKE = {
     "schema_version": "0.1",
     "synthetic": True,
-    "case_name": "Mustang in Maryland",
+    "case_name": "The Maryland Mustang",
     "situation_type": "insurance_dispute",
-    "claimant": {"name": "Delia Vance"},
+    "claimant": {"name": "Sally Ridesdale"},
     "jurisdiction": {"state": "MD"},
     "loss": {"date": "2025-03-15"},
 }
@@ -63,7 +63,7 @@ def test_dashboard_sections_present(intake_path: Path, manifest_path: Path, caps
     # Disclaimer at top.
     assert "not legal advice" in out.lower()
     # Header values.
-    assert "Mustang in Maryland" in out
+    assert "The Maryland Mustang" in out
     assert "insurance_dispute" in out
     assert "MD" in out
     assert "2025-03-15" in out

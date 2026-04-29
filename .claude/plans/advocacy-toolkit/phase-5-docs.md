@@ -11,7 +11,7 @@ Single serial agent.
 - All `docs/playbooks/*.md` — one jurisdiction worked, others scaffolded
   with clear populate-these lists.
 - All `docs/tutorials/*.md` — written against the synthetic case.
-- `examples/mustang-in-maryland/WALKTHROUGH.md` — end-to-end narrated
+- `examples/maryland-mustang/WALKTHROUGH.md` — end-to-end narrated
   run (clone, set up, ingest, triage, packet, dashboard, scrub preview).
 - `.github/workflows/ci.yml` — runs pytest, ruff, and the post-check
   jobs from Phase 3C.

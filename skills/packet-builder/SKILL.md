@@ -10,7 +10,7 @@ jurisdiction-specific lives in `packet-manifest.yaml`. This skill
 shepherds that manifest to completeness and then runs the builder.
 
 See `templates/packet-manifests/schema.yaml` for the authoritative
-schema, and `examples/mustang-in-maryland/complaint_packet/packet-manifest.yaml`
+schema, and `examples/maryland-mustang/complaint_packet/packet-manifest.yaml`
 for a filled-in synthetic reference.
 
 ## When this skill fires
@@ -29,7 +29,7 @@ for a filled-in synthetic reference.
      into place and walk through the sections below.
 
 2. **Fill the manifest header with the user.**
-   - `packet.name` — a slug like `mustang-in-maryland-mia`.
+   - `packet.name` — a slug like `maryland-mustang-mia`.
    - `authority` — name, short code, mailing address, intake URL.
      Pulled from `authorities-finder` output; do not retype by
      hand if the skill already found it.
@@ -76,13 +76,13 @@ for a filled-in synthetic reference.
 
 ## Synthetic example
 
-Mustang-in-Maryland assembles into an 8-part packet against the
+Maryland-Mustang assembles into an 8-part packet against the
 Maryland Insurance Administration: complaint narrative + 6
 exhibits (A policy forms, B correspondence compilation, C
 valuation report, D photographs, E specialist opinion, F
 salvage-transfer record) + 1 reference appendix (compiled policy
 reference). The full manifest is at
-`examples/mustang-in-maryland/complaint_packet/packet-manifest.yaml`.
+`examples/maryland-mustang/complaint_packet/packet-manifest.yaml`.
 
 ## Do not
 

@@ -1,0 +1,113 @@
+# events.yaml — The Maryland Mustang (SYNTHETIC — NOT A REAL CASE)
+#
+# Timeline events for the case-map app, tagged by entity ID so the UI
+# can filter when an entity is selected. Derived from the `timeline:`
+# block in case-facts.yaml, but with entity tags added.
+#
+# Evidence-manifest entries are intentionally NOT represented here;
+# evidence appears in the drilldown panel via `refs:` but not on the
+# timeline. Correspondence is pulled live from the correspondence
+# manifest at render time, not duplicated here.
+
+events:
+  - id: collision
+    date: 2025-03-15
+    kind: incident
+    title: "Collision — rear-end at stoplight, Columbia MD"
+    entities: [self, at_fault_driver]
+    summary: "Vehicle towed to claimant's residence."
+
+  - id: first_notice_of_loss
+    date: 2025-03-16
+    kind: filing
+    title: "First notice of loss filed with CIM"
+    entities: [self, cim]
+    summary: "Claim CIM-2025-03-5517 opened."
+
+  - id: first_shop_declines
+    date: 2025-03-19
+    kind: meeting
+    title: "Dundalk Bodywork and Crabcakes declines repair"
+    entities: [self, first_shop]
+    summary: "Parts-sourcing constraints for 1969 Mustang frame."
+
+  - id: specialist_shop_engaged
+    date: 2025-03-24
+    kind: meeting
+    title: "Midlife Crisis Restorations of Wilmington engaged"
+    entities: [self, specialist_shop]
+
+  - id: mava_inspection
+    date: 2025-04-02
+    kind: meeting
+    title: "MAVA inspection at specialist shop"
+    entities: [self, cim, appraiser_mava, specialist_shop]
+
+  - id: mava_valuation_issued
+    date: 2025-04-17
+    kind: filing
+    title: "MAVA valuation report issued ($52,719.50 ACV)"
+    entities: [self, cim, appraiser_mava]
+    summary: "Claimant disputes valuation."
+
+  - id: policy_forms_retrieved
+    date: 2025-04-21
+    kind: meeting
+    title: "Full policy form set retrieved from Meritor"
+    entities: [self, agent_meritor]
+    summary: "Insurer portal had provided only the declarations page."
+
+  - id: cim_position_letter
+    date: 2025-05-09
+    kind: filing
+    title: "CIM formal position letter — $5,280.50 deduction"
+    entities: [self, cim, adjuster_whitlock]
+    summary: "Declines storage fees and specialist labor rates as 'non-customary'."
+
+  - id: first_written_objection
+    date: 2025-05-22
+    kind: filing
+    title: "Claimant's first written objection"
+    entities: [self, cim]
+    summary: "Cites agreed-value endorsement CIM-AV-ENDT-2023."
+
+  - id: cim_reiterates_salvage_warning
+    date: 2025-06-10
+    kind: filing
+    title: "CIM reiterates position; 14-day salvage warning"
+    entities: [self, cim]
+
+  - id: salvage_transfer
+    date: 2025-06-24
+    kind: incident
+    title: "Vehicle transferred to salvage during negotiation (core grievance)"
+    entities: [self, cim]
+    summary: "Transfer occurred while dispute was unresolved."
+
+  - id: supervisor_escalation_request
+    date: 2025-07-08
+    kind: call
+    title: "Claimant requests supervisor escalation"
+    entities: [self, cim]
+    summary: "No substantive response."
+
+  - id: independent_appraisal
+    date: 2025-08-15
+    kind: filing
+    title: "Independent appraisal retained"
+    entities: [self, specialist_shop]
+    summary: "Midlife Crisis Restorations opinion letter + parts-market comps."
+
+  - id: mia_complaint_filed
+    date: 2025-09-12
+    kind: filing
+    title: "MIA complaint filed"
+    entities: [self, mia, cim]
+    summary: "Synthetic case MIA-SYN-0000-0000."
+
+  - id: mia_acknowledgment
+    date: 2025-10-01
+    kind: filing
+    title: "MIA acknowledges receipt"
+    entities: [self, mia]
+    summary: "Packet assembly complete."

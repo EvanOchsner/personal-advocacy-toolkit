@@ -14,7 +14,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 MUSTANG_MANIFEST = (
     REPO_ROOT
     / "examples"
-    / "mustang-in-maryland"
+    / "maryland-mustang"
     / "complaint_packet"
     / "packet-manifest.yaml"
 )

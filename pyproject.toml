@@ -46,7 +46,7 @@ dev = [
     "ruff>=0.4",
 ]
 synthetic-case = [
-    # Needed to regenerate the Mustang-in-Maryland synthetic artifacts
+    # Needed to regenerate the Maryland-Mustang synthetic artifacts
     # (valuation PDF, photo placeholders, MIA complaint .docx) that Phase 2
     # currently ships as .md fallbacks.
     "Pillow>=10",

@@ -1,0 +1,13 @@
+{
+  "synthetic": true,
+  "message_id": "<20250522T1420.015@synthetic-case.example>",
+  "date": "2025-05-22T14:20:03-04:00",
+  "from": {"name": "Sally Ridesdale", "email": "sally.ridesdale@example.com"},
+  "to": [{"name": "Harlan Whitlock", "email": "harlan.whitlock@chesapeake-indemnity-mutual.example"}],
+  "subject": "Formal objection — non-customary-charges deduction",
+  "thread_slug": "formal-position",
+  "beat": "formal_rejection",
+  "body_text_path": "../readable/015_2025-05-22_sally-written-objection.txt",
+  "raw_path": "../raw/015_2025-05-22_sally-written-objection.eml",
+  "notes": "Claimant's formal written objection. Cites form numbers and puts MIA on notice as a next step. Lawyer-mode."
+}

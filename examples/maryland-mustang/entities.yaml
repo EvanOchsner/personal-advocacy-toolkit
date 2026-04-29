@@ -1,0 +1,116 @@
+# entities.yaml — The Maryland Mustang (SYNTHETIC — NOT A REAL CASE)
+#
+# Case-map entity declarations for the case-map app (scripts/app/).
+# Fields with `ref:` resolve into case-facts.yaml via dotted path so
+# names, emails, and addresses are not duplicated here.
+#
+# Role-based columns in the UI:
+#   self / ally    -> left
+#   neutral        -> centre
+#   adversary      -> right
+
+entities:
+  - id: self
+    role: self
+    ref: claimant
+    labels: [policyholder, classic-car-owner]
+    icon: person
+    match:
+      emails: [sally.ridesdale@example.com]
+      names: [Sally Ridesdale, Ms. Ridesdale]
+
+  - id: specialist_shop
+    role: ally
+    ref: parties.specialist_shop
+    labels: [body-shop, engaged]
+    icon: org
+    match:
+      emails: [arden@midlife-crisis-restorations.example]
+      names: [Midlife Crisis Restorations, Arden Moody]
+
+  - id: agent_meritor
+    role: ally
+    ref: parties.agent
+    labels: [producer-agency]
+    icon: org
+    match:
+      emails: [rkeel@meritor-insurance-group.example]
+      names: [Meritor Insurance Group, Rowan Keel]
+
+  - id: first_shop
+    role: neutral
+    ref: parties.first_shop
+    labels: [body-shop, declined]
+    icon: org
+    match:
+      names: [Dundalk Bodywork]
+
+  - id: mia
+    role: neutral
+    ref: regulator
+    labels: [regulator, state]
+    icon: regulator
+
+  - id: at_fault_driver
+    role: neutral
+    ref: parties.at_fault_driver
+    labels: [third-party]
+    icon: person
+
+  - id: cim
+    role: adversary
+    ref: parties.insurer
+    labels: [insurer, counterparty]
+    icon: org
+    match:
+      emails: [claims@chesapeake-indemnity-mutual.example]
+      names: [Chesapeake Indemnity Mutual]
+
+  - id: adjuster_whitlock
+    role: adversary
+    ref: parties.adjuster
+    labels: [adjuster]
+    icon: person
+    match:
+      emails: [harlan.whitlock@chesapeake-indemnity-mutual.example]
+      names: [Harlan Whitlock]
+
+  - id: appraiser_mava
+    role: adversary
+    ref: parties.appraiser
+    labels: [valuation-vendor]
+    icon: org
+    match:
+      emails: [jpemberton@midatlantic-vehicle-appraisers.example]
+      names: [MidAtlantic Vehicle Appraisers, Joyce Pemberton]
+
+relationships:
+  - from: self
+    to: cim
+    kind: adverse_to
+    summary: "Agreed-value policy dispute; salvage transfer during negotiation is the core grievance."
+
+  - from: cim
+    to: adjuster_whitlock
+    kind: retained_by
+    summary: "Adjuster assigned by the insurer."
+
+  - from: cim
+    to: appraiser_mava
+    kind: retained_by
+    summary: "Valuation vendor retained by the insurer."
+
+  - from: self
+    to: specialist_shop
+    kind: retained_by
+    summary: "Restoration shop engaged after first shop declined."
+
+  - from: self
+    to: agent_meritor
+    kind: allied_with
+    summary: "Producer agency that issued the policy; provided full form set after insurer portal gave only declarations."
+
+  - from: mia
+    to: cim
+    kind: regulates
+    summary: "Maryland Insurance Administration has jurisdiction over CIM as an MD-licensed insurer."

@@ -1,4 +1,4 @@
-"""Tests for the Mustang-in-Maryland synthetic-case regenerator.
+"""Tests for the Maryland-Mustang synthetic-case regenerator.
 
 These tests copy the case tree into a tmp dir, run the regenerator
 against the copy, and assert the three artifact groups land with the
@@ -29,13 +29,13 @@ from scripts.synthetic_case import regenerate as rg  # noqa: E402
 
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-CASE_SRC = REPO_ROOT / "examples" / "mustang-in-maryland"
+CASE_SRC = REPO_ROOT / "examples" / "maryland-mustang"
 
 
 @pytest.fixture()
 def case_tree(tmp_path: Path) -> Path:
     """Copy the parts of the case tree the regenerator needs."""
-    root = tmp_path / "mustang-in-maryland"
+    root = tmp_path / "maryland-mustang"
     (root / "evidence" / "valuation").mkdir(parents=True)
     (root / "evidence" / "photos").mkdir(parents=True)
     (root / "drafts").mkdir(parents=True)

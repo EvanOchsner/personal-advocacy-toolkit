@@ -1,14 +1,14 @@
-# Phase 2 — Synthetic case "Mustang in Maryland"
+# Phase 2 — Synthetic case "The Maryland Mustang"
 
 One agent, running in parallel with Phase 1. Authors the fully synthetic
-worked example under `examples/mustang-in-maryland/`.
+worked example under `examples/maryland-mustang/`.
 
 ## Facts (canonical — do not drift)
 
-See §Synthetic case: "Mustang in Maryland" in the master plan. Key
+See §Synthetic case: "The Maryland Mustang" in the master plan. Key
 identifiers:
 
-- Claimant: **Delia Vance** (Towson, MD).
+- Claimant: **Sally Ridesdale** (Towson, MD).
 - Vehicle: **1969 Ford Mustang Mach 1**, 84,000 mi, agreed-value classic
   policy. VIN placeholder only.
 - Insurer: **Chesapeake Indemnity Mutual** (fictional — run

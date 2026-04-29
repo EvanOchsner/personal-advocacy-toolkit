@@ -72,11 +72,11 @@ jobs:
           uv run python -m scripts.app --help
           uv run python -m scripts.app.validate --help
 
-      - name: Case-map schema validator (examples/mustang-in-maryland)
+      - name: Case-map schema validator (examples/maryland-mustang)
         # Validates entities.yaml + events.yaml against the synthetic case.
         # Catches schema drift between the validator and the seed fixture
         # the test suite relies on.
-        run: uv run python -m scripts.app.validate --case-dir examples/mustang-in-maryland
+        run: uv run python -m scripts.app.validate --case-dir examples/maryland-mustang
 
       - name: Case-map airgap check (no external URLs in static/ or templates/)
         # Fail the build if any file under scripts/app/static/ or

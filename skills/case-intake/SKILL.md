@@ -51,10 +51,10 @@ then let `scripts/intake/situation_classify.py` do the routing.
 
 ## Synthetic example
 
-For the Mustang-in-Maryland example the answers file would look like:
+For the Maryland-Mustang example the answers file would look like:
 
 ```yaml
-claimant_name: "Delia Vance"
+claimant_name: "Sally Ridesdale"
 jurisdiction_state: "MD"
 counterparty_kind: "insurer"
 situation: >

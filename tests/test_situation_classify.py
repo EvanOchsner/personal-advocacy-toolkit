@@ -23,7 +23,7 @@ def test_md_insurance_happy_path(tmp_path: Path) -> None:
     answers_file.write_text(
         yaml.safe_dump(
             {
-                "claimant_name": "Delia Vance",
+                "claimant_name": "Sally Ridesdale",
                 "jurisdiction_state": "MD",
                 "counterparty_kind": "insurer",
                 "situation": "Agreed-value auto claim denied after a total loss; "
@@ -37,7 +37,7 @@ def test_md_insurance_happy_path(tmp_path: Path) -> None:
     assert rc == 0
     loaded = yaml.safe_load(out.read_text())
     assert loaded["situation_type"] == "insurance_dispute"
-    assert loaded["claimant"]["name"] == "Delia Vance"
+    assert loaded["claimant"]["name"] == "Sally Ridesdale"
     assert loaded["jurisdiction"]["state"] == "MD"
     assert loaded["classifier"]["disclaimer"] == sc.DISCLAIMER
     assert any("counterparty_kind" in m for m in loaded["classifier"]["matched_on"])

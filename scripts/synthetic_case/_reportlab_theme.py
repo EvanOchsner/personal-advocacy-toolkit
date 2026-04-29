@@ -123,7 +123,7 @@ def draw_synthetic_chrome(c: canvas.Canvas, *, header_title: str) -> None:
     c.drawString(
         THEME.left_margin,
         0.55 * inch,
-        f"{SYNTHETIC_STAMP} -- Mustang in Maryland teaching example.",
+        f"{SYNTHETIC_STAMP} -- The Maryland Mustang teaching example.",
     )
     page_no = c.getPageNumber()
     c.drawRightString(w - THEME.right_margin, 0.55 * inch, f"Page {page_no}")

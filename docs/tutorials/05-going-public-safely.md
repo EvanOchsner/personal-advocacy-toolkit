@@ -14,12 +14,12 @@ checks that catch the common failure modes (PDF text-layer leaks,
 docx metadata, EXIF GPS, git history leaks).
 
 Running example: the
-[`Mustang-in-Maryland`](../../examples/mustang-in-maryland/) synthetic
+[`Maryland-Mustang`](../../examples/maryland-mustang/) synthetic
 case. It's already synthetic, so no actual scrubbing is needed — but
 we'll run the tools in dry-run mode to demonstrate detection.
 
 ```sh
-cd examples/mustang-in-maryland
+cd examples/maryland-mustang
 ```
 
 ## The two options
@@ -53,8 +53,8 @@ For the Mustang case (already synthetic, so this is illustrative):
 ```yaml
 # publish/substitutions.yaml
 substitutions:
-  "Delia Vance":                     "Jane Doe"
-  "delia.vance@example.invalid":     "jane@example.invalid"
+  "Sally Ridesdale":                     "Jane Doe"
+  "sally.ridesdale@example.invalid":     "jane@example.invalid"
   "Chesapeake Indemnity Mutual":     "Example Indemnity Mutual"
   "414 Aigburth Vale":               "[address redacted]"
   "Towson, MD 21204":                "[city redacted], MD [zip redacted]"

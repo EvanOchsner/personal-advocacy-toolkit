@@ -71,7 +71,7 @@ The local half is fast, offline, auditable, and curated; but it drifts. The web 
 - If local and web disagree: surface the disagreement; do not silently pick one. Tell the user which fields differ (`url`, `mailing_address`, `kind`).
 - If the staleness flag fires: include it in the user-facing summary by name. The whole point of the dual process is to catch drift.
 
-## Synthetic example (Mustang-in-Maryland)
+## Synthetic example (Maryland-Mustang)
 
 For `(insurance_dispute, MD)`:
 

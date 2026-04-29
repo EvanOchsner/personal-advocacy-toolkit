@@ -15,8 +15,8 @@ from scripts.app._schema import CaseMapError
 MIN_CASE_FACTS = dedent(
     """\
     claimant:
-      name: Delia Vance
-      email: delia@example.com
+      name: Sally Ridesdale
+      email: sally@example.com
     parties:
       insurer:
         name: Chesapeake Indemnity Mutual
@@ -64,7 +64,7 @@ def test_load_minimal_case(tmp_path: Path) -> None:
     assert loaded.case_map.entity_ids == {"self", "cim", "mia"}
     assert len(loaded.relationships) == 2
     assert loaded.events == []
-    assert loaded.resolved["self"].display_name == "Delia Vance"
+    assert loaded.resolved["self"].display_name == "Sally Ridesdale"
     assert loaded.resolved["cim"].display_name == "Chesapeake Indemnity Mutual"
 
 
@@ -325,10 +325,10 @@ def test_resolve_dotted_path() -> None:
 
 def test_mustang_seed_loads(tmp_path: Path) -> None:
     # The real Mustang example must load cleanly — it is the CI fixture.
-    case_dir = Path(__file__).parent.parent / "examples" / "mustang-in-maryland"
+    case_dir = Path(__file__).parent.parent / "examples" / "maryland-mustang"
     loaded = load_case_map(case_dir)
     assert "self" in loaded.resolved
-    assert loaded.resolved["self"].display_name == "Delia Vance"
+    assert loaded.resolved["self"].display_name == "Sally Ridesdale"
     assert "cim" in loaded.resolved
     assert len(loaded.events) == 15
     # relationships should include the adverse_to between self and cim.

@@ -21,7 +21,7 @@ New here? Do these four things, in order:
    Every CLI in the docs is run via `uv run` — no virtualenv to activate.
 3. **Run the synthetic walkthrough end-to-end** to confirm your
    environment works:
-   [`examples/mustang-in-maryland/WALKTHROUGH.md`](../examples/mustang-in-maryland/WALKTHROUGH.md).
+   [`examples/maryland-mustang/WALKTHROUGH.md`](../examples/maryland-mustang/WALKTHROUGH.md).
    Every command is real and should complete in under a minute.
 4. **Start Tutorial 01** to set up your own case:
    [`tutorials/01-setting-up-your-case.md`](tutorials/01-setting-up-your-case.md).

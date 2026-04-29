@@ -1,7 +1,7 @@
 """Tests for scripts/intake/deadline_calc.py.
 
 Covers:
-  - MD + insurance_dispute happy path using the Mustang-in-Maryland
+  - MD + insurance_dispute happy path using the Maryland-Mustang
     synthetic loss date 2025-03-15.
   - Calendar arithmetic at month/year boundaries (leap years, Jan 31).
   - Missing jurisdiction falls back gracefully.

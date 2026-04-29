@@ -8,13 +8,13 @@ page you want to preserve — will live under `evidence/` in a
 consistent three-layer shape that every downstream tool understands.
 
 Running example: the
-[`Mustang-in-Maryland`](../../examples/mustang-in-maryland/) case,
+[`Maryland-Mustang`](../../examples/maryland-mustang/) case,
 which ships 20 synthetic emails already laid out across
 `evidence/emails/{raw,structured,readable}/`. We'll re-validate them
 as if you were doing the ingest yourself.
 
 ```sh
-cd examples/mustang-in-maryland
+cd examples/maryland-mustang
 ```
 
 ## The three-layer pattern

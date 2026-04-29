@@ -53,7 +53,7 @@ Invoke this skill when:
 
 - The user is preparing a regulator complaint and needs a provenance
   bundle to attach. (For the worked synthetic case,
-  `examples/mustang-in-maryland/`, that is the MIA packet.)
+  `examples/maryland-mustang/`, that is the MIA packet.)
 - The user asks "how do I prove where this came from?" or "is this
   file still intact?"
 - Counsel has asked for chain-of-custody documentation.
@@ -196,4 +196,4 @@ most valuable download provenance on macOS.
 - `scripts/publish/exif_scrub.py`, `docx_metadata_scrub.py`,
   `pdf_redact.py` — the *scrub* side; run after provenance capture,
   never before.
-- Worked synthetic case: `examples/mustang-in-maryland/`.
+- Worked synthetic case: `examples/maryland-mustang/`.

@@ -18,7 +18,7 @@ Serial pass. Author: Claude (this session).
 - Stub `docs/concepts/` (5 files), `docs/playbooks/` (7 files),
   `docs/tutorials/` (5 files), `docs/getting-started.md`,
   `docs/who-this-is-for.md`.
-- Stub `examples/mustang-in-maryland/README.md` + `WALKTHROUGH.md`.
+- Stub `examples/maryland-mustang/README.md` + `WALKTHROUGH.md`.
 - Stub `templates/CLAUDE.md.template`.
 - Per-phase plan files in `.claude/plans/advocacy-toolkit/`.
 

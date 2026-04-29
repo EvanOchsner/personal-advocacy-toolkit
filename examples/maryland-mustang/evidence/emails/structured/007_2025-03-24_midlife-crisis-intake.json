@@ -1,0 +1,14 @@
+{
+  "synthetic": true,
+  "message_id": "<20250324T1412.007@midlife-crisis-restorations.example>",
+  "date": "2025-03-24T14:12:55-04:00",
+  "from": {"name": "Arden Moody", "email": "arden@midlife-crisis-restorations.example"},
+  "to": [{"name": "Sally Ridesdale", "email": "sally.ridesdale@example.com"}],
+  "cc": [{"name": "Harlan Whitlock", "email": "harlan.whitlock@chesapeake-indemnity-mutual.example"}],
+  "subject": "1969 Mustang Mach 1 — intake confirmation and rate schedule",
+  "thread_slug": "midlife-crisis-intake",
+  "beat": "specialist_engagement",
+  "body_text_path": "../readable/007_2025-03-24_midlife-crisis-intake.txt",
+  "raw_path": "../raw/007_2025-03-24_midlife-crisis-intake.eml",
+  "notes": "Rate sheet is delivered to the carrier in writing — forecloses any later 'we didn't know' defense on rate."
+}

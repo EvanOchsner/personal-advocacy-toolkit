@@ -1,0 +1,13 @@
+{
+  "synthetic": true,
+  "message_id": "<20250321T0937.006@chesapeake-indemnity-mutual.example>",
+  "date": "2025-03-21T09:37:18-04:00",
+  "from": {"name": "Harlan Whitlock", "email": "harlan.whitlock@chesapeake-indemnity-mutual.example"},
+  "to": [{"name": "Sally Ridesdale", "email": "sally.ridesdale@example.com"}],
+  "subject": "RE: Moving vehicle to Midlife Crisis Restorations of Wilmington",
+  "thread_slug": "first-shop-decline",
+  "beat": "specialist_engagement",
+  "body_text_path": "../readable/006_2025-03-21_whitlock-approves-midlife-crisis.txt",
+  "raw_path": "../raw/006_2025-03-21_whitlock-approves-midlife-crisis.eml",
+  "notes": "Insurer approves the move but plants the 'customary-rate' limitation in writing — the exact phrase that becomes the $5,280.50 dispute."
+}

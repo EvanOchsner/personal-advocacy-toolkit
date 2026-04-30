@@ -54,6 +54,7 @@ The drafting and review tools are designed to ground the analysis in the facts o
 
 - **Networkless subagents.** The interactive comment workflow ([`.claude/skills/docx-comment-roundtrip/`](.claude/skills/docx-comment-roundtrip/)) spawns specialized subagents with file-read tools only — **no network access** — and instructs them to fact-check, analyze, and propose text **using only project materials**. Replies that contain unauthorized URLs are rejected automatically.
 - **Project-materials-only grounding.** Every assertion the toolkit emits is expected to cite a file under your case folder. If the agent needs information that isn't there, the workflow stops and helps you to track it down, vet it, and ingest it as a tracked document.
+- **Trusted reference acquisition** ([`.claude/skills/trusted-sources/`](.claude/skills/trusted-sources/), [`scripts/references/`](scripts/references/)) — pulls authoritative text (statutes, regulations, official policies, terms of service) into `<case>/references/` via three independent paths (user-supplied / project-known trusted source / constrained allowlist fetch), cross-checks them, and assesses user-supplied copies for completeness. Every doc is sha256-tracked with a sidecar that carries the verbatim disclaimer. See [`docs/concepts/trusted-sources.md`](docs/concepts/trusted-sources.md).
 - **Mandatory verify-with-counsel disclaimers** on every tool that emits a date, an authority, or a statute cite.
 
 ### 3. Document and Packet Creation
@@ -90,7 +91,7 @@ The toolkit ships with a skill bundle under [`.claude/skills/`](.claude/skills/)
 claude
 ```
 
-Then describe your situation in natural language and ask it to use the project skills to setup your case. The orchestrator routes through the eight phases (intake → authorities → deadlines → evidence → drafting → packet → publication safety).
+Then describe your situation in natural language and ask it to use the project skills to setup your case. The orchestrator routes through the workflow phases (intake → authorities → trusted reference docs → deadlines → evidence → drafting → packet → publication safety).
 
 **AI harnesses with shell access** — Cursor, Windsurf, Aider, Continue, Cline, OpenCode — work too. The skill content is plain markdown plus YAML frontmatter; point your harness at `.claude/skills/` (typically a one-line config change).
 

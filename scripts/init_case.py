@@ -30,12 +30,67 @@ CASE_DIRS = [
     "evidence/policy",
     "evidence/valuation",
     "evidence/photos",
+    "references/raw",
+    "references/structured",
+    "references/readable",
     "drafts",
     "complaint_packet/exhibits",
     "complaint_packet/appendix",
     "provenance/snapshots",
     "notes/entities",
+    "notes/references",
 ]
+
+REFERENCES_README = """\
+# references/
+
+Trusted reference documents — statutes, regulations, official policies,
+agency guidance, terms of service — that this case will cite.
+
+This directory is **not** part of `evidence/`. It holds third-party
+authoritative texts that are reproducible from their original
+publishers, not your private case record. The toolkit's append-only
+evidence hook does not apply here: a stale or wrong copy can be
+re-fetched from the source.
+
+## Layout
+
+    references/
+      raw/         original artifacts (PDF, HTML, DOCX as fetched/given)
+      structured/  sidecar JSON (source URL, fetch date, sha256, ...)
+      readable/    extracted plaintext for skimming and packet appendices
+      .references-manifest.yaml   one entry per ingested doc
+
+The case-level SHA-256 manifest at `<case>/.references-manifest.sha256`
+is refreshed by every ingest.
+
+## Acquiring documents
+
+Use the `trusted-sources` skill (or the CLI directly):
+
+    uv run python -m scripts.references.ingest \\
+        --file path/to/policy.pdf \\
+        --kind official-policy \\
+        --citation "Acme TOS as of 2026-04-15"
+
+    uv run python -m scripts.references.ingest \\
+        --url https://www.ecfr.gov/... \\
+        --kind regulation \\
+        --citation "29 CFR 1910.95"
+
+The fetcher refuses URLs that are not on the trusted-source allowlist
+in `data/reference_sources.yaml`; pass `--allow-unknown` only after
+explicit confirmation.
+
+## Disclaimers
+
+Every document ingested here carries the verbatim disclaimer:
+
+    This is reference information, not legal advice.
+
+Carry it through every quote, paraphrase, and downstream draft. Tag
+extracted citations with `[VERIFY WITH COUNSEL]`.
+"""
 
 US_STATES: dict[str, str] = {
     "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas",
@@ -217,6 +272,9 @@ def _create_tree(root: Path) -> list[str]:
         p = root / d
         p.mkdir(parents=True, exist_ok=True)
         created.append(d)
+    references_readme = root / "references" / "README.md"
+    if not references_readme.exists():
+        references_readme.write_text(REFERENCES_README, encoding="utf-8")
     return created
 
 

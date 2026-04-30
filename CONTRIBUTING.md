@@ -79,6 +79,35 @@ The `description` frontmatter is what triggers a skill on user phrasing
 — write it specifically (multiple example phrasings, situation
 keywords) so it competes well against sibling skills' descriptions.
 
+## Trusted-source fetcher and `references/`
+
+`scripts/references/fetch.py` is the only place in the toolkit that
+makes outbound HTTP requests on behalf of a case. Two rules:
+
+- **Allow/deny is data, not code.** The fetcher refuses any URL whose
+  host isn't on the allowlist in `data/reference_sources.yaml`. Adding
+  a new domain means editing that file (with a justifying entry), not
+  patching the fetcher.
+- **`references/` is parallel to `evidence/`, not nested under it.**
+  The case-folder layout is:
+
+      <case>/evidence/                  ← append-only via pre-commit hook
+      <case>/references/                ← reproducible third-party text
+      <case>/.evidence-manifest.sha256
+      <case>/.references-manifest.sha256
+
+  The pre-commit hook in `scripts/hooks/pre_commit.py` covers
+  `evidence/` only — by design. Reference docs are reproducible from
+  their original publishers; routine corrections (re-fetching because
+  the agency posted v2 of a regulation) should not require the
+  `ADVOCACY_ALLOW_EVIDENCE_MUTATION=1` escape hatch. The sha256
+  manifest still tracks every byte under `references/`.
+
+When you change the allowlist, fetcher behavior, or sidecar shape,
+update [`docs/concepts/trusted-sources.md`](docs/concepts/trusted-sources.md)
+and the [`trusted-sources` SKILL.md](.claude/skills/trusted-sources/SKILL.md)
+together — both are load-bearing for agent guidance.
+
 ## Airgap rules for the case-map app
 
 Anything under `scripts/app/` must remain airgapped. Concretely:

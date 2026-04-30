@@ -1,0 +1,214 @@
+# reference_sources.yaml — trusted sources for authoritative reference text
+#
+# Reference material, not legal advice. Pairs with data/authorities.yaml
+# (which lists *who has jurisdiction*) to record *where to get the text*
+# of statutes, regulations, official policies, and terms of service.
+#
+# Used by:
+#   scripts/references/_allowlist.py — fetch allow/deny enforcement
+#   scripts/references/ingest.py     — Path B "project-known" source lookup
+#   .claude/skills/trusted-sources/SKILL.md — agent guidance
+#
+# Schema (v0.1):
+#
+#   schema_version: str
+#
+#   # Domain-level network policy. Used by the fetcher to decide whether
+#   # a URL is safe to pull bytes from automatically.
+#   allowlist_domains:
+#     - { domain: <glob>, trust: <primary|secondary-trusted|secondary-confirm> }
+#   denylist_domains:
+#     - { domain: <glob>, reason: <short string> }
+#
+#   # Curated source directory keyed by (kind, jurisdiction).
+#   # `jurisdiction` is "federal", a 2-letter US state code, or "*" for
+#   # cross-jurisdiction (e.g., terms-of-service for online platforms).
+#   source_directory:
+#     <kind>:                              # statute | regulation | official-policy | tos | guidance | case-law | other
+#       <jurisdiction>:
+#         label: <human-readable>
+#         sources:
+#           - name: <human-readable name of the source>
+#             url: <root URL or search entry point>
+#             how: <one-line how-to for finding the right doc>
+#             trust: <primary|secondary-trusted|secondary-confirm>
+#         note: <optional caveats>
+
+schema_version: "0.1"
+
+# ---------------------------------------------------------------------------
+# Domain allow/denylist
+#
+# `trust: primary` — first-class authoritative source (e.g., the agency's
+#   own .gov site, official statute compilations). Default-fetch with
+#   user confirm.
+# `trust: secondary-trusted` — broadly reliable but not first-party
+#   (e.g., Cornell LII for the U.S. Code). Allowed; flagged in sidecar
+#   so the user knows it's not the primary publisher.
+# `trust: secondary-confirm` — allowed only after explicit user confirm
+#   (rare; reserve for sources where primary is offline or paywalled).
+# ---------------------------------------------------------------------------
+
+allowlist_domains:
+  # U.S. government and government-adjacent
+  - { domain: "*.gov",                      trust: "primary" }
+  - { domain: "*.us",                       trust: "primary" }
+  - { domain: "*.mil",                      trust: "primary" }
+  - { domain: "naic.org",                   trust: "primary" }
+
+  # Federal statute and regulation publishers
+  - { domain: "www.govinfo.gov",            trust: "primary" }
+  - { domain: "www.ecfr.gov",               trust: "primary" }
+  - { domain: "www.federalregister.gov",    trust: "primary" }
+
+  # State publishers (representative; *.us catches most)
+  - { domain: "mgaleg.maryland.gov",        trust: "primary" }
+  - { domain: "dsd.state.md.us",            trust: "primary" }
+
+  # Court systems
+  - { domain: "www.courts.state.*.us",      trust: "primary" }
+  - { domain: "*.uscourts.gov",             trust: "primary" }
+
+  # Secondary-trusted (well-known free legal information providers)
+  - { domain: "www.law.cornell.edu",        trust: "secondary-trusted" }
+  - { domain: "law.cornell.edu",            trust: "secondary-trusted" }
+
+  # Insurance filing system
+  - { domain: "filings.serff.com",          trust: "primary" }
+
+denylist_domains:
+  - { domain: "*.wikipedia.org",
+      reason: "Encyclopedia summary; cite the underlying statute/regulation, not the summary." }
+  - { domain: "*.wikidata.org",
+      reason: "Same as Wikipedia — secondary aggregation." }
+  - { domain: "casetext.com",
+      reason: "Paywalled; not a primary cite source." }
+  - { domain: "www.westlaw.com",
+      reason: "Paywalled; not a primary cite source." }
+  - { domain: "www.lexisnexis.com",
+      reason: "Paywalled; not a primary cite source." }
+  - { domain: "www.findlaw.com",
+      reason: "Marketing-driven aggregator; cite the primary publisher instead." }
+  - { domain: "www.justia.com",
+      reason: "Aggregator; OK for orientation but cite the primary publisher." }
+
+# ---------------------------------------------------------------------------
+# Curated source directory
+# ---------------------------------------------------------------------------
+
+source_directory:
+
+  statute:
+    federal:
+      label: "Federal statutes (U.S. Code)"
+      sources:
+        - name: "GovInfo (U.S. Code)"
+          url: "https://www.govinfo.gov/app/collection/uscode"
+          how: "Authoritative U.S. Code from GPO. Browse by title and section."
+          trust: "primary"
+        - name: "Cornell LII U.S. Code"
+          url: "https://www.law.cornell.edu/uscode/text"
+          how: "Searchable, well-cross-linked U.S. Code. Secondary-trusted; cross-check against GovInfo for enforcement-grade cites."
+          trust: "secondary-trusted"
+    MD:
+      label: "Maryland statutes (Annotated Code)"
+      sources:
+        - name: "Maryland General Assembly — statute search"
+          url: "https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText"
+          how: "Browse by article (e.g., Insurance, Commercial Law, Real Property) and section."
+          trust: "primary"
+
+  regulation:
+    federal:
+      label: "Federal regulations (Code of Federal Regulations)"
+      sources:
+        - name: "eCFR"
+          url: "https://www.ecfr.gov/"
+          how: "Live, authoritative CFR. Browse by Title."
+          trust: "primary"
+        - name: "Federal Register"
+          url: "https://www.federalregister.gov/"
+          how: "Daily journal of federal-agency rulemakings, notices, proposed rules."
+          trust: "primary"
+    MD:
+      label: "Maryland regulations (COMAR)"
+      sources:
+        - name: "COMAR — Code of Maryland Regulations"
+          url: "http://www.dsd.state.md.us/COMAR/ComarHome.html"
+          how: "Browse by title (e.g., 31 = Insurance) and chapter. Some chapters are PDF-only."
+          trust: "primary"
+
+  official-policy:
+    "*":
+      label: "Official policies (insurer forms, hospital billing policies, lender disclosures, agency handbooks)"
+      sources:
+        - name: "Issuer's own website / 'Legal' or 'Disclosures' page"
+          url: ""
+          how: "Most companies post current policy forms and terms on their site. Save as PDF (Print → Save as PDF in your browser) to capture the version you saw."
+          trust: "primary"
+      note: |
+        Insurance policy forms in particular are often not on the
+        insurer's public site — they live in SERFF (see insurance-filing
+        below) or with the state insurance department. Ask the insurer
+        for a copy in writing if one was not provided at policy issuance.
+
+  insurance-filing:
+    "*":
+      label: "Insurance filings (rate filings, policy forms via SERFF)"
+      sources:
+        - name: "SERFF state portals"
+          url: "https://filings.serff.com/sfa/"
+          how: |
+            Each state runs a public SERFF (System for Electronic Rate and
+            Form Filing) portal where insurer rate and form filings can be
+            searched. Search by company name, NAIC code, or filing TOI
+            (type of insurance). Some states require selecting their portal
+            from the SERFF state list first.
+          trust: "primary"
+
+  tos:
+    "*":
+      label: "Terms of Service / End-User License Agreements"
+      sources:
+        - name: "Platform's own legal/terms page"
+          url: ""
+          how: |
+            ToS lives on the platform itself. Save the page as PDF or HTML
+            to lock in the version that applied on a given date. Note the
+            visible 'Last updated' date in the sidecar metadata.
+          trust: "primary"
+        - name: "Internet Archive Wayback Machine (historical versions)"
+          url: "https://web.archive.org/"
+          how: |
+            For ToS disputes about which version applied on a past date,
+            the Wayback Machine often has snapshots. Use only as a fallback
+            when the platform no longer publishes the prior text — cite as
+            "archived copy of <URL>, retrieved <date>, originally captured <date>."
+          trust: "secondary-confirm"
+      note: |
+        ToS is rarely a "statute" in the legal sense, but it functions as
+        the contract between the user and the platform. Capture the
+        version that was in effect when the dispute arose, not just the
+        current version.
+
+  guidance:
+    "*":
+      label: "Agency guidance (bulletins, advisory opinions, FAQs)"
+      sources:
+        - name: "Issuing agency's website"
+          url: ""
+          how: "Most agencies publish guidance under headings like 'Bulletins', 'Advisory Opinions', or 'Industry Resources'. Note that guidance is interpretive — it is not law itself."
+          trust: "primary"
+
+  case-law:
+    "*":
+      label: "Case law (court decisions)"
+      sources:
+        - name: "CourtListener"
+          url: "https://www.courtlistener.com/"
+          how: "Free, searchable database of federal and state opinions. Cross-check the citation against the official court reporter."
+          trust: "secondary-trusted"
+        - name: "Court's own opinion archive"
+          url: ""
+          how: "State and federal courts publish their own opinions; the per-court site is the primary publisher."
+          trust: "primary"

@@ -91,10 +91,17 @@ packet:
 
   # Optional: one or more "reference appendices" — collections of
   # governing documents (policies, contracts, terms of service,
-  # handbooks) that the authority may want to consult. These are built
-  # by `scripts/packet/compile_reference.py` and stamped with a
-  # watermark + disclaimer making clear they are *not* the official
-  # document.
+  # handbooks, statutes, regulations) that the authority may want to
+  # consult. These are built by `scripts/packet/compile_reference.py`
+  # and stamped with a watermark + disclaimer making clear they are
+  # *not* the official document.
+  #
+  # Sources may live anywhere in the case folder. Common locations:
+  #   evidence/policy/...   case-specific governing documents the
+  #                         counterparty produced during the dispute
+  #   references/raw/...    or references/readable/... for trusted
+  #                         third-party text (statutes, regs, ToS)
+  #                         ingested via scripts/references/ingest.py
   reference_appendices:
     - name: "counterparty-policy-reference"
       title: "Counterparty Governing Documents — Compiled Reference"
@@ -102,6 +109,7 @@ packet:
       sources:
         - "evidence/policy-form-1.pdf"
         - "evidence/policy-form-2.pdf"
+        - "references/readable/md-code-ins-27-303.txt"
       # The disclaimer text is fixed in the tool; the `note` is
       # additional context printed on the cover page.
       note: |

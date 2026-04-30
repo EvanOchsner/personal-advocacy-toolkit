@@ -1,0 +1,54 @@
+{
+  "schema_version": "0.1",
+  "source_id": "ab0d0ce80e2d6a64",
+  "source_sha256": "ab0d0ce80e2d6a64d8f0c426953cc75ab8a5102ec468b6f848f384de7781a2d7",
+  "kind": "statute",
+  "citation": "Md. Code Ins. § 27-303",
+  "title": "Laws - Statute Text",
+  "jurisdiction": "MD",
+  "source_url": "https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText?article=gin&section=27-303",
+  "source_label": "Maryland General Assembly (mgaleg.maryland.gov)",
+  "source_origin": "fetched",
+  "source_filename": null,
+  "fetched_at": "2026-04-30T22:50:54+00:00",
+  "as_of": "2026-04-30",
+  "content_type": "text/html",
+  "size_bytes": 63267,
+  "raw_path": "references/raw/md-code-ins-27-303.html",
+  "readable_path": "references/readable/md-code-ins-27-303.txt",
+  "extraction": {
+    "method": "html-to-text",
+    "title": "Laws - Statute Text",
+    "text_chars": 13484,
+    "warnings": []
+  },
+  "assessment": {
+    "appears_complete": false,
+    "flags": [
+      {
+        "code": "truncation-suspected",
+        "level": "warn",
+        "detail": "document ends without sentence-final punctuation; possibly truncated."
+      },
+      {
+        "code": "no-effective-date",
+        "level": "info",
+        "detail": "no obvious 'effective date', 'as of', 'last updated', or version marker found. Confirm with the user which version they have."
+      }
+    ],
+    "stats": {
+      "char_count": 13484,
+      "line_count": 412
+    }
+  },
+  "fetch": {
+    "url": "https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText?article=gin&section=27-303",
+    "final_url": "https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText?article=gin&section=27-303",
+    "host": "mgaleg.maryland.gov",
+    "content_type": "text/html; charset=utf-8",
+    "size_bytes": 63267,
+    "trust": "primary",
+    "matched_pattern": "*.gov"
+  },
+  "disclaimer": "This is reference information, not legal advice."
+}

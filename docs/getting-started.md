@@ -57,6 +57,9 @@ New here? Do these four things, in order:
   the four sources a reviewer verifies.
 - [`concepts/authorities-and-regulators.md`](concepts/authorities-and-regulators.md)
   — the "who cares about this?" map.
+- [`concepts/trusted-sources.md`](concepts/trusted-sources.md) — how
+  authoritative reference text (statutes, regulations, official
+  policies, ToS) is acquired and tracked under `references/`.
 - [`concepts/tone-modes.md`](concepts/tone-modes.md) — lawyer mode
   vs. casual mode; when to use which.
 - [`concepts/pii-and-publication.md`](concepts/pii-and-publication.md)

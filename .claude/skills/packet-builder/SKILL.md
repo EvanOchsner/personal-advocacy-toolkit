@@ -54,6 +54,18 @@ for a filled-in synthetic reference.
    complainant wants attached for the reader's reference. Each has
    `{name, title, sources, note}`.
 
+   Sources may live anywhere in the case folder; common locations:
+   - `evidence/policy/...` for case-specific governing documents
+     produced by the counterparty (e.g., the insurer's policy form
+     that applies to the insured).
+   - `references/raw/...` or `references/readable/...` for
+     third-party authoritative text (statutes, regulations, ToS)
+     ingested via the [trusted-sources](../trusted-sources/SKILL.md)
+     skill. If a referenced statute / regulation / ToS isn't already
+     under `references/`, hand off to `trusted-sources` *before*
+     filling this section — drafting against the actual text catches
+     paraphrase drift early.
+
 6. **Dry-read the manifest aloud.** Before calling the builder,
    literally read back to the user: "Exhibit A is X, exhibit B is
    Y, exhibit C is Z." This catches reordered labels and missing

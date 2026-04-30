@@ -1,0 +1,25 @@
+entries:
+- source_id: ab0d0ce80e2d6a64
+  kind: statute
+  citation: Md. Code Ins. § 27-303
+  title: Laws - Statute Text
+  jurisdiction: MD
+  source_origin: fetched
+  source_url: https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText?article=gin&section=27-303
+  fetched_at: '2026-04-30T22:50:54+00:00'
+  raw_path: references/raw/md-code-ins-27-303.html
+  readable_path: references/readable/md-code-ins-27-303.txt
+  structured_path: references/structured/md-code-ins-27-303.json
+- source_id: 340be2b2e3c84930
+  kind: statute
+  citation: 15 USC § 45
+  title: 15 U.S. Code § 45 - Unfair methods of competition unlawful; prevention by
+    Commission | U.S. Code | US Law | LII / Legal Information Institute
+  jurisdiction: federal
+  source_origin: fetched
+  source_url: https://www.law.cornell.edu/uscode/text/15/45
+  fetched_at: '2026-04-30T22:51:38+00:00'
+  raw_path: references/raw/15-usc-45.html
+  readable_path: references/readable/15-usc-45.txt
+  structured_path: references/structured/15-usc-45.json
+schema_version: '0.1'

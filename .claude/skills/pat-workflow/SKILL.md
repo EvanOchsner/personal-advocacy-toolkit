@@ -86,6 +86,30 @@ secondary venues (state AG, federal CFPB/FTC, bar associations) apply
 to their dispute, with disclaimer banners attached.
 **Trigger to next phase:** the user has chosen a primary forum.
 
+### Phase 3b — Trusted reference docs (optional, on-demand)
+
+**Owner skill:** `trusted-sources`.
+**What done looks like:** every statute, regulation, official policy,
+and ToS the case will cite has a copy under `<case>/references/`,
+with sidecar metadata recording where it came from (user-supplied,
+fetched from a trusted source, or downloaded manually) and a
+disclaimer banner.
+**Trigger to next phase:** the user has the reference text they need
+on disk, or has consciously deferred specific docs to acquire later
+(some are best pulled closer to filing).
+
+This phase is optional in the sense that not every case needs it (a
+purely factual evidence packet may not cite outside text), but for
+any complaint that quotes or relies on a specific statutory
+provision, regulation, or ToS clause, the cited text should be in
+`references/` *before* the complaint is drafted, not after — drafting
+against the actual text catches paraphrase drift early.
+
+The skill walks three independent acquisition paths (user-supplied
+copy, project-known trusted source, constrained web search) and
+cross-checks when more than one is available. See
+[trusted-sources](../trusted-sources/SKILL.md) for the procedure.
+
 ### Phase 4 — Deadline computation
 
 **Owner:** `scripts.intake.deadline_calc` CLI (no skill needed).

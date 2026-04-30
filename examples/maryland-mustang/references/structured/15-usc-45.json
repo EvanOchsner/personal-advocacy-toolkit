@@ -1,0 +1,49 @@
+{
+  "schema_version": "0.1",
+  "source_id": "340be2b2e3c84930",
+  "source_sha256": "340be2b2e3c84930e84e626466553b5008aa92a9241c46830b8a4310d9f1cf45",
+  "kind": "statute",
+  "citation": "15 USC § 45",
+  "title": "15 U.S. Code § 45 - Unfair methods of competition unlawful; prevention by Commission | U.S. Code | US Law | LII / Legal Information Institute",
+  "jurisdiction": "federal",
+  "source_url": "https://www.law.cornell.edu/uscode/text/15/45",
+  "source_label": "Cornell Legal Information Institute (law.cornell.edu)",
+  "source_origin": "fetched",
+  "source_filename": null,
+  "fetched_at": "2026-04-30T22:51:38+00:00",
+  "as_of": "2026-04-30",
+  "content_type": "text/html",
+  "size_bytes": 113896,
+  "raw_path": "references/raw/15-usc-45.html",
+  "readable_path": "references/readable/15-usc-45.txt",
+  "extraction": {
+    "method": "html-to-text",
+    "title": "15 U.S. Code § 45 - Unfair methods of competition unlawful; prevention by Commission | U.S. Code | US Law | LII / Legal Information Institute",
+    "text_chars": 59491,
+    "warnings": []
+  },
+  "assessment": {
+    "appears_complete": false,
+    "flags": [
+      {
+        "code": "has-truncation-marker",
+        "level": "warn",
+        "detail": "contains literal '...'; check the surrounding text for omissions."
+      }
+    ],
+    "stats": {
+      "char_count": 59491,
+      "line_count": 566
+    }
+  },
+  "fetch": {
+    "url": "https://www.law.cornell.edu/uscode/text/15/45",
+    "final_url": "https://www.law.cornell.edu/uscode/text/15/45",
+    "host": "www.law.cornell.edu",
+    "content_type": "text/html; charset=utf-8",
+    "size_bytes": 113896,
+    "trust": "secondary-trusted",
+    "matched_pattern": "www.law.cornell.edu"
+  },
+  "disclaimer": "This is reference information, not legal advice."
+}

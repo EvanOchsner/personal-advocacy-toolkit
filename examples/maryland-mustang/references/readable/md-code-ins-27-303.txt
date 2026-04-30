@@ -1,0 +1,411 @@
+[image: Maryland General Assembly]
+                 (/mgawebsite/)
+
+                            Legislative Services (https://dls.maryland.gov/home/)
+                             |
+                            Legislative Audits (https://www.ola.state.md.us/)
+
+                                        Search
+
+                                Bill number does not exist.
+                                Enter a vaild keyword.
+
+                                            [image: Facebook] (https://www.facebook.com/sharer/sharer.php?u=https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText?article=gin§ion=27-303%2F&src=sdkpreparse)
+                                            [image: Twitter] (https://twitter.com/intent/tweet?text=Check%20out%20this%20article%20on%20MGA%21%20https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText?article=gin§ion=27-303)
+                                            [image: Youtube Channels] (/mgawebsite/Information/YouTubeChannelInfo)
+
+                                            [image: MY MGA]
+
+MyMGA
+
+- Sign In (/mgawebsite/Account/Login?registerId=Tracking)
+
+- Register (/mgawebsite/Account/Register/Tracking)
+
+- Forgot Password (/mgawebsite/Account/ForgotPassword/Tracking)
+
+                                            [image: MY MGA]
+
+Accessibility Tools
+
+                 Hide Images
+
+                Default Contrast
+
+            Reset All Settings
+
+            Request Accessibility Services
+
+            Accessibility Feedback
+
+                Menu
+
+                [image: facebook] (https://www.facebook.com/sharer/sharer.php?u=https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText?article=gin§ion=27-303%2F&src=sdkpreparse)
+                [image: twitter] (https://twitter.com/intent/tweet?text=Check%20out%20this%20article%20on%20MGA%21%20https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText?article=gin§ion=27-303)
+
+                    [image: My MGA]
+
+-
+
+MEMBERS (/mgawebsite/Members/District)
+
+Find My Representatives (/mgawebsite/Members/District)
+Senate (/mgawebsite/Members/Index/senate)
+House (/mgawebsite/Members/Index/house)
+Publications (/mgawebsite/Members/Publications)
+Related Links (/mgawebsite/Members/RelatedLinks)
+About (/mgawebsite/Members/About)
+
+-
+
+COMMITTEES (/mgawebsite/Committees/Charts)
+
+Charts (/mgawebsite/Committees/Charts)
+Senate (/mgawebsite/Committees/Index/senate)
+House (/mgawebsite/Committees/Index/house)
+Other (/mgawebsite/Committees/Index/other)
+Publications (/mgawebsite/Committees/Publications)
+Related Links (/mgawebsite/Committees/RelatedLinks)
+About (/mgawebsite/Committees/About)
+
+-
+
+MEETINGS (/mgawebsite/Meetings/Day)
+
+Day(s) (/mgawebsite/Meetings/Day)
+Week (/mgawebsite/Meetings/Week)
+Month (/mgawebsite/Meetings/Month)
+Update Report (/mgawebsite/Meetings/UpdateReport)
+Publications (/mgawebsite/Meetings/Publications)
+About (/mgawebsite/Meetings/About)
+
+-
+
+LEGISLATION (/mgawebsite/Legislation/Charts)
+
+Charts (/mgawebsite/Legislation/Charts)
+Senate (/mgawebsite/Legislation/Index/senate)
+House (/mgawebsite/Legislation/Index/house)
+Publications (/mgawebsite/Legislation/Publications)
+About (/mgawebsite/Legislation/About)
+
+-
+
+BUDGET (/mgawebsite/Budget/Charts)
+
+Charts (/mgawebsite/Budget/Charts)
+Analyses (/mgawebsite/Budget/Analyses)
+Legislation (/mgawebsite/Budget/Legislation)
+Bond Initiatives (/mgawebsite/Budget/BondInitiatives)
+Publications (/mgawebsite/Budget/Publications)
+Related Links (/mgawebsite/Budget/RelatedLinks)
+About (/mgawebsite/Budget/About)
+
+-
+
+LAWS (/mgawebsite/Laws/Statutes)
+
+Statutes (/mgawebsite/Laws/Statutes)
+Counties (/mgawebsite/Laws/Counties)
+Municipalities (/mgawebsite/Laws/Municipalities)
+Publications (/mgawebsite/Laws/Publications)
+Related Links (/mgawebsite/Laws/RelatedLinks)
+About (/mgawebsite/Laws/About)
+
+-
+
+FLOOR ACTIONS (/mgawebsite/FloorActions/Status)
+
+Status (/mgawebsite/FloorActions/Status)
+Agendas (/mgawebsite/FloorActions/Agenda/agendas)
+Senate Index (/mgawebsite/FloorActions/Index/senate)
+House Index (/mgawebsite/FloorActions/Index/house)
+Follow Both Chambers (/mgawebsite/FloorActions/FollowBothChambers)
+Publications (/mgawebsite/FloorActions/Publications)
+About (/mgawebsite/FloorActions/About)
+
+-
+
+REDISTRICTING (/mgawebsite/Redistricting/Congressional)
+
+Congressional (/mgawebsite/Redistricting/Congressional)
+Legislative (/mgawebsite/Redistricting/Legislative)
+
+-
+
+SEARCH (/mgawebsite/Search/Legislation)
+
+Legislation (/mgawebsite/Search/Legislation)
+Full Text (/mgawebsite/Search/FullText)
+Publications (/mgawebsite/Search/Publications)
+Media (/mgawebsite/Search/Media)
+
+                Menu
+
+                [image: Facebook] (https://www.facebook.com/sharer/sharer.php?u=https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText?article=gin§ion=27-303%2F&src=sdkpreparse)
+                [image: Twitter] (https://twitter.com/intent/tweet?text=Check%20out%20this%20article%20on%20MGA%21%20https://mgaleg.maryland.gov/mgawebsite/Laws/StatuteText?article=gin§ion=27-303)
+
+                    [image: Youtube Channels]
+
+                    [image: My MGA]
+
+-
+
+        MEMBERS (#navCollapseMembers)
+
+Find My Representatives (/mgawebsite/Members/District)
+Senate (/mgawebsite/Members/Index/senate)
+House (/mgawebsite/Members/Index/house)
+Publications (/mgawebsite/Members/Publications)
+Related Links (/mgawebsite/Members/RelatedLinks)
+About (/mgawebsite/Members/About)
+
+-
+
+        COMMITTEES (#navCollapseCommittees)
+
+Senate (/mgawebsite/Committees/Index/senate)
+House (/mgawebsite/Committees/Index/house)
+Other (/mgawebsite/Committees/Index/other)
+Publications (/mgawebsite/Committees/Publications)
+Related Links (/mgawebsite/Committees/RelatedLinks)
+About (/mgawebsite/Committees/About)
+
+-
+
+        MEETINGS (#navCollapseMeetings)
+
+Day(s) (/mgawebsite/Meetings/Day)
+Update Report (/mgawebsite/Meetings/UpdateReport)
+Publications (/mgawebsite/Meetings/Publications)
+About (/mgawebsite/Meetings/About)
+
+-
+
+        LEGISLATION (#navCollapseLegislation)
+
+Senate (/mgawebsite/Legislation/Index/senate)
+House (/mgawebsite/Legislation/Index/house)
+Publications (/mgawebsite/Legislation/Publications)
+About (/mgawebsite/Legislation/About)
+
+-
+
+        BUDGET (#navCollapseBudget)
+
+Analyses (/mgawebsite/Budget/Analyses)
+Legislation (/mgawebsite/Budget/Legislation)
+Bond Initiatives (/mgawebsite/Budget/BondInitiatives)
+Publications (/mgawebsite/Budget/Publications)
+Related Links (/mgawebsite/Budget/RelatedLinks)
+About (/mgawebsite/Budget/About)
+
+-
+
+        LAWS (#navCollapseLaws)
+
+Statutes (/mgawebsite/Laws/Statutes)
+Counties (/mgawebsite/Laws/Counties)
+Municipalities (/mgawebsite/Laws/Municipalities)
+Publications (/mgawebsite/Laws/Publications)
+Related Links (/mgawebsite/Laws/RelatedLinks)
+About (/mgawebsite/Laws/About)
+
+-
+
+        FLOOR ACTIONS (#navCollapseFloorActions)
+
+Status (/mgawebsite/FloorActions/Status)
+Agendas (/mgawebsite/FloorActions/Agenda/agendas)
+Senate Index (/mgawebsite/FloorActions/Index/senate)
+House Index (/mgawebsite/FloorActions/Index/house)
+Publications (/mgawebsite/FloorActions/Publications)
+About (/mgawebsite/FloorActions/About)
+
+-
+
+        REDISTRICTING (#navCollapseRedistricting)
+
+Congressional (/mgawebsite/Redistricting/Congressional)
+Legislative (/mgawebsite/Redistricting/Legislative)
+
+-
+
+        SEARCH (#navCollapseSearch)
+
+Legislation (/mgawebsite/Search/Legislation)
+Full Text (/mgawebsite/Search/FullText)
+Publications (/mgawebsite/Search/Publications)
+Media (/mgawebsite/Search/Media)
+
+- Track (/mgawebsite/MyMGATracking/ManageLists)
+
+- Witness Signup (/mgawebsite/MyMGATracking/WitnessSignup)
+
+- FAQ (/mgawebsite/MyMGATracking/FAQ)
+
+- Change Password (/mgawebsite/Manage/ChangePassword)
+
+- Cancel Account (/mgawebsite/MyMGATracking/CancelAccount)
+
+- Senate (/mgawebsite/Information/YouTubeChannelInfo?id=s)
+
+- House (/mgawebsite/Information/YouTubeChannelInfo?id=h)
+
+- Other (/mgawebsite/Information/YouTubeChannelInfo?id=o)
+
+- About (/mgawebsite/Information/YouTubeChannelInfoAbout)
+
+Statutes (/mgawebsite/Laws/Statutes)
+Counties (/mgawebsite/Laws/Counties)
+Municipalities (/mgawebsite/Laws/Municipalities)
+Publications (/mgawebsite/Laws/Publications)
+Related Links (/mgawebsite/Laws/RelatedLinks)
+About (/mgawebsite/Laws/About)
+
+Statutes Text
+
+Article - Insurance
+
+PreviousNext
+
+§27–303.
+
+    It is an unfair claim settlement practice and a violation of this subtitle for an insurer, nonprofit health service plan, or health maintenance organization to:
+
+        (1)    misrepresent pertinent facts or policy provisions that relate to the claim or coverage at issue;
+
+        (2)    refuse to pay a claim for an arbitrary or capricious reason based on all available information;
+
+        (3)    attempt to settle a claim based on an application that is altered without notice to, or the knowledge or consent of, the insured;
+
+        (4)    fail to include with each claim paid to an insured or beneficiary a statement of the coverage under which payment is being made;
+
+        (5)    fail to settle a claim promptly whenever liability is reasonably clear under one part of a policy, in order to influence settlements under other parts of the policy;
+
+        (6)    fail to provide promptly on request a reasonable explanation of the basis for a denial of a claim;
+
+        (7)    fail to meet the requirements of Title 15, Subtitle 10B of this article for preauthorization for a health care service;
+
+        (8)    fail to comply with the provisions of Title 15, Subtitle 10A of this article;
+
+        (9)    fail to act in good faith, as defined under § 27–1001 of this title, in settling a first–party claim under a policy of property and casualty insurance; or
+
+        (10)    fail to comply with the provisions of § 16–118 of this article.
+
+PreviousNext
+
+                Validation
+
+Please fix the following:
+
+-
+
+                OK
+
+Success
+
+                 Okay
+
+                [image: Maryland General Assembly]
+
+Helpful Links
+
+-
+Executive Branch (https://www.maryland.gov/Pages/default.aspx)
+
+-
+Judicial Branch (https://www.courts.state.md.us/)
+
+-
+Department of Legislative Services (http://dls.maryland.gov/home/)
+
+-
+Office of Legislative Audits (https://www.ola.state.md.us/)
+
+-
+Report Fraud & Abuse in State Government (https://www.ola.state.md.us/fraud/ola-fraud-hotline/)
+
+Quick Links
+
+-
+Guided Tours (http://dls.maryland.gov/library/educational-tours/)
+
+-
+Contact Us (/mgawebsite/Information/Text/contact_us)
+
+-
+Visit (/mgawebsite/Information/Text/visit)
+
+-
+About the General Assembly (/mgawebsite/Information/Text/about_mga)
+
+-
+Accessibility (/mgawebsite/Information/Text/access)
+
+-
+Privacy Notice (/mgawebsite/Information/Text/privacy_notice)
+
+-
+Video Tutorials (/mgawebsite/Information/VideoTutorials)
+
+Helpful Tools
+
+-
+Download Legislative Data (#)
+
+Open Legislative Data Download
+
+                    ×
+
+You are about to download a "comma-separated values" (CSV) file and/or a JSON file.
+
+                    The file includes information such as number, sponsor, title, legislative status, synopsis, committee assignments,
+                    legislative history, hearing dates, etc for each piece of legislation introduced during the selected legislative session.
+
+                    A word about the file format: CSV and JSON files are common file formats, widely supported by consumer and business applications and is used to move data between programs.
+                    The file you download can be imported into Excel, a text editor, browser, or any other application that supports the CSV and JSON formats. To save, right-click button and save as desired file format.
+
+- 2026 Regular Session CSV (/2026rs/misc/billsmasterlist/BillMasterList.csv)
+                            JSON (/2026rs/misc/billsmasterlist/legislation.json)
+                             *Updated hourly
+
+- 2025 Regular Session CSV (/2025rs/misc/billsmasterlist/BillMasterList.csv)
+                            JSON (/2025rs/misc/billsmasterlist/legislation.json)
+
+- 2024 Regular Session CSV (/2024rs/misc/billsmasterlist/BillMasterList.csv)
+                            JSON (/2024rs/misc/billsmasterlist/legislation.json)
+
+- 2023 Regular Session CSV (/2023rs/misc/billsmasterlist/BillMasterList.csv)
+                            JSON (/2023rs/misc/billsmasterlist/legislation.json)
+
+- 2022 Regular Session CSV (/2022rs/misc/billsmasterlist/BillMasterList.csv)
+                            JSON (/2022rs/misc/billsmasterlist/legislation.json)
+
+- 2021 Special Session CSV (/2021s1/misc/billsmasterlist/BillMasterList.csv)
+                            JSON (/2021s1/misc/billsmasterlist/legislation.json)
+
+- 2021 Regular Session CSV (/2021rs/misc/billsmasterlist/BillMasterList.csv)
+                            JSON (/2021rs/misc/billsmasterlist/legislation.json)
+
+- 2020 Regular Session CSV (/2020rs/misc/billsmasterlist/BillMasterList.csv)
+                            JSON (/2020rs/misc/billsmasterlist/legislation.json)
+
+- 2019 Regular Session CSV (/2019rs/misc/billsmasterlist/BillMasterList.csv)
+                            JSON (/2019rs/misc/billsmasterlist/legislation.json)
+
+- 2018 Regular Session CSV (/2018rs/misc/billsmasterlist/BillMasterList.csv)
+                            JSON (/2018rs/misc/billsmasterlist/legislation.json)
+
+- 2017 Regular Session CSV (/2017rs/misc/billsmasterlist/BillMasterList.csv)
+                            JSON (/2017rs/misc/billsmasterlist/legislation.json)
+
+                Open Data Help (http://mgaleg.maryland.gov/pubs-current/current-open-data-help.pdf)
+
+-
+
+    Click to return on the top page (#)
+
+Alert
+
+                 Okay

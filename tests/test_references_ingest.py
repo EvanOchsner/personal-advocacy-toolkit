@@ -93,11 +93,11 @@ def test_file_ingest_writes_manifest_and_sha256(tmp_path: Path) -> None:
     assert manifest_yaml.is_file()
     assert sha_manifest.is_file()
 
-    data = yaml.safe_load(manifest_yaml.read_text())
+    data = yaml.safe_load(manifest_yaml.read_text(encoding="utf-8"))
     assert len(data["entries"]) == 1
     assert data["entries"][0]["citation"] == "Md. Code Ins. § 27-303"
 
-    rows = sha_manifest.read_text().strip().splitlines()
+    rows = sha_manifest.read_text(encoding="utf-8").strip().splitlines()
     # Three files (raw, readable, structured); README isn't auto-written
     # because we created the dirs by hand here.
     assert len(rows) == 3

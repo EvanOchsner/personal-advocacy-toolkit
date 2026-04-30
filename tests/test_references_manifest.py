@@ -55,7 +55,7 @@ def test_refresh_sha256_manifest(tmp_path: Path) -> None:
     count = _manifest.refresh_sha256_manifest(refs, sha_manifest)
     assert count == 2
 
-    rows = sha_manifest.read_text().strip().splitlines()
+    rows = sha_manifest.read_text(encoding="utf-8").strip().splitlines()
     paths = [r.split("  ", 1)[1] for r in rows]
     assert "raw/doc.html" in paths
     assert "readable/doc.txt" in paths

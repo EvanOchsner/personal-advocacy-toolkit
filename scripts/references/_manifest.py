@@ -57,7 +57,7 @@ def existing_source_ids(manifest_path: Path) -> set[str]:
             ids.add(sid)
     jsonl = manifest_path.with_suffix(manifest_path.suffix + ".jsonl")
     if jsonl.exists():
-        for line in jsonl.read_text().splitlines():
+        for line in jsonl.read_text(encoding="utf-8").splitlines():
             line = line.strip()
             if not line:
                 continue
@@ -113,7 +113,7 @@ def list_entries(manifest_path: Path) -> list[dict[str, Any]]:
     out = list(data.get("entries", []) or [])
     jsonl = manifest_path.with_suffix(manifest_path.suffix + ".jsonl")
     if jsonl.exists():
-        for line in jsonl.read_text().splitlines():
+        for line in jsonl.read_text(encoding="utf-8").splitlines():
             line = line.strip()
             if not line:
                 continue

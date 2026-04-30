@@ -16,7 +16,7 @@ def test_create_tree_includes_references_dirs(tmp_path: Path) -> None:
     # The README is dropped explaining the layout.
     readme = case / "references" / "README.md"
     assert readme.is_file()
-    body = readme.read_text()
+    body = readme.read_text(encoding="utf-8")
     assert "trusted reference documents" in body.lower()
 
 

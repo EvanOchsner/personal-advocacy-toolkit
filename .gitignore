@@ -28,3 +28,4 @@ build/
 # session-local planning notes and per-machine settings are not.
 .claude/plans/
 .claude/settings.local.json
+.claude/worktrees/

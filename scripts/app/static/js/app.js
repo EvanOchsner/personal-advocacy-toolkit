@@ -2,36 +2,30 @@
  *
  * Airgap rule: this file must not reference any external URL. CI greps
  * scripts/app/static/ for `http` / `fetch("http` / `src="http` etc.
+ * (vendor/ is excluded — see static/vendor/README.md).
  */
 (function () {
   "use strict";
 
   window.CaseMap = window.CaseMap || {};
   const state = (window.CaseMap.state = {
-    graph: null,           // {entities, relationships, caption}
-    timeline: null,        // {markers}
+    dashboard: null,       // {central_issue, parties, references, adjudicators}
+    timeline: null,        // {figure, markers, tracks}
     selectedEntityId: null,
     entityCache: {},       // id -> drilldown payload
   });
 
   window.CaseMap.selectEntity = async function selectEntity(id) {
-    // Toggle off when clicking the same entity twice.
     if (state.selectedEntityId === id) {
       state.selectedEntityId = null;
-      if (window.CaseMap.graph && window.CaseMap.graph.markSelected) {
-        window.CaseMap.graph.markSelected(null);
-      }
-      if (window.CaseMap.timeline && window.CaseMap.timeline.rerenderForSelection) {
-        window.CaseMap.timeline.rerenderForSelection();
+      if (window.CaseMap.dashboard && window.CaseMap.dashboard.markSelected) {
+        window.CaseMap.dashboard.markSelected(null);
       }
       return;
     }
     state.selectedEntityId = id;
-    if (window.CaseMap.graph && window.CaseMap.graph.markSelected) {
-      window.CaseMap.graph.markSelected(id);
-    }
-    if (window.CaseMap.timeline && window.CaseMap.timeline.rerenderForSelection) {
-      window.CaseMap.timeline.rerenderForSelection();
+    if (window.CaseMap.dashboard && window.CaseMap.dashboard.markSelected) {
+      window.CaseMap.dashboard.markSelected(id);
     }
     let payload = state.entityCache[id];
     if (!payload) {
@@ -45,8 +39,8 @@
       payload = await res.json();
       state.entityCache[id] = payload;
     }
-    if (window.CaseMap.panel && window.CaseMap.panel.render) {
-      window.CaseMap.panel.render(payload);
+    if (window.CaseMap.panel && window.CaseMap.panel.renderEntity) {
+      window.CaseMap.panel.renderEntity(payload);
     }
   };
 
@@ -56,21 +50,34 @@
     }
   };
 
+  window.CaseMap.showReference = function showReference(card) {
+    if (window.CaseMap.panel && window.CaseMap.panel.renderReference) {
+      window.CaseMap.panel.renderReference(card);
+    }
+  };
+
+  window.CaseMap.showAdjudicator = function showAdjudicator(card) {
+    if (window.CaseMap.panel && window.CaseMap.panel.renderAdjudicator) {
+      window.CaseMap.panel.renderAdjudicator(card);
+    }
+  };
+
   async function boot() {
-    const [graphRes, timelineRes] = await Promise.all([
-      fetch("/api/graph", { headers: { Accept: "application/json" } }),
+    const [dashRes, tlRes] = await Promise.all([
+      fetch("/api/dashboard", { headers: { Accept: "application/json" } }),
       fetch("/api/timeline", { headers: { Accept: "application/json" } }),
     ]);
-    if (graphRes.ok) {
-      state.graph = await graphRes.json();
-      if (window.CaseMap.graph && window.CaseMap.graph.render) {
-        window.CaseMap.graph.render(state.graph);
+    if (dashRes.ok) {
+      state.dashboard = await dashRes.json();
+      if (window.CaseMap.dashboard && window.CaseMap.dashboard.render) {
+        window.CaseMap.dashboard.render(state.dashboard);
       }
     } else {
-      document.getElementById("graph").textContent = "failed to load graph";
+      const central = document.getElementById("central-issue");
+      if (central) central.textContent = "failed to load dashboard";
     }
-    if (timelineRes.ok) {
-      state.timeline = await timelineRes.json();
+    if (tlRes.ok) {
+      state.timeline = await tlRes.json();
       if (window.CaseMap.timeline && window.CaseMap.timeline.render) {
         window.CaseMap.timeline.render(state.timeline);
       }

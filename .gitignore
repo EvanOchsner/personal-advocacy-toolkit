@@ -19,6 +19,10 @@ build/
 # Scratch
 .tmp/
 
+# Case-map dashboard cache. Per-case precompute output from
+# `scripts.case_map_build`; regenerated on demand and never committed.
+.case-map/
+
 # Local settings (never published)
 .env
 .env.local

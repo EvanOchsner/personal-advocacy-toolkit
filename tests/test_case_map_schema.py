@@ -39,13 +39,6 @@ MIN_ENTITIES = dedent(
       - id: mia
         role: neutral
         ref: regulator
-    relationships:
-      - from: self
-        to: cim
-        kind: adverse_to
-      - from: mia
-        to: cim
-        kind: regulates
     """
 )
 
@@ -62,7 +55,6 @@ def test_load_minimal_case(tmp_path: Path) -> None:
     _write_case(tmp_path, MIN_ENTITIES)
     loaded = load_case_map(tmp_path)
     assert loaded.case_map.entity_ids == {"self", "cim", "mia"}
-    assert len(loaded.relationships) == 2
     assert loaded.events == []
     assert loaded.resolved["self"].display_name == "Sally Ridesdale"
     assert loaded.resolved["cim"].display_name == "Chesapeake Indemnity Mutual"
@@ -192,7 +184,9 @@ def test_entity_with_display_name_no_ref(tmp_path: Path) -> None:
     assert loaded.resolved["journalist_smith"].resolved == {}
 
 
-def test_relationship_unknown_entity(tmp_path: Path) -> None:
+def test_relationships_block_rejected_with_migration_message(tmp_path: Path) -> None:
+    # The dashboard rewrite removed the graph view; any case file still
+    # carrying a `relationships:` block must surface a clear error.
     bad = dedent(
         """\
         entities:
@@ -201,33 +195,12 @@ def test_relationship_unknown_entity(tmp_path: Path) -> None:
             ref: claimant
         relationships:
           - from: self
-            to: ghost
+            to: self
             kind: adverse_to
         """
     )
     _write_case(tmp_path, bad)
-    with pytest.raises(CaseMapError, match="'ghost' is not a known entity id"):
-        load_case_map(tmp_path)
-
-
-def test_relationship_bad_kind(tmp_path: Path) -> None:
-    bad = dedent(
-        """\
-        entities:
-          - id: self
-            role: self
-            ref: claimant
-          - id: cim
-            role: adversary
-            ref: parties.insurer
-        relationships:
-          - from: self
-            to: cim
-            kind: fights_with
-        """
-    )
-    _write_case(tmp_path, bad)
-    with pytest.raises(CaseMapError, match="kind 'fights_with' must be one of"):
+    with pytest.raises(CaseMapError, match="relationships.*no longer supported"):
         load_case_map(tmp_path)
 
 
@@ -331,6 +304,3 @@ def test_mustang_seed_loads(tmp_path: Path) -> None:
     assert loaded.resolved["self"].display_name == "Sally Ridesdale"
     assert "cim" in loaded.resolved
     assert len(loaded.events) == 15
-    # relationships should include the adverse_to between self and cim.
-    kinds = {(r.source, r.target, r.kind) for r in loaded.relationships}
-    assert ("self", "cim", "adverse_to") in kinds

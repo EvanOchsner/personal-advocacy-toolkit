@@ -59,7 +59,6 @@ def main(argv: list[str] | None = None) -> int:
     print(
         f"OK  {args.case_dir}: "
         f"{len(loaded.entities)} entities, "
-        f"{len(loaded.relationships)} relationships, "
         f"{len(loaded.events)} events, "
         f"{len(markers)} timeline markers."
     )

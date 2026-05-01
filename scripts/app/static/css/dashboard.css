@@ -1,0 +1,623 @@
+/* dashboard.css — case-map sector layout.
+ *
+ * Keep this file dependency-free (no @import, no url() to external hosts).
+ * CI greps for `http` in this directory; `static/vendor/` is excluded.
+ *
+ * Color palette tokens:
+ *   --ally-*       blue hues for self/ally cards
+ *   --adv-*        red hues for adversary cards
+ *   --neutral-*    warm gray for neutral parties + governing docs
+ */
+
+:root {
+  /* Base */
+  --bg: #faf9f6;
+  --fg: #1f2024;
+  --muted: #5d5e62;
+  --border: #d8d5cf;
+  --panel-bg: #ffffff;
+  --focus: #b88a00;
+
+  /* Allies — blue */
+  --ally-bg: #eaf2fb;
+  --ally-border: #b3cce8;
+  --ally-accent: #1f5fa6;
+  --ally-text: #0e3a6b;
+
+  /* Adversaries — red */
+  --adv-bg: #fbecea;
+  --adv-border: #e8b6b0;
+  --adv-accent: #a82a1e;
+  --adv-text: #6b1410;
+
+  /* Neutral — warm gray */
+  --neutral-bg: #f3f1ec;
+  --neutral-border: #ccc7bc;
+  --neutral-accent: #5e5a52;
+  --neutral-text: #2a2820;
+
+  /* Governing-document strip — parchment */
+  --ref-bg: #fbf6e9;
+  --ref-border: #d9c98a;
+  --ref-accent: #6e5a18;
+
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header --------------------------------------------------------------- */
+
+.app-header {
+  padding: 16px 24px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-bg);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.disclaimer {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.counts {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.counts span + span {
+  margin-left: 4px;
+}
+
+/* Central issue band --------------------------------------------------- */
+
+.central-issue {
+  background: var(--panel-bg);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
+}
+
+.central-issue-blurb {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 90ch;
+}
+
+.central-issue-meta {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.central-relief {
+  margin: 8px 0 0 18px;
+  padding: 0;
+  font-size: 13px;
+}
+
+.central-relief li {
+  margin-bottom: 2px;
+}
+
+.central-issue details > summary {
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+/* Dashboard main grid -------------------------------------------------- */
+
+.dashboard-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr 1fr 360px;
+  gap: 1px;
+  background: var(--border);
+  min-height: 0;
+}
+
+@media (max-width: 1100px) {
+  .dashboard-main {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .dashboard-main .drilldown {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--border);
+  }
+}
+
+.sector {
+  background: var(--panel-bg);
+  padding: 12px 14px;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.sector-allies { background: linear-gradient(180deg, var(--ally-bg) 0, #fff 80px); }
+.sector-neutral { background: linear-gradient(180deg, var(--neutral-bg) 0, #fff 80px); }
+.sector-adversaries { background: linear-gradient(180deg, var(--adv-bg) 0, #fff 80px); }
+
+.sector-heading {
+  margin: 0 0 8px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.sector-allies .sector-heading { color: var(--ally-accent); }
+.sector-neutral .sector-heading { color: var(--neutral-accent); }
+.sector-adversaries .sector-heading { color: var(--adv-accent); }
+
+.card-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sector-empty {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Party cards ---------------------------------------------------------- */
+
+.party-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--neutral-accent);
+  border-radius: 4px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: border-color 120ms, box-shadow 120ms, transform 120ms;
+}
+
+.party-card:hover,
+.party-card:focus {
+  outline: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  border-color: var(--focus);
+}
+
+.party-card.selected {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 2px var(--focus);
+}
+
+.party-card.role-self,
+.party-card.role-ally {
+  border-left-color: var(--ally-accent);
+  background: var(--ally-bg);
+}
+
+.party-card.role-neutral {
+  border-left-color: var(--neutral-accent);
+  background: #fff;
+}
+
+.party-card.role-adversary {
+  border-left-color: var(--adv-accent);
+  background: var(--adv-bg);
+}
+
+.party-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.party-card-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.party-card-role {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.party-card.role-self .party-card-role,
+.party-card.role-ally .party-card-role { color: var(--ally-accent); }
+.party-card.role-adversary .party-card-role { color: var(--adv-accent); }
+.party-card.role-neutral .party-card-role { color: var(--neutral-accent); }
+
+.party-card-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.party-card-labels li {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--muted);
+}
+
+.party-card-blurb {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.party-card-contact {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.party-card-contact li {
+  margin-bottom: 2px;
+  word-break: break-word;
+}
+
+/* Adjudicators (sub-section of NEUTRAL) -------------------------------- */
+
+.adjudicator-stack {
+  margin-top: 14px;
+}
+
+.adjudicator-heading {
+  margin: 0 0 6px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--neutral-accent);
+}
+
+.adjudicator-card {
+  background: #fff;
+  border: 1px solid var(--neutral-border);
+  border-left: 3px solid var(--neutral-accent);
+  border-radius: 4px;
+  padding: 8px 10px;
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+
+.adjudicator-card:hover,
+.adjudicator-card:focus {
+  outline: none;
+  border-color: var(--focus);
+}
+
+.adjudicator-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.adjudicator-card-name {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.adjudicator-card-kind {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--neutral-accent);
+}
+
+.adjudicator-card-fullname {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.adjudicator-card-meta {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* References band ------------------------------------------------------ */
+
+.references-band {
+  background: var(--ref-bg);
+  border-top: 1px solid var(--ref-border);
+  border-bottom: 1px solid var(--ref-border);
+  padding: 12px 24px;
+}
+
+.band-heading {
+  margin: 0 0 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ref-accent);
+  font-weight: 700;
+}
+
+.references-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px;
+}
+
+.reference-card {
+  background: #fff;
+  border: 1px solid var(--ref-border);
+  border-left: 3px solid var(--ref-accent);
+  border-radius: 4px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.reference-card:hover,
+.reference-card:focus {
+  outline: none;
+  border-color: var(--focus);
+}
+
+.reference-card-citation {
+  margin: 0 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.reference-card-title {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.reference-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0 0 6px;
+  padding: 0;
+  list-style: none;
+}
+
+.reference-card-tags li {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 2px;
+  background: rgba(110, 90, 24, 0.1);
+  color: var(--ref-accent);
+}
+
+.reference-card-blurb {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Drilldown panel ------------------------------------------------------ */
+
+.drilldown {
+  background: var(--panel-bg);
+  padding: 16px 20px;
+  overflow-y: auto;
+  min-height: 0;
+  border-left: 1px solid var(--border);
+}
+
+.panel-empty {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.panel-empty-note {
+  font-size: 12px;
+  margin-top: 8px;
+  color: var(--muted);
+}
+
+.panel-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.panel-header h2 {
+  margin: 0;
+  font-size: 18px;
+  flex: 1;
+}
+
+.panel-role-chip {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: var(--border);
+  color: var(--fg);
+}
+
+.panel-role-chip.role-self,
+.panel-role-chip.role-ally {
+  background: var(--ally-bg);
+  color: var(--ally-text);
+}
+
+.panel-role-chip.role-neutral {
+  background: var(--neutral-bg);
+  color: var(--neutral-text);
+}
+
+.panel-role-chip.role-adversary {
+  background: var(--adv-bg);
+  color: var(--adv-text);
+}
+
+.panel-role-chip.track-self_event,
+.panel-role-chip.track-outbound { background: var(--ally-bg); color: var(--ally-text); }
+.panel-role-chip.track-adverse_event,
+.panel-role-chip.track-inbound { background: var(--adv-bg); color: var(--adv-text); }
+.panel-role-chip.track-deadline { background: #efe6d2; color: #6b5a1a; }
+
+.panel-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.panel-labels li {
+  font-size: 11px;
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--muted);
+}
+
+.panel-blurb {
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0 0 12px;
+}
+
+.panel-section {
+  margin-top: 16px;
+}
+
+.panel-section h3 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.panel-resolved dt {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.panel-resolved dd {
+  margin: 0;
+  font-size: 13px;
+  word-break: break-word;
+}
+
+.panel-notes p, .panel-notes li {
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.panel-notes h1, .panel-notes h2, .panel-notes h3,
+.panel-notes h4, .panel-notes h5, .panel-notes h6 {
+  margin: 12px 0 4px;
+}
+
+.panel-event-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+}
+
+.panel-event-list li {
+  margin-bottom: 4px;
+}
+
+.panel-refs-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 12px;
+}
+
+.panel-refs-list a {
+  color: var(--ally-accent);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.panel-refs-list a:hover {
+  text-decoration: underline;
+}
+
+.entity-link {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--ally-accent);
+  font-family: inherit;
+}
+
+.entity-link:hover {
+  border-color: var(--focus);
+}
+
+/* Timeline ------------------------------------------------------------- */
+
+.timeline-panel {
+  background: var(--panel-bg);
+  border-top: 1px solid var(--border);
+  padding: 12px 24px 8px;
+}
+
+.timeline-plot {
+  min-height: 360px;
+}
+
+/* Footer --------------------------------------------------------------- */
+
+.app-footer {
+  border-top: 1px solid var(--border);
+  padding: 8px 24px;
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--panel-bg);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.airgap-note {
+  margin: 0;
+  font-variant: small-caps;
+  letter-spacing: 0.05em;
+}
+
+.app-footer p { margin: 0; }

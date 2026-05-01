@@ -79,6 +79,7 @@ jobs:
           uv run python -m scripts.publish.pii_scrub --help
           uv run python -m scripts.app --help
           uv run python -m scripts.app.validate --help
+          uv run python -m scripts.case_map_build --help
 
       - name: Case-map schema validator (examples/maryland-mustang)
         # Validates entities.yaml + events.yaml against the synthetic case.
@@ -86,13 +87,29 @@ jobs:
         # the test suite relies on.
         run: uv run python -m scripts.app.validate --case-dir examples/maryland-mustang
 
+      - name: Case-map build (examples/maryland-mustang)
+        # Smoke-test the precompute step end-to-end against the fixture.
+        # Deterministic-only path — no LLM call, no network.
+        run: uv run python -m scripts.case_map_build --case-dir examples/maryland-mustang
+
       - name: Case-map airgap check (no external URLs in static/ or templates/)
-        # Fail the build if any file under scripts/app/static/ or
-        # scripts/app/templates/ references an external URL. XML namespace
-        # URIs (e.g. http://www.w3.org/2000/svg) are identifiers, not fetch
-        # targets, and are allowlisted. Mirrors the policy documented in
-        # docs/concepts/case-map-app.md and the unit test
-        # test_no_external_urls_in_static_tree.
+        # Fail the build if any *hand-written* file under scripts/app/static/
+        # or scripts/app/templates/ references an external URL. The CSP and
+        # 127.0.0.1 bind are the runtime exfiltration defenses; this grep is
+        # hygiene against careless additions to hand-written code.
+        #
+        # scripts/app/static/vendor/ is excluded because minified third-party
+        # bundles contain doc-link / namespace URL string literals that are
+        # not network calls. Each vendored asset is documented in
+        # scripts/app/static/vendor/README.md (source URL, version, sha256,
+        # license). The CSP blocks any actual external fetch a bundle might
+        # try to perform.
+        #
+        # XML namespace URIs (e.g. http://www.w3.org/2000/svg) are identifiers,
+        # not fetch targets, and are allowlisted.
+        #
+        # Mirrors the policy documented in docs/concepts/case-map-app.md and
+        # the unit test test_no_external_urls_in_static_tree.
         run: |
           set -e
           ROOTS="scripts/app/static scripts/app/templates"
@@ -107,13 +124,16 @@ jobs:
                 grep -nE "$PATTERN" <(sed "s#${ALLOWLIST}##g" "$f")
                 FAIL=1
               fi
-            done < <(find "$root" -type f \( -name '*.html' -o -name '*.css' -o -name '*.js' \) -print0)
+            done < <(find "$root" -type f \
+                          \( -name '*.html' -o -name '*.css' -o -name '*.js' \) \
+                          -not -path '*/vendor/*' \
+                          -print0)
           done
           if [ "$FAIL" -ne 0 ]; then
             echo "FAIL: case-map airgap rule violated — see docs/concepts/case-map-app.md"
             exit 1
           fi
-          echo "OK: no external URLs under scripts/app/ static or templates."
+          echo "OK: no external URLs in hand-written static/ or templates/ (vendor/ excluded by policy)."
 
   # Publication-safety post-checks: exercise the Phase 3C scrubbers against
   # examples/ and templates/ and assert that nothing survives. A failure

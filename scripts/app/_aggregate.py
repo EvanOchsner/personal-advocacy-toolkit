@@ -31,6 +31,19 @@ class TimelineMarker:
     summary: str | None = None
     entity_ids: list[str] = field(default_factory=list)
     ref: dict[str, Any] = field(default_factory=dict)  # pointer back to source
+    # `track` groups markers for the dashboard's Plotly timeline so the
+    # legend can toggle whole categories at once. Values:
+    #   self_event  — events.yaml entries that touch self/ally
+    #   adverse_event — events.yaml entries that touch an adversary
+    #   neutral_event — everything else from events.yaml (incl. no-entity)
+    #   outbound — correspondence sent by self/ally
+    #   inbound — correspondence sent by an adversary
+    #   correspondence — correspondence we couldn't role-classify
+    #   deadline — deadline calculator output
+    track: str = "neutral_event"
+    # `parties` is a list of {id, role} pairs for the entities the marker
+    # touches. Role values come from entities.yaml ROLES vocabulary.
+    parties: list[dict[str, str]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -42,10 +55,21 @@ def build_timeline(
     correspondence_manifest: dict[str, Any] | None = None,
     deadlines: dict[str, Any] | None = None,
 ) -> list[TimelineMarker]:
+    role_by_id = {ent.id: ent.role for ent in loaded.entities}
     markers: list[TimelineMarker] = []
+
+    def _parties(ids: list[str]) -> list[dict[str, str]]:
+        return [{"id": i, "role": role_by_id.get(i, "neutral")} for i in ids]
 
     # 1. events.yaml
     for event in loaded.events:
+        roles = {role_by_id.get(i) for i in event.entities}
+        if "adversary" in roles:
+            track = "adverse_event"
+        elif "self" in roles or "ally" in roles:
+            track = "self_event"
+        else:
+            track = "neutral_event"
         markers.append(
             TimelineMarker(
                 date=event.date,
@@ -63,6 +87,8 @@ def build_timeline(
                         "evidence": list(event.refs.evidence),
                     },
                 },
+                track=track,
+                parties=_parties(list(event.entities)),
             )
         )
 
@@ -87,6 +113,9 @@ def build_timeline(
                 summary_bits.append(f"from: {from_hdr}")
             if to_hdr:
                 summary_bits.append(f"to: {to_hdr}")
+            track = _classify_correspondence_track(
+                from_hdr, to_hdr, loaded, role_by_id
+            )
             markers.append(
                 TimelineMarker(
                     date=dt_iso,
@@ -101,6 +130,8 @@ def build_timeline(
                         "from": from_hdr,
                         "to": to_hdr,
                     },
+                    track=track,
+                    parties=_parties(entity_ids),
                 )
             )
 
@@ -136,11 +167,60 @@ def build_timeline(
                         "verify": verify,
                         "authority_ref": d.get("authority_ref"),
                     },
+                    track="deadline",
+                    parties=[],
                 )
             )
 
     markers.sort(key=lambda m: (m.date, m.kind, m.title))
     return markers
+
+
+def _classify_correspondence_track(
+    from_hdr: str,
+    to_hdr: str,
+    loaded: LoadedCaseMap,
+    role_by_id: dict[str, str],
+) -> str:
+    """Decide which track a correspondence marker lives on.
+
+    The heuristic is intentionally simple: we look at which entity (if any)
+    matches the From: header and use that entity's role. If the sender
+    isn't classifiable, fall back to the To: header. If still nothing,
+    the marker stays on the generic 'correspondence' track and the legend
+    can still hide it.
+    """
+    sender_id = _match_header(from_hdr, loaded)
+    if sender_id is not None:
+        role = role_by_id.get(sender_id)
+        if role == "adversary":
+            return "inbound"
+        if role in ("self", "ally"):
+            return "outbound"
+    recipient_id = _match_header(to_hdr, loaded)
+    if recipient_id is not None:
+        role = role_by_id.get(recipient_id)
+        if role == "adversary":
+            return "outbound"
+        if role in ("self", "ally"):
+            return "inbound"
+    return "correspondence"
+
+
+def _match_header(hdr: str, loaded: LoadedCaseMap) -> str | None:
+    if not hdr:
+        return None
+    hay = hdr
+    hay_lower = hay.lower()
+    emails_in = {e.lower() for e in EMAIL_RE.findall(hay)}
+    for ent in loaded.entities:
+        for em in ent.match.emails:
+            if em in emails_in:
+                return ent.id
+        for nm in ent.match.names:
+            if nm.lower() in hay_lower:
+                return ent.id
+    return None
 
 
 def _match_correspondence(entry: dict[str, Any], loaded: LoadedCaseMap) -> list[str]:

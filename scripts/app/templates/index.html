@@ -5,35 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
   <title>{{ caption }} — case map</title>
-  <link rel="stylesheet" href="/static/css/app.css">
+  <link rel="stylesheet" href="/static/css/dashboard.css">
 </head>
 <body>
   <header class="app-header">
     <h1>{{ caption }}</h1>
     <p class="disclaimer">{{ disclaimer }}</p>
     <p class="counts">
-      <span>{{ entity_count }} entities</span>
+      <span>{{ ally_count }} self/ally</span>
       <span>·</span>
-      <span>{{ relationship_count }} relationships</span>
+      <span>{{ neutral_count }} neutral</span>
       <span>·</span>
-      <span>{{ event_count }} events</span>
+      <span>{{ adversary_count }} adversary</span>
+      <span>·</span>
+      <span>{{ adjudicator_count }} adjudicator{{ '' if adjudicator_count == 1 else 's' }}</span>
+      <span>·</span>
+      <span>{{ reference_count }} reference{{ '' if reference_count == 1 else 's' }}</span>
     </p>
   </header>
 
-  <main class="app-main">
-    <section class="graph-panel" aria-label="Case graph">
-      <div class="column-labels">
-        <span class="col-label col-ally">Self &amp; allies</span>
-        <span class="col-label col-neutral">Neutrals</span>
-        <span class="col-label col-adversary">Adversaries</span>
-      </div>
-      <svg id="graph" aria-label="case entity graph"></svg>
+  <section class="central-issue" aria-label="Central issue">
+    <div id="central-issue" class="central-issue-body">Loading…</div>
+  </section>
+
+  <main class="dashboard-main">
+    <section class="sector sector-allies" aria-label="Self and allies">
+      <h2 class="sector-heading">Self &amp; allies</h2>
+      <div id="sector-allies" class="card-stack" data-sector="allies">Loading…</div>
+    </section>
+
+    <section class="sector sector-neutral" aria-label="Neutral parties">
+      <h2 class="sector-heading">Neutral &amp; adjudicators</h2>
+      <div id="sector-neutral" class="card-stack" data-sector="neutrals">Loading…</div>
+      <div id="sector-adjudicators" class="card-stack adjudicator-stack" data-sector="adjudicators"></div>
+    </section>
+
+    <section class="sector sector-adversaries" aria-label="Adversaries">
+      <h2 class="sector-heading">Adversaries</h2>
+      <div id="sector-adversaries" class="card-stack" data-sector="adversaries">Loading…</div>
     </section>
 
     <aside id="panel" class="drilldown" aria-live="polite">
       <div class="panel-empty">
-        <p>Select an entity in the graph, or a marker on the timeline,
-          to see details.</p>
+        <p>Select any party card, governing-document card, or timeline
+          marker to drill down.</p>
         <p class="panel-empty-note">
           All details shown are loaded from files on disk under the case
           directory. Nothing here is inferred from outside sources.
@@ -42,17 +57,14 @@
     </aside>
   </main>
 
+  <section class="references-band" aria-label="Governing documents">
+    <h2 class="band-heading">Governing documents</h2>
+    <div id="references" class="references-strip">Loading…</div>
+  </section>
+
   <section class="timeline-panel" aria-label="Case timeline">
-    <div class="timeline-legend">
-      <span class="legend-dot legend-event"></span>event
-      <span class="legend-dot legend-correspondence"></span>correspondence
-      <span class="legend-dot legend-deadline"></span>deadline
-      <span class="legend-sep">—</span>
-      <span class="legend-note">
-        Select an entity to colour markers that touch it; click a marker for details.
-      </span>
-    </div>
-    <div id="timeline"></div>
+    <h2 class="band-heading">Timeline</h2>
+    <div id="timeline" class="timeline-plot"></div>
   </section>
 
   <footer class="app-footer">
@@ -62,9 +74,10 @@
     </p>
   </footer>
 
+  <script src="/static/vendor/plotly-basic.min.js"></script>
   <script src="/static/js/app.js"></script>
-  <script src="/static/js/graph.js"></script>
+  <script src="/static/js/dashboard.js"></script>
   <script src="/static/js/panel.js"></script>
-  <script src="/static/js/timeline.js"></script>
+  <script src="/static/js/plotly_timeline.js"></script>
 </body>
 </html>

@@ -18,7 +18,7 @@ from wsgiref.simple_server import WSGIRequestHandler, make_server
 from scripts.intake._common import DISCLAIMER
 
 from scripts.app._schema import CaseMapError
-from scripts.app.server import BIND_HOST, DEFAULT_PORT, make_app
+from scripts.app.server import BIND_HOST, DEFAULT_PORT, CacheNotBuiltError, make_app
 
 
 class _QuietHandler(WSGIRequestHandler):
@@ -53,6 +53,9 @@ def main(argv: list[str] | None = None) -> int:
             correspondence_manifest=args.correspondence_manifest,
         )
     except CaseMapError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+    except CacheNotBuiltError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
 

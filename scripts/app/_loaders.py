@@ -29,6 +29,9 @@ from scripts.app._schema import (
 )
 
 
+_CACHE_DIR_NAME = ".case-map"
+
+
 @dataclass
 class ResolvedEntity:
     """Entity plus the fact block resolved from case-facts.yaml."""
@@ -58,12 +61,12 @@ class LoadedCaseMap:
         return self.case_map.entities
 
     @property
-    def relationships(self):
-        return self.case_map.relationships
-
-    @property
     def events(self):
         return self.case_map.events
+
+    @property
+    def cache_dir(self) -> Path:
+        return self.case_dir / _CACHE_DIR_NAME
 
 
 def load_case_map(case_dir: str | Path) -> LoadedCaseMap:
@@ -81,7 +84,7 @@ def load_case_map(case_dir: str | Path) -> LoadedCaseMap:
         case_facts = load_yaml(case_facts_path)
 
     entities_raw = load_yaml(entities_path)
-    entities, relationships = parse_entities_file(entities_raw, source=entities_path)
+    entities = parse_entities_file(entities_raw, source=entities_path)
 
     known_ids = {e.id for e in entities}
     events_path = case_dir / "events.yaml"
@@ -106,7 +109,7 @@ def load_case_map(case_dir: str | Path) -> LoadedCaseMap:
 
     return LoadedCaseMap(
         case_dir=case_dir,
-        case_map=CaseMap(entities=entities, relationships=relationships, events=events),
+        case_map=CaseMap(entities=entities, events=events),
         case_facts=case_facts,
         resolved=resolved,
     )

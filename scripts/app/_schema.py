@@ -4,6 +4,10 @@ Pattern mirrors scripts/packet/_manifest.py: eager loader, a single
 CaseMapError exception, small private parsers per section. Fixed-
 vocabulary fields are validated against a set here so the UI never
 has to handle unknown roles / icons / kinds at render time.
+
+The `relationships:` block was removed when the case map switched
+from a graph rendering to a sector-dashboard. Files that still carry
+it are rejected with a migration message.
 """
 from __future__ import annotations
 
@@ -18,18 +22,6 @@ HEX_COLOR_RE = re.compile(r"^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$")
 ROLES = frozenset({"self", "ally", "neutral", "adversary"})
 ICONS = frozenset(
     {"person", "org", "court", "regulator", "witness", "counsel", "journalist", "venue"}
-)
-RELATIONSHIP_KINDS = frozenset(
-    {
-        "adverse_to",
-        "represented_by",
-        "retained_by",
-        "witness_to",
-        "venue_for",
-        "regulates",
-        "allied_with",
-        "other",
-    }
 )
 EVENT_KINDS = frozenset({"incident", "filing", "hearing", "call", "meeting", "other"})
 
@@ -60,14 +52,6 @@ class Entity:
 
 
 @dataclass
-class Relationship:
-    source: str  # "from" in YAML; "from" is a Python keyword
-    target: str
-    kind: str
-    summary: str | None = None
-
-
-@dataclass
 class EventRefs:
     correspondence: list[str] = field(default_factory=list)
     letters: list[str] = field(default_factory=list)
@@ -88,7 +72,6 @@ class Event:
 @dataclass
 class CaseMap:
     entities: list[Entity]
-    relationships: list[Relationship]
     events: list[Event]
 
     @property
@@ -96,12 +79,16 @@ class CaseMap:
         return {e.id for e in self.entities}
 
 
-def parse_entities_file(data: Any, *, source: Path) -> tuple[list[Entity], list[Relationship]]:
+def parse_entities_file(data: Any, *, source: Path) -> list[Entity]:
     if not isinstance(data, dict):
         raise CaseMapError(f"{source}: top-level must be a mapping.")
-    entities = _parse_entities(data.get("entities") or [])
-    relationships = _parse_relationships(data.get("relationships") or [], entities)
-    return entities, relationships
+    if "relationships" in data:
+        raise CaseMapError(
+            f"{source}: `relationships:` is no longer supported. The case map "
+            "switched from a graph view to a sector dashboard; relationships "
+            "are not rendered. Remove the `relationships:` block from this file."
+        )
+    return _parse_entities(data.get("entities") or [])
 
 
 def parse_events_file(data: Any, *, source: Path, known_ids: set[str]) -> list[Event]:
@@ -200,36 +187,6 @@ def _parse_match(raw: Any, *, eid: str) -> EntityMatch:
     if not isinstance(names, list) or not all(isinstance(x, str) for x in names):
         raise CaseMapError(f"entities[{eid}].match.names must be a list of strings.")
     return EntityMatch(emails=[e.lower() for e in emails], names=list(names))
-
-
-def _parse_relationships(raw: Any, entities: list[Entity]) -> list[Relationship]:
-    if not isinstance(raw, list):
-        raise CaseMapError("`relationships` must be a list.")
-    valid = {e.id for e in entities}
-    out: list[Relationship] = []
-    for i, item in enumerate(raw):
-        if not isinstance(item, dict):
-            raise CaseMapError(f"relationships[{i}] must be a mapping.")
-        source = str(item.get("from") or "").strip()
-        target = str(item.get("to") or "").strip()
-        kind = str(item.get("kind") or "").strip()
-        if source not in valid:
-            raise CaseMapError(f"relationships[{i}].from {source!r} is not a known entity id.")
-        if target not in valid:
-            raise CaseMapError(f"relationships[{i}].to {target!r} is not a known entity id.")
-        if kind not in RELATIONSHIP_KINDS:
-            raise CaseMapError(
-                f"relationships[{i}].kind {kind!r} must be one of {sorted(RELATIONSHIP_KINDS)}."
-            )
-        out.append(
-            Relationship(
-                source=source,
-                target=target,
-                kind=kind,
-                summary=_opt_str(item.get("summary")),
-            )
-        )
-    return out
 
 
 def _parse_event(item: Any, *, index: int, known_ids: set[str]) -> Event:

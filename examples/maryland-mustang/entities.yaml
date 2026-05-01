@@ -83,34 +83,3 @@ entities:
     match:
       emails: [jpemberton@midatlantic-vehicle-appraisers.example]
       names: [MidAtlantic Vehicle Appraisers, Joyce Pemberton]
-
-relationships:
-  - from: self
-    to: cim
-    kind: adverse_to
-    summary: "Agreed-value policy dispute; salvage transfer during negotiation is the core grievance."
-
-  - from: cim
-    to: adjuster_whitlock
-    kind: retained_by
-    summary: "Adjuster assigned by the insurer."
-
-  - from: cim
-    to: appraiser_mava
-    kind: retained_by
-    summary: "Valuation vendor retained by the insurer."
-
-  - from: self
-    to: specialist_shop
-    kind: retained_by
-    summary: "Restoration shop engaged after first shop declined."
-
-  - from: self
-    to: agent_meritor
-    kind: allied_with
-    summary: "Producer agency that issued the policy; provided full form set after insurer portal gave only declarations."
-
-  - from: mia
-    to: cim
-    kind: regulates
-    summary: "Maryland Insurance Administration has jurisdiction over CIM as an MD-licensed insurer."

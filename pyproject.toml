@@ -64,6 +64,12 @@ publish = [
     "pypdf>=4",
     "reportlab>=4",
 ]
+llm = [
+    # Optional: enables `python -m scripts.case_map_build --llm` to enrich
+    # dashboard synopses via the Claude API. The viewer (scripts.app)
+    # never imports this; it stays fully offline regardless.
+    "anthropic>=0.40",
+]
 
 [project.urls]
 Homepage = "https://github.com/EvanOchsner/personal-advocacy-toolkit"

@@ -104,6 +104,15 @@ def redact_pdf(
     for page_idx, page in enumerate(reader.pages):
         page_redactions = by_page.get(page_idx, [])
 
+        # Attach the page to the writer FIRST, then mutate the
+        # writer-attached copy. Reader-owned pages don't have the
+        # indirect-object plumbing pypdf needs to reliably rewrite
+        # /Contents; doing this on the reader page is exactly the
+        # pattern pypdf 6+ is deprecating. For redaction this is
+        # also the safer correctness story: a "mostly works"
+        # content-stream rewrite is how leaks happen.
+        attached = writer.add_page(page)
+
         if page_redactions:
             # Remove text whose positioning falls inside any bbox. pypdf's
             # high-level API doesn't expose a surgical "delete text under
@@ -112,12 +121,10 @@ def redact_pdf(
             # overwrite the content stream with opaque rectangles so any
             # underlying text is covered AND to also drop the text layer
             # via pypdf's content-stream rewriter.
-            _strip_text_in_bboxes(page, [r.bbox for r in page_redactions])
+            _strip_text_in_bboxes(attached, [r.bbox for r in page_redactions])
 
             # Draw opaque rectangles + replacement text over each bbox.
-            _draw_redaction_overlays(page, page_redactions)
-
-        writer.add_page(page)
+            _draw_redaction_overlays(attached, page_redactions)
 
     # Scrub /Info metadata. Overwrite every sensitive entry with an empty
     # string rather than trying to delete the dict (pypdf versions differ

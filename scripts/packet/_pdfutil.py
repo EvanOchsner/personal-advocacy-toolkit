@@ -193,8 +193,12 @@ def stamp_watermark(input_pdf: Path, output_pdf: Path, text: str) -> None:
 
     writer = PdfWriter()
     for page in reader.pages:
-        page.merge_page(stamp_page)
-        writer.add_page(page)
+        # Attach to the writer BEFORE mutating. ``merge_page`` calls
+        # ``replace_contents`` internally; pypdf 6+ deprecates that for
+        # pages still owned by a reader (the indirect-object plumbing
+        # is unreliable without a writer's object table).
+        attached = writer.add_page(page)
+        attached.merge_page(stamp_page)
     output_pdf.parent.mkdir(parents=True, exist_ok=True)
     with output_pdf.open("wb") as fh:
         writer.write(fh)

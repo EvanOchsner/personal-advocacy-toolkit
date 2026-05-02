@@ -62,10 +62,11 @@ def scrub_image(path: Path, *, apply: bool) -> ScrubResult:
     if apply:
         with Image.open(path) as im:
             im.load()
-            # Build a fresh image with no info dict.
-            data = list(im.getdata())
-            clean = Image.new(im.mode, im.size)
-            clean.putdata(data)
+            # Build a fresh image with no info dict. `frombytes` /
+            # `tobytes` is the canonical pixel-clone path; it skips
+            # the deprecated-in-Pillow-14 `getdata` and is faster than
+            # the `getdata` / `putdata` roundtrip.
+            clean = Image.frombytes(im.mode, im.size, im.tobytes())
             # Preserve format and mode; save without exif=.
             fmt = im.format or "JPEG"
             # tmp write + atomic replace.

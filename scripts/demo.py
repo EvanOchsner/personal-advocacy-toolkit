@@ -153,11 +153,12 @@ def main(argv: list[str] | None = None) -> int:
                 False,
             ),
             (
-                "Ingest demo (email JSON → TXT)",
+                "Ingest demo (cascade extraction over .eml)",
                 _uv_cmd(
-                    "scripts.ingest.email_json_to_txt",
-                    str(out / "evidence" / "emails" / "structured"),
-                    "--out-dir", str(tmp / "mustang-txt-demo"),
+                    "scripts.extraction",
+                    str(out / "evidence" / "emails" / "raw"),
+                    "--out-dir", str(tmp / "mustang-extraction-demo"),
+                    "--non-interactive",
                 ),
                 False,
             ),

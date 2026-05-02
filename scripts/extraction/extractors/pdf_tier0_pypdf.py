@@ -1,26 +1,21 @@
-"""Shared PDF helpers for ingest pipelines.
+"""Tier-0 PDF extractor: stdlib + ``pypdf``.
 
-Centralizes the OCR + text-extraction primitives that were previously
-private to ``scripts.packet.compile_reference``. The packet's reference
-compiler and the ``pdf_to_text`` ingester both need the same three
-operations:
-
-  - decide whether a PDF already has an extractable text layer,
-  - run ``ocrmypdf`` on it if not (with a graceful fallback when the
-    binary isn't installed),
-  - extract plaintext via pypdf.
-
-``ocrmypdf`` stays an optional system binary, never a Python dependency.
-A missing binary is a stderr warning, not a hard failure — image-only
-PDFs simply pass through without OCR'd text. The ingester records this
-as ``ocr_applied: false`` so a reviewer can spot the gap.
+Ported from the previous ``scripts/ingest/_pdf.py``. Stays the
+default fast path for any PDF with a usable text layer; the cascade
+only escalates to tier 1+ when garble is detected. ``ocrmypdf`` is
+treated as it was before: an optional system binary, never a Python
+dependency. A missing binary is a stderr warning.
 """
 from __future__ import annotations
 
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
+from typing import Any
+
+from ..result import ExtractionResult, PageResult
 
 
 def pdf_has_text_layer(pdf: Path) -> bool:
@@ -70,8 +65,7 @@ def ocr_pdf(src: Path, workdir: Path) -> tuple[Path, bool]:
     boolean is True only when OCR actually produced a new artifact.
 
     If `ocrmypdf` is not on PATH, emits a stderr warning and returns
-    (src, False). Never raises for a missing binary — OCR is a
-    nice-to-have, not a build prerequisite.
+    (src, False). Never raises for a missing binary.
     """
     if pdf_has_text_layer(src):
         return src, False
@@ -102,12 +96,7 @@ def ocr_pdf(src: Path, workdir: Path) -> tuple[Path, bool]:
 
 
 def extract_text(pdf: Path) -> str:
-    """Concatenate `extract_text()` from every page of `pdf`.
-
-    Returns an empty string on any error (missing pypdf, unreadable
-    file, encrypted document). Pages with whitespace-only text are
-    dropped; the remaining chunks are joined with a blank line.
-    """
+    """Concatenate ``extract_text()`` from every page of ``pdf``."""
     try:
         from pypdf import PdfReader
     except ModuleNotFoundError:
@@ -127,6 +116,26 @@ def extract_text(pdf: Path) -> str:
     return "\n\n".join(chunks)
 
 
+def extract_pages(pdf: Path) -> list[str]:
+    """Return one string per page (preserving order, including empty pages)."""
+    try:
+        from pypdf import PdfReader
+    except ModuleNotFoundError:
+        return []
+    try:
+        reader = PdfReader(str(pdf))
+    except Exception:
+        return []
+    out: list[str] = []
+    for page in reader.pages:
+        try:
+            t = page.extract_text() or ""
+        except Exception:
+            t = ""
+        out.append(t)
+    return out
+
+
 def page_count(pdf: Path) -> int:
     """Return the number of pages in `pdf`, or 0 if unreadable."""
     try:
@@ -138,3 +147,63 @@ def page_count(pdf: Path) -> int:
     except Exception:
         return 0
     return len(reader.pages)
+
+
+def extract(pdf: Path, *, run_ocrmypdf: bool = True) -> ExtractionResult:
+    """Tier-0 cascade entry point for PDFs.
+
+    Behavior is intentionally identical to the prior
+    ``scripts.ingest.pdf_to_text`` pipeline: detect text layer, run
+    ``ocrmypdf --skip-text`` if missing and the binary is on PATH,
+    extract text via pypdf.
+    """
+    pdf = Path(pdf)
+    notes: list[str] = []
+    ocr_applied = False
+    ocr_engine: str | None = None
+
+    with tempfile.TemporaryDirectory() as td:
+        workdir = Path(td)
+        if pdf_has_text_layer(pdf):
+            working_pdf = pdf
+        elif run_ocrmypdf:
+            working_pdf, ocr_applied = ocr_pdf(pdf, workdir)
+            if ocr_applied:
+                ocr_engine = ocrmypdf_version()
+            else:
+                notes.append(
+                    "image-only PDF; ocrmypdf unavailable or failed — "
+                    "extracted text will be empty"
+                )
+        else:
+            working_pdf = pdf
+            notes.append(
+                "image-only PDF; tier 0 cannot extract without ocrmypdf"
+            )
+        per_page = extract_pages(working_pdf)
+        full_text = "\n\n".join(p.strip() for p in per_page if p.strip())
+
+    page_results = [
+        PageResult(
+            page_number=i + 1,
+            text=text,
+            method="pypdf+ocrmypdf" if ocr_applied else "pypdf",
+            tier=0,
+        )
+        for i, text in enumerate(per_page)
+    ]
+
+    settings: dict[str, Any] = {
+        "ocr_applied": ocr_applied,
+        "ocr_engine": ocr_engine,
+        "page_count": len(per_page),
+    }
+
+    return ExtractionResult(
+        text=full_text,
+        method="pypdf+ocrmypdf" if ocr_applied else "pypdf",
+        tier=0,
+        settings=settings,
+        warnings=list(notes),
+        page_results=page_results,
+    )

@@ -1,23 +1,14 @@
 """Plaintext extraction for trusted-source documents.
 
-Dispatches by content type to the existing project ingesters where one
-exists, and falls back to small in-module helpers otherwise. The output
-is plain UTF-8 text written to ``references/readable/<slug>.txt`` with
-no further processing — section/citation parsing is deferred to a
-later iteration.
+Delegates to ``scripts.extraction`` for HTML and PDF (so the cascade's
+garble detection + tier-1+ fallbacks apply to reference docs too) and
+keeps small in-module helpers for plain text and ``.docx``.
 
-Supported types (v1):
-
-    text/html, application/xhtml+xml  → scripts.ingest.html_to_text
-    application/pdf                   → scripts.ingest._pdf
-    text/plain, text/markdown         → identity (decode)
-    application/vnd.openxmlformats-
-        officedocument.wordprocessingml.document   → python-docx
-    application/msword                → unsupported (warning only)
-
-Anything else is recorded as ``method: "no-extractor"`` with a warning.
-The raw bytes are still preserved under ``references/raw/`` so the
-agent can fall back to manual review.
+Returns the project-local ``ExtractionResult`` — a flatter type than
+``scripts.extraction.result.ExtractionResult`` that carries just what
+``scripts.references.ingest`` needs (text, method label, optional title,
+warnings). The cascade's per-page detail is collapsed away here; the
+references pipeline doesn't paginate.
 """
 
 from __future__ import annotations
@@ -26,7 +17,8 @@ import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from scripts.ingest.html_to_text import render_html
+from scripts.extraction import cascade
+from scripts.extraction.extractors import html_tier0_stdlib, pdf_tier0_pypdf
 
 
 @dataclass
@@ -62,7 +54,7 @@ def _content_type_from_suffix(path: Path) -> str:
 
 
 def normalize_content_type(declared: str | None, path: Path) -> str:
-    """Return the best content-type guess: declared if recognized, else by suffix."""
+    """Best content-type guess: declared if recognized, else by suffix."""
     if declared:
         ct = declared.split(";", 1)[0].strip().lower()
         if ct in _HTML_TYPES | _TEXT_TYPES | _PDF_TYPES | _DOCX_TYPES | _DOC_TYPES:
@@ -70,11 +62,15 @@ def normalize_content_type(declared: str | None, path: Path) -> str:
     return _content_type_from_suffix(path)
 
 
-def extract(raw_bytes: bytes, content_type: str, *, source_path: Path | None = None) -> ExtractionResult:
-    """Extract plaintext from ``raw_bytes`` using the best available method."""
+def extract(
+    raw_bytes: bytes,
+    content_type: str,
+    *,
+    source_path: Path | None = None,
+) -> ExtractionResult:
+    """Extract plaintext from `raw_bytes` using the best available method."""
     if content_type in _HTML_TYPES:
-        text, title, _charset = render_html(raw_bytes)
-        return ExtractionResult(text=text, method="html-to-text", title=title)
+        return _extract_html(raw_bytes)
 
     if content_type in _TEXT_TYPES:
         decoded = raw_bytes.decode("utf-8", errors="replace")
@@ -106,40 +102,49 @@ def extract(raw_bytes: bytes, content_type: str, *, source_path: Path | None = N
     )
 
 
-def _extract_pdf(raw_bytes: bytes) -> ExtractionResult:
-    """Extract text from a PDF.
+def _extract_html(raw_bytes: bytes) -> ExtractionResult:
+    """Reference HTML extraction.
 
-    Reuses ``scripts.ingest._pdf.extract_text`` (which sits on top of
-    pypdf). Does not run OCR — image-only PDFs return empty text with a
-    warning. The user can run the evidence ``pdf_to_text`` ingester
-    separately for OCR if needed; reference docs from ``.gov`` sources
-    almost always have a real text layer.
+    For references we stay on the cheap path by default — most ``.gov``
+    HTML is well-formed and Trafilatura's main-content guess sometimes
+    drops the very legal text we care about. Callers that hit a
+    JS-rendered statute page should ingest via the evidence
+    ``document-extraction`` skill instead, which runs the full cascade.
     """
-    from scripts.ingest._pdf import extract_text, pdf_has_text_layer
+    text, title, _charset = html_tier0_stdlib.render_html(raw_bytes)
+    return ExtractionResult(text=text, method="html.parser", title=title)
 
+
+def _extract_pdf(raw_bytes: bytes) -> ExtractionResult:
+    """Reference PDF extraction via the cascade's PDF tier 0.
+
+    We do *not* run OCR for references: ``.gov`` source PDFs almost
+    always have a real text layer, and a missing layer is itself
+    diagnostic — the user should re-fetch the HTML version.
+    """
     warnings: list[str] = []
     with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as fh:
         fh.write(raw_bytes)
         tmp_path = Path(fh.name)
     try:
-        if not pdf_has_text_layer(tmp_path):
+        if not pdf_tier0_pypdf.pdf_has_text_layer(tmp_path):
             warnings.append(
                 "PDF has no text layer — extracted text will be empty. "
-                "Try fetching the HTML version instead, or run the evidence "
-                "pdf_to_text ingester (which can OCR via ocrmypdf)."
+                "Try fetching the HTML version instead, or ingest as evidence "
+                "via `python -m scripts.extraction` to run OCR / VLM fallback."
             )
             text = ""
         else:
-            text = extract_text(tmp_path)
+            text = pdf_tier0_pypdf.extract_text(tmp_path)
     finally:
         tmp_path.unlink(missing_ok=True)
-    return ExtractionResult(text=text, method="pdf-to-text", warnings=warnings)
+    return ExtractionResult(text=text, method="pypdf", warnings=warnings)
 
 
 def _extract_docx(raw_bytes: bytes) -> ExtractionResult:
     """Extract text from a .docx using python-docx (already a project dep)."""
     try:
-        import docx  # type: ignore  # python-docx
+        import docx  # type: ignore[import-untyped]
     except ImportError:
         return ExtractionResult(
             text="",
@@ -156,4 +161,14 @@ def _extract_docx(raw_bytes: bytes) -> ExtractionResult:
         text = "\n".join(paragraphs)
     finally:
         tmp_path.unlink(missing_ok=True)
-    return ExtractionResult(text=text, method="docx-to-text", title=title)
+    return ExtractionResult(text=text, method="python-docx", title=title)
+
+
+__all__ = [
+    "ExtractionResult",
+    "extract",
+    "normalize_content_type",
+    # Re-export so callers wanting full cascade access don't have to
+    # know the internal package layout.
+    "cascade",
+]

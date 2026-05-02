@@ -202,12 +202,102 @@ def yaml_frontmatter_sibling(
     return info
 
 
+def extraction_recipe(
+    path: Path, config: dict[str, Any], report: Any
+) -> dict[str, Any]:
+    """Surface the cascade-recipe metadata for any extracted evidence file.
+
+    Looks for the structured-layer JSON next to ``path`` (same naming
+    convention as the other three-layer handlers — ``<source_id>.json``
+    in a sibling ``structured/`` dir) and surfaces the chosen tier,
+    method, VLM provider (if any), warnings, and per-page outcomes.
+
+    Also checks ``<case_root>/extraction/scripts/extract_<source_id>.py``
+    for a reproducibility script and ``<case_root>/extraction/vlm-consent.yaml``
+    for any externally-processed-pages records — both are signals a
+    reviewer (or going-public skill) cares about.
+    """
+    info: dict[str, Any] = {"kind": "extraction-recipe"}
+    rel = _rel_to_evidence(path, report)
+    if rel is None:
+        return info
+
+    # Find the structured-layer sibling.
+    structured_dir = config.get("structured_layer_dir") or "structured"
+    rel_parts = Path(rel).parts
+    layer_dirs = {
+        config.get("structured_layer_dir") or "structured",
+        config.get("raw_layer_dir") or "raw",
+        config.get("readable_layer_dir") or "readable",
+    }
+    new_parts: list[str] = []
+    swapped = False
+    for part in rel_parts:
+        if part in layer_dirs and not swapped:
+            new_parts.append(structured_dir)
+            swapped = True
+        else:
+            new_parts.append(part)
+    candidate = report.evidence_root / Path(*new_parts).with_suffix(".json")
+    if not candidate.exists():
+        # Fall back: same-stem .json next to the file.
+        candidate = path.with_suffix(".json")
+    if not candidate.exists():
+        report.warn(f"no structured sibling found for {path.name}")
+        return info
+
+    try:
+        data = json.loads(candidate.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        report.warn(f"could not parse {candidate}: {exc}")
+        return info
+
+    info["structured_sibling"] = str(candidate)
+    extraction = data.get("extraction") or {}
+    for key in ("method", "tier", "vlm_provider", "warnings"):
+        v = extraction.get(key) if extraction else data.get(key)
+        if v is not None:
+            info[key] = v
+    if "page_results" in (extraction or {}):
+        info["page_count"] = len(extraction["page_results"] or [])
+        info["garbled_pages"] = [
+            p["page_number"]
+            for p in (extraction["page_results"] or [])
+            if p.get("garbled")
+        ]
+    info["source_id"] = data.get("source_id")
+    info["source_sha256"] = data.get("source_sha256")
+    if data.get("overrides_applied"):
+        info["overrides_applied"] = data["overrides_applied"]
+
+    # Recipe script + consent record are best-effort lookups under
+    # case_root. We don't have a guaranteed handle on case_root from
+    # the report object, but evidence_root.parent is the convention.
+    case_root = getattr(report, "case_root", None) or report.evidence_root.parent
+    source_id = data.get("source_id")
+    if source_id:
+        recipe_script = (
+            Path(case_root) / "extraction" / "scripts" / f"extract_{source_id}.py"
+        )
+        if recipe_script.exists():
+            info["recipe_script"] = str(recipe_script)
+        else:
+            report.warn(
+                f"extraction recipe script missing at {recipe_script}; "
+                "re-run `python -m scripts.extraction --case-root <root> "
+                "--file <evidence>` to regenerate"
+            )
+
+    return info
+
+
 # Registry — string names map to callables. Extend here when adding a
 # new handler to data/pipeline_dispatch.yaml.
 HANDLERS: dict[str, HandlerFn] = {
     "email_three_layer": email_three_layer,
     "readme_catalog": readme_catalog,
     "yaml_frontmatter_sibling": yaml_frontmatter_sibling,
+    "extraction_recipe": extraction_recipe,
 }
 
 

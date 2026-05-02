@@ -63,29 +63,31 @@ uv run python -m scripts.ingest.mbox_split path/to/All.mbox \
 ### From .eml files
 
 If you already have individual .eml files (exported from Mail.app,
-saved from Outlook, etc.), skip `mbox_split` and go straight to:
+saved from Outlook, etc.), skip `mbox_split` and run the cascade
+directly. The cascade auto-detects type by extension and writes both
+the structured JSON and the readable transcript in one pass:
 
 ```sh
-uv run python -m scripts.ingest.email_eml_to_json \
+uv run python -m scripts.extraction \
   evidence/emails/raw \
-  --out-dir evidence/emails/structured
+  --out-dir evidence/emails \
+  --case-root . \
+  --manifest evidence/emails/manifest.yaml
 ```
 
-One JSON per .eml, same stem. The JSON captures headers, addresses,
-Message-ID, dates, both plain-text and HTML bodies, attachment
-metadata (filename, content-type, size, SHA-256), and a SHA-256 of
-the raw .eml bytes as `source_sha256`.
+Output (per `.eml`):
+- `evidence/emails/raw/<source_id>.eml` — byte-identical copy
+- `evidence/emails/structured/<source_id>.json` — canonical record:
+  headers, addresses, Message-ID, date_iso, plain + HTML bodies,
+  attachment metadata (filename, content-type, size, sha256), and
+  the cascade's `extraction` block (tier, method, warnings).
+- `evidence/emails/readable/<source_id>.txt` — human-readable
+  transcript suitable for Exhibit B.
 
-### Render the human-readable layer
-
-```sh
-uv run python -m scripts.ingest.email_json_to_txt \
-  evidence/emails/structured \
-  --out-dir evidence/emails/readable
-```
-
-One `.txt` per JSON. This is what gets concatenated into Exhibit B
-(correspondence compilation) of the complaint packet.
+Email is single-tier — stdlib `email` is enough; the cascade does not
+escalate for `.eml` inputs. With `--case-root`, a per-source
+reproducibility script is written to
+`<case>/extraction/scripts/extract_<source_id>.py`.
 
 ### Build the correspondence manifest
 
@@ -165,66 +167,92 @@ shape.
 
 <!-- TODO: verify after dogfood pass -->
 
-## PDF ingest (with optional OCR)
+## PDF / HTML / image ingest — the cascade
 
-Adversaries sometimes deliver evidence as scanned, image-only PDFs
-that defeat plain-text search. `scripts/ingest/pdf_to_text.py` runs
-each PDF through pypdf for native text extraction first, and falls
-back to `ocrmypdf` (an optional system binary, **not** a Python
-dependency) if no text layer is present:
+PDFs, HTML, and images all go through the same layered cascade
+(`scripts/extraction/`). Tier 0 is stdlib + pypdf — equivalent to the
+old `pdf_to_text` / `html_to_text` ingesters and works in any base
+install. Tier 1+ unlocks **layout-aware PDF parsing (Docling),
+main-content HTML extraction (Trafilatura), JS-rendered page
+loading (Playwright), and a per-page VLM fallback** for the hardest
+PDFs (bezier-glyph fonts, photos of text):
 
 ```sh
-uv run python -m scripts.ingest.pdf_to_text \
+uv run python -m scripts.extraction \
   evidence/policy/auto-policy.pdf \
-  --out-dir evidence/pdfs \
-  --manifest evidence/pdfs/manifest.yaml
+  --out-dir evidence/policy \
+  --case-root . \
+  --manifest evidence/policy/manifest.yaml
 ```
 
 Output:
 
 ```
-evidence/pdfs/
+evidence/policy/
   raw/<source_id>.pdf            # byte-identical copy of the input
-  structured/<source_id>.json    # provenance + extraction metadata
-  human/<source_id>.txt          # plaintext transcript (grep-able)
-  manifest.yaml                  # one entry per ingested PDF
+  structured/<source_id>.json    # extraction metadata: tier, method,
+                                 # provider, warnings, per-page detail
+  readable/<source_id>.txt       # plaintext transcript (grep-able)
+  manifest.yaml                  # one entry per ingested file
+<case>/extraction/scripts/
+  extract_<source_id>.py         # reproducibility script
 ```
 
-The structured JSON records `ocr_applied` (true/false), `ocr_engine`
-(e.g. `"ocrmypdf 16.10.0"`), `page_count`, and `text_chars` so a
-reviewer can spot pages where extraction yielded nothing. Install
-`ocrmypdf` via your package manager (`brew install ocrmypdf` on
-macOS) when you need to OCR scanned exhibits; the tool emits a clear
-warning and skips OCR otherwise.
-
-`--force` overwrites an existing manifest entry with the same
-`source_id`. Without it, re-runs on already-ingested files fail loud
-to protect against accidental clobber.
-
-## Standalone HTML ingest
-
-Insurer portals and consumer-facing emails sometimes deliver content
-as HTML where the visible text is nontrivial to recover (nested
-tables, inline styles, no plaintext alternative). The email pipeline
-above already handles HTML bodies inside MIME messages, but for
-**standalone** `.html` / `.htm` files saved from a browser, use:
+To unlock tier 1+ fallbacks:
 
 ```sh
-uv run python -m scripts.ingest.html_to_text \
-  evidence/portal-pages/claim-status.html \
-  --out-dir evidence/html \
-  --manifest evidence/html/manifest.yaml
+uv sync --extra extraction
+playwright install chromium    # one-time
+brew install tesseract poppler ocrmypdf   # macOS — graceful fallback if missing
 ```
 
-The renderer is stdlib-only (`html.parser.HTMLParser` plus
-`html.unescape`); no third-party HTML library is added to the
-project. It strips `<script>` / `<style>` content, preserves block
-structure, renders links as `text (https://...)` so URLs stay
-grep-able, and decodes character entities. The `<title>` element is
-captured into the structured JSON.
+### Provider order for tier-2 (VLM fallback)
 
-You can also pass a directory; every `.html` and `.htm` file inside
-(non-recursive) is processed.
+When tier 0 (`pypdf`) and tier 1 (Docling) both produce garbled text
+on a page, the cascade routes that page to a VLM provider. Pick
+providers in this order:
+
+1. **`tesseract`** — local OCR, no GPU, no network. **Default.**
+2. **`olmocr`** — local 7B VLM, GPU recommended. Install with
+   `uv sync --extra extraction-vlm`. Pick when tesseract isn't
+   enough AND privacy matters.
+3. **`claude` / `openai` / `http`** — cloud VLMs. **Last resort.**
+   Page images leave the machine. The cascade prompts for per-case
+   consent and records the answer in
+   `<case>/extraction/vlm-consent.yaml`. The `going-public` skill
+   reads that file before publication.
+
+Override the default per-case via the override sidecar:
+
+```yaml
+# <case>/extraction/overrides/<source_id>.yaml
+source_id: 7a3f1e9c
+file: evidence/policy/raw/<id>.pdf
+overrides:
+  vlm_provider: olmocr
+  notes: "Tier 0 garbled on pages 3-5; bezier glyphs."
+```
+
+Then re-run the same `python -m scripts.extraction` command.
+
+### Provider availability
+
+```sh
+uv run python -m scripts.extraction --list-providers
+```
+
+Reports availability + install hints for `tesseract`, `olmocr`,
+`claude`, `openai`, `http`.
+
+### Verifying reproducibility
+
+```sh
+uv run python <case>/extraction/scripts/extract_<source_id>.py
+```
+
+Replays the recorded recipe and asserts byte-identical readable text.
+Non-zero exit means extraction has drifted from the recipe — either
+you changed the cascade or the source bytes changed.
 
 ## Hash and snapshot after every ingest
 

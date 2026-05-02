@@ -81,7 +81,40 @@ Rails enforced by the script:
 Follow the bash rules: run this in its own Bash call, never
 chained with other steps.
 
-### 5. Second-pair-of-eyes read
+### 5. Externally-processed evidence check
+
+If any document in the publication set was extracted via a network
+VLM provider (`claude` / `openai` / generic `http`), its raw page
+images already left the user's machine before scrubbing. Page
+images can carry text the cascade transcribed verbatim (SSNs,
+account numbers, medical notes), and a vendor's logs may retain
+them.
+
+Read `<case>/extraction/vlm-consent.yaml` and surface every entry in
+the `externally_processed` list whose source maps to a file in the
+publication set. For each, ask the user:
+
+  - Is this document going public? If yes, do you want to re-extract
+    it with `tesseract` or `olmocr` for the public copy?
+  - The original extraction record (network provider, pages, time)
+    stays in the private case; only the readable text needs to be
+    regenerated locally for the publication bundle.
+
+Helper:
+
+```sh
+uv run python -c "
+from pathlib import Path
+from scripts.extraction.consent import list_externally_processed_files
+for r in list_externally_processed_files(Path('.')):
+    print(r)
+"
+```
+
+If the consent file lists nothing or doesn't exist, the case never
+used a network provider — skip this step.
+
+### 6. Second-pair-of-eyes read
 
 Scripts catch mechanical leaks. They do not catch:
 

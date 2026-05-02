@@ -45,3 +45,19 @@ rules:
         - citation
         - authority
         - extraction_tool
+
+  # Generic extraction-cascade artifacts: any evidence file that came
+  # through `python -m scripts.extraction` and produced a
+  # raw/structured/readable triple. Surfaces the chosen tier, VLM
+  # provider (if any), warnings, garbled-page list, and a pointer to
+  # the per-source reproducibility script under
+  # <case>/extraction/scripts/extract_<source_id>.py.
+  #
+  # No path_prefix — matches by extension anywhere under the evidence
+  # root. Earlier prefix-anchored rules take priority via first-match.
+  - extensions: [".pdf", ".html", ".htm", ".png", ".jpg", ".jpeg", ".tiff"]
+    handler: extraction_recipe
+    config:
+      structured_layer_dir: "structured"
+      raw_layer_dir: "raw"
+      readable_layer_dir: "readable"

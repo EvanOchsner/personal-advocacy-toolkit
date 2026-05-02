@@ -56,14 +56,15 @@ When the user describes a dispute or asks "where do I start" /
 "what's next", invoke the **`pat-workflow`** skill. It is the
 top-level orchestrator and will route to per-phase skills.
 
-The 12 per-phase skills are:
+The per-phase skills are:
 
 - `case-intake` — Phase 2 intake interview
 - `situation-triage` — sanity-check classification
 - `authorities-finder` — Phase 3 authorities lookup
 - `authorities-reconcile` — authorities lookup with web reconciliation
 - `authorities-web-research` — manual web research for sparse data
-- `evidence-intake` — Phase 5 evidence ingestion
+- `evidence-intake` — Phase 5 evidence ingestion (router)
+- `document-extraction` — layered cascade for PDF / HTML / email / image
 - `provenance` — chain-of-custody for evidence
 - `packet-builder` — Phase 7 packet assembly
 - `pii-scrubber` — PII detection + substitution
@@ -81,4 +82,26 @@ The 12 per-phase skills are:
   copyright issue.
 - **Evidence is append-only.** A pre-commit hook refuses commits that
   modify or delete files under `evidence/` paths.
-- **Stdlib first.** New dependencies require justification.
+- **Stdlib first at the base install level.** Heavy deps (Docling,
+  Trafilatura, Playwright, olmOCR, etc.) live under optional extras
+  (`[extraction]`, `[extraction-vlm]`, `[extraction-cloud-openai]`)
+  and lazy-import inside the cascade. A base install (`uv sync`)
+  still runs the tier-0 path for every document type. New
+  base-runtime dependencies still require justification.
+
+## Extraction provider order — load-bearing
+
+When the cascade in `scripts/extraction/` needs a VLM provider for
+tier-2 PDF fallback, recommend providers in this order. The same
+order appears in `README.md` and
+`.claude/skills/document-extraction/SKILL.md`:
+
+1. **`tesseract`** — local OCR, no GPU, no network. **Default.**
+2. **`olmocr`** — local 7B VLM, GPU recommended. **For tough cases
+   where privacy matters.**
+3. **`claude` / `openai` / `http`** — cloud VLMs. **Last resort;
+   per-case opt-in required.** Page images leave the machine.
+
+Privacy default is `tesseract`. Cloud providers gate first use behind
+a consent prompt recorded in `<case>/extraction/vlm-consent.yaml`.
+The `going-public` skill reads that file before publication.

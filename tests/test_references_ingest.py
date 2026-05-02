@@ -66,7 +66,7 @@ def test_file_ingest_lands_three_layers(tmp_path: Path) -> None:
     assert sidecar["disclaimer"] == DISCLAIMER
     assert sidecar["citation"] == "Md. Code Ins. § 27-303"
     assert sidecar["jurisdiction"] == "MD"
-    assert sidecar["extraction"]["method"] == "html-to-text"
+    assert sidecar["extraction"]["method"] == "html.parser"
     assert sidecar["extraction"]["text_chars"] > 100
 
 

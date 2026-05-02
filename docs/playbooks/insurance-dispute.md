@@ -62,16 +62,17 @@ provide it. Track the request in the correspondence manifest.
 ### 2. Build the three-layer correspondence set
 
 Everything the insurer said in writing is exhibit material. Run each
-`.eml` through:
+`.eml` through the extraction cascade:
 
 ```
-uv run python -m scripts.ingest.email_eml_to_json <input>  --out-dir evidence/emails/structured
-uv run python -m scripts.ingest.email_json_to_txt evidence/emails/structured --out-dir evidence/emails/readable
+uv run python -m scripts.extraction evidence/emails/raw \
+  --out-dir evidence/emails --case-root .
 ```
 
 `raw/` keeps the RFC-5322 original; `structured/` is canonical JSON
 the tools consume; `readable/` is what goes into the packet as an
-exhibit.
+exhibit. The cascade also writes a per-source reproducibility script
+under `<case>/extraction/scripts/extract_<source_id>.py`.
 
 ### 3. Build a correspondence manifest
 

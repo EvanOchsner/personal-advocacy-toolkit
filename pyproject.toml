@@ -70,6 +70,40 @@ llm = [
     # never imports this; it stays fully offline regardless.
     "anthropic>=0.40",
 ]
+extraction = [
+    # Layered document → searchable plaintext extraction
+    # (`scripts.extraction`). Without this extra, the cascade still
+    # works at tier 0 (stdlib + pypdf + the existing ocrmypdf system
+    # binary), so a base install matches the prior `scripts.ingest`
+    # behavior. Installing this extra unlocks tier-1+ fallbacks for
+    # bezier-glyph PDFs, JS-rendered HTML, and image-only inputs.
+    #
+    # Provider recommendation order (see README "Extraction"):
+    #   1. tesseract  (default, local, no GPU, no network)
+    #   2. olmocr     (local 7B VLM, GPU recommended) — install via
+    #                 the `extraction-vlm` extra below.
+    #   3. cloud VLMs (Claude / OpenAI / generic HTTP) — last resort,
+    #                 per-case opt-in required.
+    "docling>=2",
+    "trafilatura>=1.10",
+    "playwright>=1.40",
+    "pdf2image>=1.17",
+    "pytesseract>=0.3.10",
+    "Pillow>=10",
+]
+extraction-vlm = [
+    # Local 7B VLM fallback for severely garbled PDF pages. Stays
+    # entirely on the user's machine; recommended over cloud VLMs
+    # whenever evidence is sensitive (medical, financial, etc.).
+    # GPU recommended; CPU-only inference is slow but functional.
+    "olmocr>=0.1",
+]
+extraction-cloud-openai = [
+    # OpenAI vision (gpt-4o family) provider for tier-2 PDF VLM.
+    # Sends raw page images to the OpenAI API; per-case consent
+    # required (see scripts/extraction/consent.py).
+    "openai>=1.30",
+]
 
 [project.urls]
 Homepage = "https://github.com/EvanOchsner/personal-advocacy-toolkit"

@@ -33,6 +33,8 @@ CASE_DIRS = [
     "references/raw",
     "references/structured",
     "references/readable",
+    "extraction/overrides",
+    "extraction/scripts",
     "drafts",
     "complaint_packet/exhibits",
     "complaint_packet/appendix",

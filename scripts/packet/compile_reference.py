@@ -36,10 +36,10 @@ import sys
 import tempfile
 from pathlib import Path
 
-from scripts.ingest._pdf import (
+from scripts.extraction.extractors.pdf_tier0_pypdf import (
     extract_text as _pdf_extract_text,
-    ocr_pdf as _ingest_ocr_pdf,
-    pdf_has_text_layer as _ingest_pdf_has_text_layer,
+    ocr_pdf as _cascade_ocr_pdf,
+    pdf_has_text_layer as _cascade_pdf_has_text_layer,
 )
 
 from ._convert import to_pdf
@@ -69,17 +69,16 @@ FIDELITY_CHARS_PER_PAGE_FLOOR = 200
 
 
 def _pdf_has_text_layer(pdf: Path) -> bool:
-    """Backwards-compatible alias for `scripts.ingest._pdf.pdf_has_text_layer`."""
-    return _ingest_pdf_has_text_layer(pdf)
+    """Local alias to keep this module's call sites short."""
+    return _cascade_pdf_has_text_layer(pdf)
 
 
 def _ocr_pdf(src: Path, workdir: Path) -> Path:
-    """Backwards-compatible alias for `scripts.ingest._pdf.ocr_pdf`.
+    """Wrap the cascade's tier-0 OCR helper to drop the ``ocr_applied`` flag.
 
-    Returns just the path (drops the ocr_applied flag) to preserve the
-    original signature used elsewhere in this module.
+    Compile-reference's call sites just need the (possibly-OCRed) path.
     """
-    out, _ = _ingest_ocr_pdf(src, workdir)
+    out, _ = _cascade_ocr_pdf(src, workdir)
     return out
 
 

@@ -46,7 +46,8 @@ Creates a forensic audit trail a regulator or attorney can verify without trusti
 - **Pre-commit immutability hook** ([`scripts/hooks/pre_commit.py`](scripts/hooks/pre_commit.py)) — refuses git commits that modify or delete files under the protected `evidence/` path.
 - **xattr / provenance snapshots** ([`scripts/provenance_snapshot.py`](scripts/provenance_snapshot.py)) — captures `kMDItemWhereFroms` download URLs and quarantine timestamps that git does not track.
 - **Unified provenance report** ([`scripts/provenance.py`](scripts/provenance.py)) — joins the manifest, xattr snapshot, git history, and pipeline-metadata sidecars into a single JSON document a reviewer can skim.
-- **Bulk ingest pipelines** ([`scripts/ingest/`](scripts/ingest/)) — emails (EML / mbox), SMS, voicemail metadata, screenshots, medical EOBs. PDFs and HTML get OCR / plaintext extraction so adversaries can't hide behind unsearchable formats. Every ingester lands originals plus a machine-searchable plaintext copy under the same audit trail.
+- **Layered extraction cascade** ([`scripts/extraction/`](scripts/extraction/)) — converts PDFs, HTML, emails, and images into searchable plaintext via a tiered fallback (stdlib → Docling / Trafilatura → local VLM → Tesseract backstop) with garble detection per page. Every extracted document gets a per-source reproducibility script under `<case>/extraction/scripts/extract_<source_id>.py` so any reviewer can re-run the exact recipe (settings, overrides, provider) and assert byte-identical output.
+- **Single-format ingest pipelines** ([`scripts/ingest/`](scripts/ingest/)) — SMS / iMessage exports, voicemail metadata, medical EOBs, screenshots of live URLs, mailbox splits. These wrap format-specific oddities the cascade isn't responsible for.
 
 ### 2. Analysis with anti-hallucination guard rails
 
@@ -174,15 +175,48 @@ tests/         pytest suite; fixtures derived from the synthetic case
 Install [uv](https://docs.astral.sh/uv/getting-started/installation/) first, then:
 
 ```sh
-uv sync                                 # core runtime
+uv sync                                 # core runtime (tier-0 extraction works out of the box)
 uv sync --extra dev                     # pytest + ruff
 uv sync --extra publish                 # Pillow, pypdf, reportlab for scrubbers
 uv sync --extra synthetic-case          # Pillow, python-docx for regenerating the example
+uv sync --extra extraction              # Docling, Trafilatura, Playwright, Tesseract for tier-1+
+uv sync --extra extraction-vlm          # olmOCR — local 7B VLM for the hardest PDFs
+uv sync --extra extraction-cloud-openai # OpenAI vision provider (cloud — privacy trade-off)
+uv sync --extra llm                     # Anthropic SDK (also enables the `claude` VLM provider)
 ```
 
 Combine extras with multiple `--extra` flags. Every CLI invocation in the docs runs as `uv run python -m scripts...`; `uv run` resolves the project-managed virtualenv automatically, so there is nothing to activate.
 
-`git filter-repo` (for history sanitizing) is a separate binary; install via your package manager (`brew install git-filter-repo` on macOS).
+System binaries (graceful fallback when missing — extraction prints a hint):
+
+- `tesseract` — `brew install tesseract`
+- `chromium` — after `uv sync --extra extraction`, run `playwright install chromium`
+- `poppler` (provides `pdftoppm` for `pdf2image`) — `brew install poppler`
+- `ocrmypdf` — `brew install ocrmypdf` (used by tier-0 PDF for image-only inputs)
+- `git-filter-repo` (for history sanitizing) — `brew install git-filter-repo`
+
+## Extraction
+
+The `document-extraction` skill (and `python -m scripts.extraction`) runs a **layered cascade** that converts adversary-supplied PDFs, HTML, emails, and images into searchable plaintext — with **garble detection** at each tier so the cheap path can't silently lie about what's in a bezier-glyph PDF or a JS-rendered page.
+
+Tier ladder:
+
+| Tier | PDF                    | HTML                       | Image     | Email |
+|------|------------------------|----------------------------|-----------|-------|
+| 0    | `pypdf` + `ocrmypdf`   | stdlib `html.parser`       | —         | stdlib `email` |
+| 1    | Docling                | Trafilatura                | Tesseract | (single tier) |
+| 2    | VLM provider (per page)| Playwright + Trafilatura   | —         | — |
+| 3    | Tesseract backstop     | —                          | —         | — |
+
+Tier 2 routes garbled PDF pages to a VLM provider. **Pick providers in this recommended order:**
+
+1. **`tesseract`** — local OCR, no GPU, no network. **Default.** Adequate for most documents.
+2. **`olmocr`** — local 7B VLM, GPU recommended. **When tesseract isn't enough AND privacy matters.** Stays on the user's machine.
+3. **`claude` / `openai` / `http`** — cloud VLMs. **Last resort.** Powerful but page images leave the machine; the cascade prompts for per-case consent and records the answer in `<case>/extraction/vlm-consent.yaml`. The `going-public` skill reads that file before publication so externally-processed pages can be re-extracted locally for the public copy.
+
+**Privacy callout.** Raw evidence pages frequently contain SSNs, medical info, account numbers, and other sensitive content. PII scrubbing runs *after* extraction by design. So if you point the cascade at a cloud VLM, the unscrubbed page images go to that vendor before any redaction. Default to local providers; only opt into cloud VLMs when you've consciously accepted the trade-off.
+
+Every extraction writes a per-source reproducibility script under `<case>/extraction/scripts/extract_<source_id>.py` that re-runs the cascade with the recorded recipe and asserts byte-identical output. A regulator or attorney's expert can run it cold to verify the chain.
 
 ## What this isn't
 

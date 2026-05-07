@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Advocacy Toolkit</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #f8f8f6;
+      --surface:  #ffffff;
+      --border:   #e2e2dc;
+      --text:     #1a1a18;
+      --muted:    #5c5c56;
+      --accent:   #1a5fa8;
+      --accent-h: #0f3f72;
+      font-size: 16px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:      #161614;
+        --surface: #1f1f1d;
+        --border:  #303030;
+        --text:    #e8e8e4;
+        --muted:   #888880;
+        --accent:  #5b9fdb;
+        --accent-h:#7fb8ef;
+      }
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    main { flex: 1; padding: 3rem 1.25rem 4rem; }
+    .wrap { max-width: 720px; margin: 0 auto; text-align: center; }
+
+    .logo {
+      max-width: 260px;
+      width: 100%;
+      height: auto;
+      margin: 0 auto 1.75rem;
+      display: block;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 5vw, 2.4rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .tagline {
+      font-size: 1.05rem;
+      color: var(--muted);
+      font-style: italic;
+      max-width: 56ch;
+      margin: 0 auto 2.5rem;
+    }
+
+    .lede {
+      text-align: left;
+      font-size: 1rem;
+      color: var(--text);
+      max-width: 60ch;
+      margin: 0 auto 2.5rem;
+    }
+    .lede p { margin-bottom: 1rem; }
+    .lede p:last-child { margin-bottom: 0; }
+
+    .cta {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      text-decoration: none;
+      padding: 0.85rem 1.6rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.15s;
+      margin-bottom: 0.75rem;
+    }
+    .cta:hover { background: var(--accent-h); }
+
+    .secondary {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .secondary a { color: var(--accent); text-decoration: none; }
+    .secondary a:hover { text-decoration: underline; }
+
+    /* ── footer ── */
+    footer {
+      padding: 1.25rem 1.25rem 2rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    footer .wrap {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 720px;
+    }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+
+<main>
+<div class="wrap">
+
+  <img src="pat-logo.png" alt="PAT logo" class="logo">
+
+  <h1>Personal Advocacy Toolkit</h1>
+  <p class="tagline">Do the legwork so whoever helps you can actually help you.</p>
+
+  <div class="lede">
+    <p>An AI toolkit for non-technical people in a fact-heavy dispute &mdash; bad-faith insurance claims, surprise medical bills, harassment campaigns, retaliating landlords, debt collectors who won't follow the rules.</p>
+    <p>PAT does the legwork: evidence intake with forensic integrity, situation-specific reference material, drafting tools with anti-hallucination guard rails, and a publication-safety pipeline. The output is something an attorney, regulator, or journalist can act on.</p>
+  </div>
+
+  <a href="https://github.com/EvanOchsner/personal-advocacy-toolkit" class="cta">View on GitHub →</a>
+
+  <p class="secondary">
+    Setup, usage, and full documentation live in the
+    <a href="https://github.com/EvanOchsner/personal-advocacy-toolkit#readme">README</a>.
+  </p>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="https://ochsner.dev">ochsner.dev</a>
+    <a href="https://github.com/EvanOchsner/personal-advocacy-toolkit">GitHub</a>
+    <a href="https://github.com/EvanOchsner/personal-advocacy-toolkit/blob/main/LICENSE">Apache 2.0</a>
+  </div>
+</footer>
+
+</body>
+</html>

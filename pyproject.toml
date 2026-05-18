@@ -104,10 +104,24 @@ extraction-cloud-openai = [
     # required (see scripts/extraction/consent.py).
     "openai>=1.30",
 ]
+benchmark = [
+    # Synthetic-gold PDF extraction benchmark from the sibling
+    # `pdf-plaintext-extraction` package. Ships clean + 6 poisoned
+    # variants per source text; ground-truth manifest + scoring
+    # primitives. Used by tests/extraction/test_benchmark.py to gate
+    # regressions in the cascade.
+    "pdf-plaintext-extraction>=0.1",
+]
 
 [project.urls]
 Homepage = "https://github.com/EvanOchsner/personal-advocacy-toolkit"
 Issues = "https://github.com/EvanOchsner/personal-advocacy-toolkit/issues"
+
+# Local sibling-checkout development source. Published wheels use the
+# version constraint above; this stanza is honored only by uv during
+# local dev sync. Drop or comment out to consume from PyPI.
+[tool.uv.sources]
+pdf-plaintext-extraction = { path = "../serff-extraction", editable = true }
 
 [tool.setuptools.packages.find]
 where = ["scripts"]

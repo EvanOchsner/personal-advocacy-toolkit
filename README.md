@@ -218,6 +218,19 @@ Tier 2 routes garbled PDF pages to a VLM provider. **Pick providers in this reco
 
 Every extraction writes a per-source reproducibility script under `<case>/extraction/scripts/extract_<source_id>.py` that re-runs the cascade with the recorded recipe and asserts byte-identical output. A regulator or attorney's expert can run it cold to verify the chain.
 
+### Benchmark (optional dev tooling)
+
+The cascade is exercised against a synthetic-gold corpus from the sibling `pdf-plaintext-extraction` package — three short Gutenberg excerpts × seven variants (clean + six poisoning techniques: character-spacing, homoglyph substitution, invisible-text overlay, metadata swap, rasterize, watermark). Each variant has a byte-exact ground truth, so the cascade can be regression-gated by token-F1 and normalized-edit-distance floors.
+
+Install the extra and run the test:
+
+```
+uv sync --extra extraction --extra benchmark --extra dev
+uv run pytest tests/extraction/test_benchmark.py -v
+```
+
+The corpus is materialized into the user cache dir (`platformdirs.user_cache_dir("pdf-plaintext-extraction")`) on first use; subsequent runs are idempotent. The benchmark is dev-only — base `uv sync` ignores it and the test module skips cleanly.
+
 ## What this isn't
 
 - **Not legal advice.** Nothing here tells you what to argue or predicts an outcome in your specific case. Every tool that emits a date, an authority, or a statute cite does so with a "verify with counsel" disclaimer.

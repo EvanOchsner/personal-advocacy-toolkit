@@ -70,7 +70,11 @@ def test_writer_produces_recipe_script_when_case_root_supplied(
 
     script = case_root / "extraction" / "scripts" / f"extract_{record['source_id']}.py"
     assert script.is_file()
-    assert script.stat().st_mode & 0o111  # executable bit set
+    if os.name != "nt":
+        # Windows doesn't carry POSIX exec bits in stat().st_mode; the
+        # chmod call in write_recipe is a no-op there. Reading the file
+        # is the strongest portable check.
+        assert script.stat().st_mode & 0o111  # executable bit set
 
 
 def test_writer_skips_recipe_script_without_case_root(

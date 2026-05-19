@@ -50,6 +50,11 @@ def main(argv: list[str] | None = None) -> int:
                     help="Refuse to prompt for VLM consent (for scripted runs).")
     ap.add_argument("--verbose", "-v", action="store_true",
                     help="Log tier transitions to stderr.")
+    ap.add_argument("--cross-check", action="store_true",
+                    help="Run tier-3 tesseract as a shadow extractor on every "
+                         "page and reconcile disagreements. Doubles wall time on "
+                         "clean PDFs. Recommended for high-stakes evidence where "
+                         "novel obfuscation may slip past garble detection.")
     ap.add_argument("--list-providers", action="store_true",
                     help="Print VLM provider availability and exit.")
     args = ap.parse_args(argv)
@@ -92,6 +97,7 @@ def main(argv: list[str] | None = None) -> int:
                 manifest_path=args.manifest,
                 manifest_kind=args.manifest_kind,
                 force=args.force,
+                cross_check=args.cross_check,
             )
         except FileExistsError as exc:
             print(str(exc), file=sys.stderr)

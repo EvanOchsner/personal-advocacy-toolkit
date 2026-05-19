@@ -40,18 +40,18 @@ FLOORS: dict[str, tuple[float, float]] = {
     "rasterize": (0.90, 0.10),
 }
 
-# Variants the cascade is known to fail on today. Removed as fixes
-# land in PR 3 (homoglyph). ``strict=True`` means an unexpected pass
-# also fails — so we don't silently leave the marker behind when the
-# cascade improves.
+# Variants the cascade is known to fail on today.
+# ``strict=True`` would mean an unexpected pass also fails — useful
+# for catching silent improvements. Empty for now: the english_token_ratio
+# signal in garble.py escalates homoglyph past tier 0, OCR reads the
+# visual Latin, and the variant joins the passing set.
 #
-# Note: ``rasterize`` looked broken in early serff benchmark runs
-# (pat-cascade F1=0), but with PAT's ``[extraction]`` extra installed
-# the cascade falls through to Docling, whose Rapid-OCR pipeline
-# recovers the text. The defect surfaces only when the `extraction`
-# extra is missing; that case is covered separately by Fix 1 in PR 2
-# (clear missing-extra error rather than silent failure).
-KNOWN_FAILURES = {"homoglyph"}
+# Historical: ``rasterize`` looked broken in early serff benchmark
+# runs (pat-cascade F1=0), but with PAT's ``[extraction]`` extra
+# installed the cascade falls through to Docling's rapid-OCR
+# pipeline and recovers the text. The defect surfaces only when the
+# `extraction` extra is missing.
+KNOWN_FAILURES: set[str] = set()
 
 
 @pytest.fixture(scope="session")

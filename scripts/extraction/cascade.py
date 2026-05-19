@@ -44,6 +44,12 @@ class CascadeContext:
     vlm_provider_name: str | None = None  # default: tesseract
     interactive: bool = True
     verbose: bool = False
+    # If True, after the cascade lands on a tier-0/1 result, also run
+    # tier-3 tesseract as a shadow extractor and reconcile per-page
+    # disagreements. Off by default — doubles extraction time on clean
+    # docs. Recommend for high-stakes evidence where novel obfuscation
+    # the existing garble signals don't catch is a real risk.
+    cross_check: bool = False
 
     def log(self, msg: str) -> None:
         if self.verbose:
@@ -200,7 +206,67 @@ def extract_pdf(ctx: CascadeContext) -> ExtractionResult:
         except Exception as exc:
             result.warnings.append(f"tier 3 (Tesseract) unavailable: {exc}")
 
+    if ctx.cross_check:
+        result = _cross_check_pdf(ctx, result)
+
     return _finalize(result, ovr)
+
+
+def _cross_check_pdf(
+    ctx: CascadeContext, result: ExtractionResult
+) -> ExtractionResult:
+    """Opt-in second pass: run tier-3 tesseract on every page and
+    reconcile against ``result``. Surfaces disagreements as warnings +
+    per-page notes."""
+    if result.page_results is None:
+        ctx.log("cross-check skipped: no per-page detail to reconcile")
+        return result
+    try:
+        from .extractors import pdf_tier3_tesseract
+        from . import reconcile as reconcile_mod
+    except Exception as exc:  # pragma: no cover — defensive
+        result.warnings.append(f"cross-check skipped: {exc}")
+        return result
+
+    try:
+        shadow = pdf_tier3_tesseract.extract(ctx.file)
+    except Exception as exc:
+        result.warnings.append(f"cross-check shadow extractor failed: {exc}")
+        return result
+
+    if not shadow.page_results:
+        result.warnings.append("cross-check shadow extractor returned no pages")
+        return result
+
+    reconciled, disagreements = reconcile_mod.reconcile_pages(
+        result.page_results, shadow.page_results
+    )
+
+    if disagreements:
+        affected = [d.page_number for d in disagreements]
+        result.warnings.append(
+            f"cross-check disagreement on pages {affected}; see page_results notes"
+        )
+        ctx.log(
+            f"cross-check flagged {len(disagreements)} page(s): "
+            + ", ".join(
+                f"p{d.page_number}(F1={d.f1:.2f}, winner={d.winner})"
+                for d in disagreements
+            )
+        )
+
+    return ExtractionResult(
+        text="\n\n".join(p.text.strip() for p in reconciled if p.text.strip()),
+        method=f"{result.method}+cross-check",
+        tier=result.tier,
+        settings={**result.settings, "cross_check": True},
+        warnings=list(result.warnings),
+        page_results=reconciled,
+        overrides_applied=dict(result.overrides_applied),
+        vlm_provider=result.vlm_provider,
+        title=result.title,
+        charset=result.charset,
+    )
 
 
 def extract_html(ctx: CascadeContext, raw_bytes: bytes | None = None) -> ExtractionResult:
@@ -287,8 +353,17 @@ def extract(
     vlm_provider: str | None = None,
     interactive: bool = True,
     verbose: bool = False,
+    cross_check: bool = False,
 ) -> ExtractionResult:
-    """Top-level entry point: classify by extension and run the cascade."""
+    """Top-level entry point: classify by extension and run the cascade.
+
+    ``cross_check`` (PDF-only): after the cascade lands on a result,
+    also run tier-3 tesseract as a shadow extractor on every page and
+    reconcile per-page disagreements via
+    :func:`scripts.extraction.reconcile.reconcile_pages`. Recommended
+    for high-stakes evidence where novel obfuscation may slip past
+    garble detection. Doubles wall time on clean documents.
+    """
     file = Path(file)
     ovr_path = override_path
     if ovr_path is None and case_root is not None:
@@ -302,6 +377,7 @@ def extract(
         vlm_provider_name=vlm_provider,
         interactive=interactive,
         verbose=verbose,
+        cross_check=cross_check,
     )
     kind = _classify(file)
     if kind == "pdf":

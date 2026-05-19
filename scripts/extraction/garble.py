@@ -12,6 +12,7 @@ where the defaults misfire (e.g. a deliberately short cover page).
 from __future__ import annotations
 
 import re
+import unicodedata
 from dataclasses import dataclass, field
 
 # Pattern for the (cid:NNN) glyph fallback that pypdf emits when it
@@ -24,6 +25,11 @@ _REPLACEMENT_CHAR = "�"
 # A "word-like token" for the word-shape check.
 _WORD_RE = re.compile(r"[A-Za-z]{2,}")
 _TOKEN_RE = re.compile(r"\S+")
+# Per-codepoint ASCII Latin gate for the english_token_ratio check.
+_LATIN_LETTER = re.compile(r"[A-Za-z]")
+# Punctuation we strip from token edges before scoring. Includes ASCII
+# punctuation + a few Unicode dashes that show up in real-world text.
+_TOKEN_EDGE_PUNCT = "\"'`.,;:!?()[]{}<>—–-_/\\|*&^%$#@~"
 
 
 # ---- Defaults ----------------------------------------------------------
@@ -33,6 +39,12 @@ DEFAULT_MIN_CHARS_DOC = 200
 DEFAULT_MAX_CID_RATIO = 0.02  # any nontrivial CID-glyph density is bad
 DEFAULT_MAX_NONPRINTABLE_RATIO = 0.05
 DEFAULT_MIN_WORD_SHAPE_RATIO = 0.40
+# Minimum fraction of word-like tokens whose letters are all ASCII
+# Latin (post-NFC). Trips homoglyph-substituted text: Cyrillic
+# lookalikes (а, е, о, р, с, х) survive NFC unchanged and fall outside
+# [A-Za-z], so even partial substitution lands well below this floor.
+# Tunable per-case in overrides.yaml.
+DEFAULT_MIN_ENGLISH_TOKEN_RATIO = 0.85
 # HTML-specific: tier 1 (Trafilatura) is considered "empty" if the
 # extracted text is < N chars while the raw bytes are > 10x that. This
 # is the JS-rendered-only signal.
@@ -51,6 +63,48 @@ class GarbleScore:
     cid_ratio: float = 0.0
     nonprintable_ratio: float = 0.0
     word_shape_ratio: float = 0.0
+    english_token_ratio: float = 1.0
+
+
+def english_token_ratio(text: str) -> float:
+    """Fraction of word-like tokens whose letters are all ASCII Latin.
+
+    A token *qualifies* if it contains at least one alphabetic
+    codepoint (so standalone numbers or pure punctuation are
+    excluded). It *passes* if every alphabetic codepoint in it lies
+    in ``[A-Za-z]``.
+
+    Returns 1.0 when no qualifying tokens exist — i.e. the signal is
+    silent on degenerate input. Returns 0.0 when qualifying tokens
+    exist but none of them are pure Latin (heavy homoglyph
+    substitution, or genuine non-English text). Catches the homoglyph
+    case where the *first* Latin run inside a token still matches
+    ``[A-Za-z]{2,}`` (so word_shape_ratio doesn't fire) but the token
+    as a whole is mixed-script.
+    """
+    nfc = unicodedata.normalize("NFC", text)
+    qualifying = 0
+    pure_latin = 0
+    for raw in _TOKEN_RE.findall(nfc):
+        stripped = raw.strip(_TOKEN_EDGE_PUNCT)
+        if not stripped:
+            continue
+        has_letter = False
+        has_non_latin_letter = False
+        for ch in stripped:
+            if ch.isalpha():
+                has_letter = True
+                if not _LATIN_LETTER.match(ch):
+                    has_non_latin_letter = True
+                    break
+        if not has_letter:
+            continue
+        qualifying += 1
+        if not has_non_latin_letter:
+            pure_latin += 1
+    if qualifying == 0:
+        return 1.0
+    return pure_latin / qualifying
 
 
 def score_text(
@@ -62,6 +116,7 @@ def score_text(
     max_cid_ratio: float = DEFAULT_MAX_CID_RATIO,
     max_nonprintable_ratio: float = DEFAULT_MAX_NONPRINTABLE_RATIO,
     min_word_shape_ratio: float = DEFAULT_MIN_WORD_SHAPE_RATIO,
+    min_english_token_ratio: float = DEFAULT_MIN_ENGLISH_TOKEN_RATIO,
 ) -> GarbleScore:
     """Score `text` for "did the cheap extractor lie to us?".
 
@@ -113,6 +168,20 @@ def score_text(
             score.reasons.append(
                 f"word-shape ratio {score.word_shape_ratio:.3f} < {min_word_shape_ratio:.3f}"
             )
+
+    # English-token ratio: catches semantic-level corruption
+    # (homoglyph substitution) where the extracted bytes look fine to
+    # every other signal but words contain Cyrillic / Greek lookalike
+    # letters. The right escalation when this fires is OCR (tier 2 or
+    # 3), NOT another text-layer extractor — Docling reads the same
+    # glyph stream and produces the same homoglyphed output.
+    score.english_token_ratio = english_token_ratio(text)
+    if score.english_token_ratio < min_english_token_ratio:
+        score.garbled = True
+        score.reasons.append(
+            f"english-token ratio {score.english_token_ratio:.3f} < "
+            f"{min_english_token_ratio:.3f} (homoglyph signal — escalate to OCR)"
+        )
 
     # Char-count floors.
     if pages is not None and pages > 0:

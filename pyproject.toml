@@ -117,11 +117,16 @@ benchmark = [
 Homepage = "https://github.com/EvanOchsner/personal-advocacy-toolkit"
 Issues = "https://github.com/EvanOchsner/personal-advocacy-toolkit/issues"
 
-# Local sibling-checkout development source. Published wheels use the
-# version constraint above; this stanza is honored only by uv during
-# local dev sync. Drop or comment out to consume from PyPI.
+# Source override for the benchmark extra. pdf-plaintext-extraction
+# isn't on PyPI yet, so point uv at the GitHub repo so CI runners can
+# resolve. Local dev can override with a path source in a personal
+# uv.toml (not committed) — e.g.:
+#   [sources]
+#   pdf-plaintext-extraction = { path = "../serff-extraction", editable = true }
+# After serff publishes a tagged release to PyPI, drop this stanza and
+# the version pin in [project.optional-dependencies] suffices.
 [tool.uv.sources]
-pdf-plaintext-extraction = { path = "../serff-extraction", editable = true }
+pdf-plaintext-extraction = { git = "https://github.com/EvanOchsner/pdf-plaintext-extraction", branch = "main" }
 
 [tool.setuptools.packages.find]
 where = ["scripts"]

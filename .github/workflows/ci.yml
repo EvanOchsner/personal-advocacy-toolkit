@@ -64,8 +64,7 @@ jobs:
           uv run python -m scripts.evidence_hash --help
           uv run python -m scripts.provenance --help
           uv run python -m scripts.provenance_snapshot --help
-          uv run python -m scripts.ingest.email_eml_to_json --help
-          uv run python -m scripts.ingest.email_json_to_txt --help
+          uv run python -m scripts.extraction --help
           uv run python -m scripts.ingest.mbox_split --help
           uv run python -m scripts.manifest.correspondence_manifest --help
           uv run python -m scripts.intake.situation_classify --help || true

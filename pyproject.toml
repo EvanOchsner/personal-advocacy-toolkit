@@ -104,10 +104,29 @@ extraction-cloud-openai = [
     # required (see scripts/extraction/consent.py).
     "openai>=1.30",
 ]
+benchmark = [
+    # Synthetic-gold PDF extraction benchmark from the sibling
+    # `pdf-plaintext-extraction` package. Ships clean + 6 poisoned
+    # variants per source text; ground-truth manifest + scoring
+    # primitives. Used by tests/extraction/test_benchmark.py to gate
+    # regressions in the cascade.
+    "pdf-plaintext-extraction>=0.1",
+]
 
 [project.urls]
 Homepage = "https://github.com/EvanOchsner/personal-advocacy-toolkit"
 Issues = "https://github.com/EvanOchsner/personal-advocacy-toolkit/issues"
+
+# Source override for the benchmark extra. pdf-plaintext-extraction
+# isn't on PyPI yet, so point uv at the GitHub repo so CI runners can
+# resolve. Local dev can override with a path source in a personal
+# uv.toml (not committed) — e.g.:
+#   [sources]
+#   pdf-plaintext-extraction = { path = "../serff-extraction", editable = true }
+# After serff publishes a tagged release to PyPI, drop this stanza and
+# the version pin in [project.optional-dependencies] suffices.
+[tool.uv.sources]
+pdf-plaintext-extraction = { git = "https://github.com/EvanOchsner/pdf-plaintext-extraction", branch = "main" }
 
 [tool.setuptools.packages.find]
 where = ["scripts"]

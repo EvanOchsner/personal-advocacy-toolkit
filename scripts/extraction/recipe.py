@@ -42,16 +42,10 @@ def recipe_dict(
     return {
         "schema": "pat-extraction-recipe/1",
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "case_root": str(case_root),
-        "source_file_relative": str(source_file.resolve().relative_to(case_root))
-        if str(source_file.resolve()).startswith(str(case_root))
-        else str(source_file.resolve()),
-        "structured_path_relative": str(structured_path.resolve().relative_to(case_root))
-        if str(structured_path.resolve()).startswith(str(case_root))
-        else str(structured_path.resolve()),
-        "readable_path_relative": str(readable_path.resolve().relative_to(case_root))
-        if str(readable_path.resolve()).startswith(str(case_root))
-        else str(readable_path.resolve()),
+        "case_root": case_root.as_posix(),
+        "source_file_relative": _relative_posix(source_file, case_root),
+        "structured_path_relative": _relative_posix(structured_path, case_root),
+        "readable_path_relative": _relative_posix(readable_path, case_root),
         "method": result.method,
         "tier": result.tier,
         "vlm_provider": result.vlm_provider,
@@ -112,10 +106,10 @@ def _render(
     auditable and the template self-contained.
     """
     substitutions = {
-        "source_file": str(source_file),
-        "structured_path": str(structured_path),
-        "readable_path": str(readable_path),
-        "case_root": str(case_root),
+        "source_file": Path(source_file).as_posix(),
+        "structured_path": Path(structured_path).as_posix(),
+        "readable_path": Path(readable_path).as_posix(),
+        "case_root": Path(case_root).as_posix(),
         "generated_at": recipe["generated_at"],
         "recipe_json": json.dumps(recipe, indent=4, sort_keys=True),
     }
@@ -123,6 +117,14 @@ def _render(
     for key, value in substitutions.items():
         out = out.replace("{{ " + key + " }}", str(value))
     return out
+
+
+def _relative_posix(p: Path, case_root: Path) -> str:
+    resolved = p.resolve()
+    try:
+        return resolved.relative_to(case_root).as_posix()
+    except ValueError:
+        return resolved.as_posix()
 
 
 def _scrub_unserializable(value: Any) -> Any:

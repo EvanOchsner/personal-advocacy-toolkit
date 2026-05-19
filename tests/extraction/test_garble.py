@@ -10,7 +10,9 @@ from __future__ import annotations
 from scripts.extraction.garble import (
     DEFAULT_MAX_CID_RATIO,
     DEFAULT_MIN_CHARS_PER_PAGE,
+    DEFAULT_MIN_ENGLISH_TOKEN_RATIO,
     GarbleScore,
+    english_token_ratio,
     html_extract_is_empty,
     score_text,
 )
@@ -126,6 +128,74 @@ def test_html_extract_is_not_empty_when_raw_is_small() -> None:
     assert not html_extract_is_empty(extracted_chars=180, raw_bytes_len=200)
 
 
+# ---- english_token_ratio (homoglyph signal) ---------------------------
+
+def test_english_token_ratio_pure_latin_is_one() -> None:
+    text = "the quick brown fox jumps over the lazy dog"
+    assert english_token_ratio(text) == 1.0
+
+
+def test_english_token_ratio_pure_cyrillic_is_zero() -> None:
+    # Pure Cyrillic — qualifying tokens exist, none are pure Latin.
+    text = "съешь ещё этих мягких французских булок"
+    assert english_token_ratio(text) == 0.0
+
+
+def test_english_token_ratio_empty_input_returns_one() -> None:
+    # Degenerate input — signal silent, not a false positive.
+    assert english_token_ratio("") == 1.0
+    assert english_token_ratio("12345 !@#$%") == 1.0
+
+
+def test_english_token_ratio_drops_with_homoglyph_substitution() -> None:
+    # Replace every third 'a/e/o' with its Cyrillic lookalike.
+    # The visible glyphs look identical but bytes differ.
+    pure = "agreed value of the vehicle at policy inception"
+    homo = "аgreed vаlue оf the vehicle аt pоlicy inceptiоn"  # noqa: RUF001
+    assert english_token_ratio(pure) == 1.0
+    ratio = english_token_ratio(homo)
+    assert ratio < 0.85, ratio  # crosses the default escalation threshold
+
+
+def test_english_token_ratio_ignores_pure_numbers_and_punctuation() -> None:
+    # Tokens with no letters at all don't count as qualifying — so a
+    # document of "1.23 4.56 7.89" returns the silent-default 1.0.
+    text = "1.23 4.56 7.89 !!! ???"
+    assert english_token_ratio(text) == 1.0
+
+
+def test_homoglyph_text_trips_score_text_garble() -> None:
+    # End-to-end: score_text returns garbled=True with a homoglyph
+    # reason when english_token_ratio drops below the default.
+    homo_blob = (
+        "Thе аgreed vаlue endorsement оn this pоlicy wаs аcknоwledged "
+        "аt pоlicy inceptiоn. The insurеr's vendоr's lаter vаluation "
+        "dоes nоt оverride the schedule оf vаlue аbsent frаud."
+    )  # noqa: RUF001
+    score = score_text(homo_blob, pages=1, min_chars_per_page=1)
+    assert score.garbled, score.reasons
+    assert any("english-token" in r for r in score.reasons)
+
+
+def test_threshold_override_can_relax_english_token_ratio() -> None:
+    # A user with a deliberately multilingual document can relax the
+    # default via the threshold-override surface.
+    homo = "Thе аgreed vаlue"  # noqa: RUF001
+    relaxed = score_text(
+        homo,
+        pages=1,
+        min_chars_per_page=1,
+        min_english_token_ratio=0.0,
+    )
+    assert not any("english-token" in r for r in relaxed.reasons)
+
+
+def test_english_token_ratio_default_is_85_percent() -> None:
+    # Anchor the default — if someone bumps this they should also
+    # update the benchmark floor in test_benchmark.py.
+    assert DEFAULT_MIN_ENGLISH_TOKEN_RATIO == 0.85
+
+
 # ---- Diagnostic fields exposed for the recipe -------------------------
 
 def test_garble_score_exposes_diagnostics() -> None:
@@ -136,3 +206,4 @@ def test_garble_score_exposes_diagnostics() -> None:
     assert 0.0 <= score.cid_ratio <= 1.0
     assert 0.0 <= score.nonprintable_ratio <= 1.0
     assert 0.0 <= score.word_shape_ratio <= 1.0
+    assert 0.0 <= score.english_token_ratio <= 1.0

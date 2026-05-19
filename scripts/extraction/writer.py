@@ -66,6 +66,7 @@ def write_three_layer(
     manifest_path: Path | None = None,
     manifest_kind: str | None = None,
     force: bool = False,
+    cross_check: bool = False,
 ) -> dict[str, Any]:
     """Run the cascade and write raw/structured/readable + (optional) recipe.
 
@@ -96,6 +97,7 @@ def write_three_layer(
         vlm_provider=vlm_provider,
         interactive=interactive,
         verbose=verbose,
+        cross_check=cross_check,
     )
 
     readable_path = readable_dir / f"{source_id}.txt"

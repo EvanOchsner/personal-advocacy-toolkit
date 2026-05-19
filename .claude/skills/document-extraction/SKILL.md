@@ -33,6 +33,28 @@ The cascade tries cheap → expensive, runs garble detection at each
 tier, and only re-extracts the *garbled pages* (PDF) or the document
 (HTML) at the next tier. Email is single-tier — stdlib is enough.
 
+### Garble signals (what trips escalation)
+
+Per-page (PDF) or per-document (HTML), tier 0 text is scored by
+deterministic heuristics in `scripts/extraction/garble.py`:
+
+- **CID-glyph density** — `(cid:NNN)` markers in the output mean
+  subset-font fallback. Escalate to a VLM.
+- **Replacement-char / non-printable ratio** — charset failure.
+- **Word-shape ratio** — random-letter blobs from bezier-glyph PDFs.
+- **English-token ratio** — fraction of word-like tokens that are
+  pure ASCII Latin after NFC normalization. Catches **homoglyph
+  substitution** (Cyrillic а/е/о/р/с/х masquerading as Latin) which
+  defeats every other signal because the bytes look word-shaped and
+  CID-clean.
+- **Char-count floors** — too little extracted text per page.
+
+When `english_token_ratio` fires, the right escalation is **OCR**
+(tier 2 with the `tesseract` VLM provider, or tier 3 backstop) —
+*not* Docling (tier 1). Docling reads the same text-layer bytes and
+produces the same homoglyphed output. The cascade already gets this
+right; mention it in case the user asks why tier 1 isn't being tried.
+
 ## Provider recommendation order — **load-bearing**
 
 When tier 2 fires for a PDF (any page failed tier-0 and tier-1
@@ -95,10 +117,28 @@ local provider for the public copy.
    - `evidence/<type>/readable/<source_id>.txt` (plaintext)
    - `<case>/extraction/scripts/extract_<source_id>.py` (reproducibility script)
 
+   **For high-stakes evidence** (anything going into a packet bound
+   for a regulator, attorney, or court), add `--cross-check`:
+
+   ```sh
+   uv run python -m scripts.extraction <file> --out-dir <dir> --case-root . --cross-check
+   ```
+
+   The cross-check runs tier-3 tesseract as a *shadow* extractor on
+   every page and reconciles per-page disagreements. Doubles wall
+   time on clean PDFs but catches novel obfuscation the existing
+   garble signals don't recognize. When pages disagree, the higher-
+   quality candidate wins and the disagreement is recorded in
+   `structured/<source_id>.json` under `extraction.page_results[].notes`
+   plus a summary line in `extraction.warnings`. Surface those to the
+   user before passing the text downstream.
+
 3. **Inspect the result.** The structured JSON's `extraction.tier`
    field tells you which tier won. If you see `tier: 0`, the cheap
    path was good. If `tier: 2` or `tier: 3`, something was hard about
    this document — note which pages were garbled (`extraction.page_results`).
+   Also scan `extraction.warnings` for cross-check disagreement
+   messages.
 
 4. **If the result is wrong**, write or edit
    `<case>/extraction/overrides/<source_id>.yaml`:

@@ -168,10 +168,15 @@ def test_cascade_meets_floor(case):
     )
 
 
+@pytest.mark.skipif(
+    not BENCHMARK_FULL,
+    reason="informational baseline — runs only with PAT_BENCHMARK_FULL=1",
+)
 def test_no_silent_regressions(cases):
     """Record the full F1/NED matrix to a gitignored baseline file.
-    Informational only — not a gate. Useful for diffing across cascade
-    changes."""
+    Informational only — not a gate. It re-extracts the whole matrix,
+    so it runs only in full mode (``PAT_BENCHMARK_FULL=1``); the
+    default pre-push run skips it to stay fast."""
     from pathlib import Path
 
     rows = []

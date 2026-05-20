@@ -74,7 +74,18 @@
       margin: 0 auto 2.5rem;
     }
     .lede p { margin-bottom: 1rem; }
-    .lede p:last-child { margin-bottom: 0; }
+    .lede > :last-child { margin-bottom: 0; }
+
+    .steps {
+      margin: 0 0 1rem;
+      padding-left: 1.5rem;
+    }
+    .steps li {
+      margin-bottom: 0.6rem;
+      color: var(--muted);
+    }
+    .steps li:last-child { margin-bottom: 0; }
+    .steps strong { color: var(--text); }
 
     .cta {
       display: inline-block;
@@ -126,8 +137,17 @@
   <p class="tagline">Do the legwork so whoever helps you can actually help you.</p>
 
   <div class="lede">
-    <p>An AI toolkit for non-technical people in a fact-heavy dispute &mdash; bad-faith insurance claims, surprise medical bills, harassment campaigns, retaliating landlords, debt collectors who won't follow the rules.</p>
-    <p>PAT does the legwork: evidence intake with forensic integrity, situation-specific reference material, drafting tools with anti-hallucination guard rails, and a publication-safety pipeline. The output is something an attorney, regulator, or journalist can act on.</p>
+    <p>You have a situation &mdash; a bad-faith insurance claim, a surprise medical bill, a harassment campaign, a landlord trying to retaliate, a debt collector who won't follow the rules, a scam that took your money. There are people whose job it is to help &mdash; regulators, consumer-protection advocates, attorneys, journalists &mdash; but they can only help if you hand them something they can act on.</p>
+    <p>Working through a dispute &mdash; whatever it's about &mdash; tends to follow the same arc:</p>
+    <ol class="steps">
+      <li><strong>What's happening?</strong> Gather information. Learn how the process is <em>supposed</em> to work &mdash; and what you and the other side are each supposed to do.</li>
+      <li><strong>What's the conflict?</strong> Identify who you're up against, and pin down the core disagreement.</li>
+      <li><strong>What are the facts?</strong> Who said and did what, and when? Collect, preserve, and organize every piece of evidence &mdash; emails, texts, call records, photos, documents, bills, your own notes &mdash; and be able to prove none of it was altered after the fact. Build a timeline, ground every claim in something on the record, and note who your witnesses are.</li>
+      <li><strong>What are the rules?</strong> Which laws, regulations, and codes apply? Who decides the outcome &mdash; a court, a regulator, an arbiter &mdash; and how does this kind of dispute usually get resolved? Who can help you, and what will you need to prove to them?</li>
+      <li><strong>What should you do?</strong> Set the anger aside and weigh the other side's perspective honestly. Decide what a just outcome looks like &mdash; and revisit it as you learn more. Then measure it against what's actually attainable: a real cost/benefit look at your options.</li>
+      <li><strong>Write it.</strong> Demand letters, complaints, regulator filings &mdash; the documents that put your case in front of someone who can act on it.</li>
+    </ol>
+    <p>PAT does the legwork at every step: evidence intake with forensic integrity, situation-specific reference material, drafting tools with anti-hallucination guard rails, and a publication-safety pipeline. The output is something an attorney, regulator, or journalist can act on.</p>
   </div>
 
   <a href="https://github.com/EvanOchsner/personal-advocacy-toolkit" class="cta">View on GitHub →</a>

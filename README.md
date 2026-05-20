@@ -29,7 +29,16 @@ Suggested path: docs/img/case-map-app.png  (~1600px wide, PNG).
 
 You have a situation — a bad-faith insurance claim, a surprise medical bill, a harassment campaign, a landlord trying to retaliate, a debt collector who won't follow the rules, a scam that took your money. There are people and offices whose job it is to help: state regulators, consumer-protection advocates, attorneys, journalists. They can only help you if you hand them something they can act on.
 
-PAT does the legwork — evidence intake with forensic integrity, situation-specific reference material, drafting tools with anti-hallucination guard rails, and a publication-safety pipeline — so the person who helps you can spend their time on your case instead of cleaning up your file.
+Working through a dispute — whatever it's about — tends to follow the same arc:
+
+1. **What's happening?** Gather information. Learn how the process is *supposed* to work — and what you and the other side are each supposed to do.
+2. **What's the conflict?** Identify who you're up against, and pin down the core disagreement.
+3. **What are the facts?** Who said and did what, and when? Collect, preserve, and organize every piece of evidence — emails, texts, call records, photos, documents, bills, your own notes — and be able to prove none of it was altered after the fact. Build a timeline, ground every claim in something on the record, and note who your witnesses are.
+4. **What are the rules?** Which laws, regulations, and codes apply? Who decides the outcome — a court, a regulator, an arbiter — and how does this kind of dispute usually get resolved? Who can help you (a lawyer, a regulator, an advocate, a knowledgeable friend), and what will you need to prove to them?
+5. **What should you do?** Set the anger aside and weigh the other side's perspective honestly. Decide what a just outcome looks like — and revisit it as you learn more. Then measure it against what's actually attainable: a real cost/benefit look at your options.
+6. **Write it.** Demand letters, complaints, regulator filings — the documents that put your case in front of someone who can act on it.
+
+PAT does the legwork at every step — evidence intake with forensic integrity, situation-specific reference material, drafting tools with anti-hallucination guard rails, and a publication-safety pipeline — so the person who helps you can spend their time on your case instead of cleaning up your file.
 
 > **Do the legwork so whoever helps you can actually help you.**
 
@@ -106,8 +115,9 @@ The one-command demo against the fully synthetic Maryland Mustang example (nothi
 
 ```sh
 # Copies the synthetic example and runs the full pipeline
-# (hash, ingest, classify, authorities, deadlines, packet,
-# letters, PII scrub).
+# (hash, provenance snapshot, extraction, classify, authorities,
+# deadlines, evidence manifest, dashboard, packet, demand letter,
+# PII scrub).
 uv run python -m scripts.demo
 ```
 
@@ -115,7 +125,7 @@ Or run individual tools against the in-repo example:
 
 ```sh
 # Launch the local case-map app (127.0.0.1 only).
-uv run python -m scripts.app --case examples/maryland-mustang
+uv run python -m scripts.app --case-dir examples/maryland-mustang
 
 # Hash the evidence tree.
 uv run python -m scripts.evidence_hash \
@@ -132,10 +142,10 @@ For the step-by-step walkthrough, see [`examples/maryland-mustang/WALKTHROUGH.md
 ### Start your own case (either path)
 
 ```sh
-uv run python -m scripts.init_case --output ~/cases/my-case
+uv run python -m scripts.init_case --output ~/cases/my-case --git
 ```
 
-This creates the full directory structure, copies starter templates, and runs an interactive intake questionnaire. From there, either point your assistant at the new workspace (BYOA) or follow the tutorials yourself (CLI). See [`docs/tutorials/01-setting-up-your-case.md`](docs/tutorials/01-setting-up-your-case.md) for details.
+This creates the full directory structure, copies starter templates, and runs an interactive intake questionnaire. `--git` also initializes a git repo and installs the evidence-immutability pre-commit hook — recommended for any real case. From there, either point your assistant at the new workspace (BYOA) or follow the tutorials yourself (CLI). See [`docs/tutorials/01-setting-up-your-case.md`](docs/tutorials/01-setting-up-your-case.md) for details.
 
 ## Situations it fits
 
@@ -155,13 +165,15 @@ The framework generalizes further. See [`docs/playbooks/`](docs/playbooks/) for 
 
 ```
 scripts/       CLI tools (demo, init_case, evidence_hash, provenance,
-               ingest, intake, packet, publish, letters, status,
-               hooks, app)
+               extraction, ingest, intake, references, manifest,
+               packet, publish, letters, status, hooks, app)
 .claude/skills/  Portable assistant skills (case intake, situation
-                 triage, provenance review, packet building, PII scrub,
-                 tone-modes, going-public checks, docx-comment-roundtrip,
-                 plus the pat-workflow orchestrator); auto-discovered
-                 by Claude Code, readable by any shell-having agent
+                 triage, authorities lookup, evidence intake, document
+                 extraction, provenance, packet building, PII scrub,
+                 going-public, trusted-sources, tone-modes,
+                 docx-comment-roundtrip, plus the pat-workflow
+                 orchestrator); auto-discovered by Claude Code, readable
+                 by any shell-having agent
 data/          Community-maintainable reference data (authorities by
                jurisdiction, deadline tables, situation types)
 templates/     Case-intake, letter, and packet-manifest templates
@@ -266,6 +278,7 @@ If you work on legal aid, civic tech, AI safety / alignment, legal informatics, 
 - [`pii-and-publication.md`](docs/concepts/pii-and-publication.md) — the four-leakage model (text, DOCX metadata, image EXIF, git history) and the verification pass each scrubber ships.
 - [`tone-modes.md`](docs/concepts/tone-modes.md) — lawyer mode vs casual mode; the read-aloud test; the "scripts as scaffolds, not oracles" rule.
 - [`authorities-and-regulators.md`](docs/concepts/authorities-and-regulators.md) — the "who cares about this?" map: regulators, ombuds, state AGs, federal backstops, by jurisdiction and situation type.
+- [`trusted-sources.md`](docs/concepts/trusted-sources.md) — acquiring authoritative reference text (statutes, regulations, official policies, terms of service) with provenance; the three independent acquisition paths and how user-supplied copies get vetted.
 - [`correspondence-manifest-schema.md`](docs/concepts/correspondence-manifest-schema.md) — the per-message metadata shape used to track exhibits, threads, and matched-rule provenance.
 
 ## Contributing
@@ -300,4 +313,4 @@ If you reference PAT in academic or journalistic work, please cite as:
 }
 ```
 
-Press and academic inquiries welcome. Contact: **TBD** (will be filled in before public launch).
+Press and academic inquiries welcome. Contact: **toolkit@ochsner.dev**.

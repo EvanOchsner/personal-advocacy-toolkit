@@ -2104,7 +2104,7 @@ wheels = [
 [[package]]
 name = "pdf-plaintext-extraction"
 version = "0.1.0"
-source = { git = "https://github.com/EvanOchsner/pdf-plaintext-extraction?branch=main#8342e7faa0cbdcb1aa13a810f117b0ee7afe0ce7" }
+source = { git = "https://github.com/EvanOchsner/pdf-plaintext-extraction?branch=main#994f5ecf06bd488e271bb02fa9fcbf37f8a2ad9f" }
 dependencies = [
     { name = "httpx" },
     { name = "pikepdf" },

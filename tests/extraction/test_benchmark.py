@@ -1,23 +1,30 @@
 """Benchmark-gated regression tests for the PAT extraction cascade.
 
-Pulls the synthetic-gold corpus from the sibling ``pdf-plaintext-extraction``
-package: three Gutenberg excerpts × seven variants (clean + six poisoning
-techniques). For each variant, runs the cascade and asserts the resulting
-token-F1 / normalized-edit-distance lands inside a per-variant floor.
+Pulls the synthetic-gold corpus from the ``pdf-plaintext-extraction``
+package: 100 source documents × seven variants (clean + six poisoning
+techniques). For each variant, runs the cascade and asserts the
+resulting token-F1 / normalized-edit-distance lands inside a
+per-variant floor.
+
+Running all 100 sources is slow (~30-60 min), so by default the test
+samples a small deterministic subset — enough to catch gross
+regressions in a pre-push run. Set ``PAT_BENCHMARK_FULL=1`` to run the
+whole corpus (a dedicated CI job, or before a cascade release).
 
 This module skips entirely when the ``[benchmark]`` extra isn't
 installed — keeps a base CI run green for contributors who haven't
 checked out the benchmark.
 
-Floors are tuned to the current cascade behavior; variants where the
-cascade has known defects (homoglyph, rasterize) are marked
-``xfail(strict=True)`` so the marker auto-trips when those defects are
-fixed (PR 2, PR 3).
+Floors are tuned to observed cascade behavior. Variants with a known
+cascade defect go in ``KNOWN_FAILURES`` and are marked
+``xfail(strict=True)``, so a marker auto-trips once the cascade
+improves enough to pass.
 """
 
 from __future__ import annotations
 
 import json
+import os
 
 import pytest
 
@@ -30,6 +37,11 @@ from scripts.extraction.cascade import extract  # noqa: E402
 
 
 # Per-variant (min_f1, max_ned). Anything outside the window fails.
+# Tuned to observed cascade behavior on the 100-source corpus. The
+# rasterize window is deliberately loose: recovering rasterized text
+# means OCR, and OCR token-F1 legitimately varies (~0.86-0.99 across
+# documents). The floor catches a real regression — OCR disabled, F1
+# collapses — without flagging ordinary OCR noise.
 FLOORS: dict[str, tuple[float, float]] = {
     "clean": (0.98, 0.02),
     "char_spacing": (0.90, 0.10),
@@ -37,21 +49,24 @@ FLOORS: dict[str, tuple[float, float]] = {
     "metadata_swap": (0.98, 0.02),
     "watermark": (0.95, 0.05),
     "homoglyph": (0.85, 0.15),
-    "rasterize": (0.90, 0.10),
+    "rasterize": (0.80, 0.25),
 }
 
-# Variants the cascade is known to fail on today.
-# ``strict=True`` would mean an unexpected pass also fails — useful
-# for catching silent improvements. Empty for now: the english_token_ratio
-# signal in garble.py escalates homoglyph past tier 0, OCR reads the
-# visual Latin, and the variant joins the passing set.
-#
-# Historical: ``rasterize`` looked broken in early serff benchmark
-# runs (pat-cascade F1=0), but with PAT's ``[extraction]`` extra
-# installed the cascade falls through to Docling's rapid-OCR
-# pipeline and recovers the text. The defect surfaces only when the
-# `extraction` extra is missing.
+# Variants with a known cascade defect. ``strict=True`` on the xfail
+# marker means an unexpected pass also fails, so a stale marker can't
+# outlive the defect it documents. Currently empty: the
+# english_token_ratio signal in garble.py escalates homoglyph past
+# tier 0, OCR reads the visual Latin, and the variant now passes.
 KNOWN_FAILURES: set[str] = set()
+
+# The corpus has 100 sources; 100 × 7 variants is a ~30-60 min run —
+# too slow to gate every push. By default the test samples a small
+# deterministic subset (the first source of each prefix below). Set
+# ``PAT_BENCHMARK_FULL=1`` to run the whole corpus.
+BENCHMARK_FULL = (
+    os.environ.get("PAT_BENCHMARK_FULL", "").lower() not in ("", "0", "false")
+)
+SUBSET_PREFIXES = ("gutenberg-", "usc-", "wikipedia-")
 
 
 @pytest.fixture(scope="session")
@@ -59,10 +74,31 @@ def corpus_root():
     return pdf_pte.ensure_corpus()
 
 
+def _select_entries(corpus_root):
+    """Ground-truth entries for this run: the whole corpus when
+    ``PAT_BENCHMARK_FULL`` is set, otherwise a deterministic stratified
+    subset — the first source of each ``SUBSET_PREFIXES`` family, so the
+    gate still spans literary / legal / encyclopedic document types."""
+    entries = sorted(
+        pdf_pte.iter_ground_truth(corpus_root), key=lambda e: e.source_id
+    )
+    if BENCHMARK_FULL:
+        return entries
+    subset = []
+    for prefix in SUBSET_PREFIXES:
+        match = next(
+            (e for e in entries if e.source_id.startswith(prefix)), None
+        )
+        if match is not None:
+            subset.append(match)
+    return subset or entries[:3]
+
+
 def _cases(corpus_root):
-    """Flatten manifest into (source_id, variant_name, pdf_path, reference)."""
+    """Flatten selected ground-truth entries into
+    (source_id, variant_name, pdf_path, reference) tuples."""
     out = []
-    for entry in pdf_pte.iter_ground_truth(corpus_root):
+    for entry in _select_entries(corpus_root):
         if entry.clean_pdf_path:
             out.append(
                 (entry.source_id, "clean", entry.clean_pdf_path, entry.normalized_text)
